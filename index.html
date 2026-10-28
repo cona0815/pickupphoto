@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v7 (2026-10-28)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v8 (2026-10-28)　（原名：AI 照片篩選器）
+  2026v8: 步驟列改成 匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出；每一步有「下一步」提示（要按的地方會發光）
   2026v7: 拿掉 sportstime 連結；網站 repo 改為新的乾淨 repo
   2026v6: 拿掉網頁裡學校行事曆的確切日期資料（183 筆）；推薦只看月份，功能不變
   2026v5: 拿掉「依 114 下／115 上各處室行事曆整理」字樣
@@ -167,7 +168,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v7 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v8 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2451,6 +2452,19 @@
   #acAdv > summary { color: var(--text-dim); }
   #acAdv > summary u { text-decoration: none; color: #0b1a2e; background: var(--blue); padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; margin-left: 6px; }
   #acAdvSum.custom { color: var(--blue) !important; }
+  /* 2026v8: 下一步提示 */
+  .coach-bar { position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px; z-index: 900; display: flex; align-items: center; gap: 8px; max-width: min(760px, calc(100vw - 32px)); padding: 9px 10px 9px 16px; border-radius: 14px; background: rgba(28, 22, 52, 0.96); border: 1px solid rgba(255,209,102,0.55); box-shadow: 0 10px 30px rgba(0,0,0,0.45); color: var(--text); font-size: 13px; line-height: 1.5; backdrop-filter: blur(10px); }
+  .coach-bar[hidden] { display: none !important; }
+  .coach-txt { flex: 1 1 auto; min-width: 0; }
+  .coach-bar button { flex: 0 0 auto; font: 600 12px var(--font); border-radius: 999px; padding: 5px 11px; cursor: pointer; border: 1px solid var(--glass-edge-soft); background: rgba(255,255,255,0.06); color: var(--text-dim); }
+  .coach-bar .coach-go { background: var(--yellow); color: #2a1f00; border-color: transparent; }
+  .coach-bar .coach-x { padding: 5px 8px; }
+  .coach-pulse { outline: 2.5px solid var(--yellow) !important; outline-offset: 3px; animation: coachPulse 1.4s ease-in-out infinite; border-radius: 12px; }
+  @keyframes coachPulse { 50% { outline-color: rgba(255,209,102,0.15); outline-offset: 7px; } }
+  @media (max-width: 720px) { .coach-bar { bottom: calc(74px + env(safe-area-inset-bottom)); flex-wrap: wrap; font-size: 12.5px; } .coach-bar .coach-off { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .coach-pulse { animation: none; } }
+  body.coach-shown .toast { bottom: 84px !important; }
+  @media (max-width: 720px) { body.coach-shown .toast { bottom: calc(150px + env(safe-area-inset-bottom)) !important; } }
   /* 2026v3: 摘要一行 = 文字（可換行）＋按鈕（不拆開、靠右） */
   #acGrp > summary, #acAdv > summary { display: flex; align-items: center; gap: 6px; line-height: 1.45; }
   #acGrp > summary > b, #acAdv > summary > b { flex: 1 1 auto; min-width: 0; }
@@ -2677,7 +2691,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v7 · 2026-10-28</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v8 · 2026-10-28</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -2740,7 +2754,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><td>瀏覽器 IndexedDB（分析快取）</td><td>每張照片的分析數值，<b>含人臉位置、臉部縮圖雜湊</b>；勾了 128 維特徵時另含<b>臉部特徵向量（屬生物特徵）</b>。不含照片本身</td><td>設定 → 儲存 → 🗑️ 清除分析快取</td></tr>
         <tr><td>瀏覽器 IndexedDB（設定）</td><td>相簿庫、備份資料夾的位置</td><td>清除瀏覽器網站資料</td></tr>
         <tr><td>瀏覽器 Cache Storage（網站版／安裝成 App）</td><td>工具本身、圖示，以及公開程式庫與人臉模型（離線用）。<b>不含照片、不含分析結果</b></td><td>解除安裝 App，或清除瀏覽器網站資料</td></tr>
-        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單（都不含照片）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
+        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關（都不含照片）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
         <tr><td>你選的相簿庫資料夾</td><td>匯出的照片、index.json（檔名、日期、活動、分數、人數、拍攝者名字、最愛、自建相簿名稱、照片本身帶的 <b>GPS 經緯度</b>、你設定的學校位置、自己取的地點名稱與查到的地標名稱）、索引歷史（_index_history）與每天的記錄備份（_相簿庫記錄備份，保留 30 天）。設為最愛的照片檔內會寫入「5 顆星」。在相簿庫刪除的照片先放進「_回收桶」資料夾，按「永久刪除」才真的刪掉</td><td>自行管理資料夾</td></tr>
       </table>
       <div class="pv-note">共用電腦用完請清除分析快取；離職或交接時一併刪除相簿庫與 Gemini Key。</div>
@@ -2750,7 +2764,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       網站版的 service worker 只快取工具與公開模型，<b>不會攔截或保存照片</b>；Gemini、Google、OpenStreetMap 的連線一律不經過快取。<br>
       本工具是單一 HTML 檔，可用文字編輯器搜尋 <code>fetch(</code>、<code>https://</code> 自行檢查所有連線。
 
-      <div class="pv-foot">本頁依 2026v7 程式逐項清點（2026-10-28）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v8 程式逐項清點（2026-10-28）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -2761,11 +2775,11 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <nav class="stepbar" id="stepBar">
   <button class="sb-step" data-step="1" onclick="gotoStep(1)"><span class="sb-n">1</span><span class="sb-t">匯入<small id="sbSub1">選照片</small></span></button>
   <i class="sb-line"></i>
-  <button class="sb-step" data-step="2" onclick="gotoStep(2)"><span class="sb-n">2</span><span class="sb-t">情境<small id="sbSub2"></small></span></button>
+  <button class="sb-step" data-step="2" onclick="gotoStep(2)"><span class="sb-n">2</span><span class="sb-t">整理方式<small id="sbSub2"></small></span></button>
   <i class="sb-line"></i>
-  <button class="sb-step" data-step="3" onclick="gotoStep(3)"><span class="sb-n">3</span><span class="sb-t">分群<small id="sbSub3"></small></span></button>
+  <button class="sb-step" data-step="3" onclick="gotoStep(3)"><span class="sb-n">3</span><span class="sb-t">分析<small id="sbSub3"></small></span></button>
   <i class="sb-line"></i>
-  <button class="sb-step" data-step="4" onclick="gotoStep(4)"><span class="sb-n">4</span><span class="sb-t">分析<small id="sbSub4"></small></span></button>
+  <button class="sb-step" data-step="4" onclick="gotoStep(4)"><span class="sb-n">4</span><span class="sb-t">命名<small id="sbSub4"></small></span></button>
   <i class="sb-line"></i>
   <button class="sb-step" data-step="5" onclick="gotoStep(5)"><span class="sb-n">5</span><span class="sb-t">審核<small id="sbSub5"></small></span></button>
   <i class="sb-line"></i>
@@ -3172,8 +3186,9 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 
     <div style="font-size:13px;color:var(--text-dim);line-height:2;">
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
-        頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 情境 → 分群 → 分析 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
-        <span style="font-size:11px;">本說明對應 2026v7（2026-10-28）。</span>
+        頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
+        畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
+        <span style="font-size:11px;">本說明對應 2026v8（2026-10-28）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -3662,6 +3677,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
     <section class="sd-sec" id="sd-about">
       <h4>ℹ️ 關於</h4>      <div class="sd-btns">
         <button class="btn-export-report" onclick="closeSettings();showManual()">❓ 操作說明</button>
+        <label class="sd-row" style="cursor:pointer;"><span>顯示「下一步」提示<small>畫面下方告訴你下一步要按哪裡，要按的地方會發光</small></span><input type="checkbox" id="sdCoachOn" checked onchange="setCoachOn(this.checked)"></label>
         <button class="btn-export-report" id="btnInstallApp" hidden onclick="pwaInstall()" title="在桌面建立「校園拾光」圖示，用自己的視窗開啟；離線也能篩照片">📲 安裝成 App</button>
         <button class="btn-export-report" onclick="closeSettings();document.getElementById('securityModal').classList.add('show')">🔒 資安與隱私</button>
         <button class="btn-export-report" onclick="closeSettings();showDownloadHelp()">📦 ZIP 安全性</button>
@@ -3765,8 +3781,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v7';
-const APP_BUILD = 'v163';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v8';
+const APP_BUILD = 'v164';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -13468,6 +13484,7 @@ function openSettings(sec) {
   { const top = SD_TOP[sec] || window._sdTop || 'perf'; const changed = top !== window._sdTop; sdShow(top); if (changed || !sec || sec === top) { const b = d.querySelector('.sd-body'); if (b) b.scrollTop = 0; } if (sec === top) { if (sec === 'gemini') setTimeout(() => document.getElementById('geminiKeyGlobal')?.focus(), 300); sec = null; } }
   d.classList.add('open'); d.setAttribute('aria-hidden', 'false');
   document.getElementById('settingsScrim').classList.add('open');
+  { const c = document.getElementById('sdCoachOn'); if (c) c.checked = coachOn(); }   // 2026v8
   updateStorageEstimate(); refreshGeminiKeyUi(); renderPromoSettings(); try { refreshBackupUi(); } catch {} try { renderEventListSettings(); } catch {}
   try { const cs = document.getElementById('sdCapStyle'); if (cs) cs.innerHTML = Object.entries(LIB_STYLES).map(([k, v]) => `<option value="${k}"${capStylePref() === k ? ' selected' : ''}>${v.label}</option>`).join('');
         const pu = document.getElementById('sdPackUnit'); if (pu) pu.value = libPackUnit(); } catch {}
@@ -13557,12 +13574,63 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
 // STEP BAR (v104) — 一條流程：匯入 → 情境 → 分群 → 分析 → 審核 → 匯出
 // ══════════════════════════════════════════════════════════════
 let _exportedOnce = false;
+// 2026v8: 1 匯入 → 2 整理方式（情境＋分組）→ 3 分析 → 4 命名 → 5 審核 → 6 匯出
+// 2026v8: 「下一步」提示 — 下方提示列＋要按的東西發光；localStorage coachOff='1' 關掉
+function coachOn() { try { return localStorage.getItem('coachOff') !== '1'; } catch { return true; } }
+function setCoachOn(on) { try { on ? localStorage.removeItem('coachOff') : localStorage.setItem('coachOff', '1'); } catch {} window._coachSig = ''; coachUpdate(); const c = document.getElementById('sdCoachOn'); if (c) c.checked = on; }
+function coachTarget(step) {
+  const vis = el => el && el.offsetParent !== null && !el.closest('[hidden]');
+  const album = window._acMode === 'album' || albumMode;
+  if (step === 1) return { el: document.getElementById('uploadZone'), t: '👆 第 1 步：把活動照片拖到這裡，或點這裡選照片' };
+  if (step === 2) return album ? { el: document.querySelector('#acAlbumCard .ac-chips'), t: '👆 第 2 步：選怎麼分組（一天／半天／相隔 40 分鐘），再按「📱 開始整理」' }
+                               : { el: document.getElementById('acScens'), t: '👆 第 2 步：選「這是什麼場合」— 學校活動、運動會、頒獎或畢業典禮' };
+  if (step === 3) { const b = document.getElementById(album ? 'btnAlbumSide' : 'btnAnalyzeSide');
+    return window._analysisInProgress ? { el: null, t: '⏳ 分析中，請稍等…' } : { el: vis(b) ? b : document.getElementById('btnAnalyze'), t: album ? '👆 第 3 步：按「📱 開始整理」' : '👆 第 3 步：按「▶ 開始分析」（② 分組、③ 進階可以先調整）' }; }
+  if (step === 4) { const nm = namingState(); const b = nm.first && document.querySelector(`.nt-btn[onclick="openNameTag(${nm.first.id})"]`);
+    return { el: b, t: `👆 第 4 步：按「📁 命名・標籤」幫每一組取名字（還有 ${nm.total - nm.named} 組）` }; }
+  if (step === 5) return { el: document.getElementById('ecLibrary'), t: '👆 第 5 步：看一下入選的照片（綠框入選，點照片可放大），沒問題就按「📚 存進相簿庫」' };
+  if (step === 6) return { el: document.getElementById('btnLibrary'), t: '✅ 完成！到右上角「📚 相簿庫」可以做成果包（Word、照片說明、FB 貼文）' };
+  return null;
+}
+function coachUpdate(step) {
+  if (step == null) step = window._coachStep || 1;
+  window._coachStep = step;
+  let bar = document.getElementById('coachBar');
+  document.querySelectorAll('.coach-pulse').forEach(e => e.classList.remove('coach-pulse'));
+  document.body.classList.remove('coach-shown');   // 顯示提示列時，toast 往上移，不要蓋住
+  if (!coachOn() || window._coachHidden === step) { if (bar) bar.hidden = true; return; }
+  const tg = coachTarget(step); if (!tg) { if (bar) bar.hidden = true; return; }
+  document.body.classList.add('coach-shown');
+  if (!bar) {
+    bar = document.createElement('div'); bar.id = 'coachBar'; bar.className = 'coach-bar'; bar.setAttribute('role', 'status');
+    bar.innerHTML = `<span class="coach-txt"></span><button class="coach-go">帶我去</button><button class="coach-x" title="這一步先不要提示">✕</button><button class="coach-off" title="之後都不要提示（設定 → 關於 可再打開）">不要再提示</button>`;
+    bar.querySelector('.coach-go').onclick = () => { const t = coachTarget(window._coachStep); if (t && t.el) { t.el.scrollIntoView({ behavior: 'smooth', block: 'center' }); t.el.classList.remove('flash-target'); void t.el.offsetWidth; t.el.classList.add('flash-target'); } else gotoStep(window._coachStep); };
+    bar.querySelector('.coach-x').onclick = () => { window._coachHidden = window._coachStep; coachUpdate(); };
+    bar.querySelector('.coach-off').onclick = () => { setCoachOn(false); showToast('已關閉提示；⚙️ 設定 → 關於 可以再打開'); };
+    document.body.appendChild(bar);
+  }
+  bar.hidden = false;
+  bar.querySelector('.coach-txt').textContent = tg.t;
+  bar.dataset.step = step;
+  bar.querySelector('.coach-go').hidden = !tg.el;
+  if (tg.el) tg.el.classList.add('coach-pulse');
+}
+function namingState() {
+  const gs = (typeof groups !== 'undefined' ? groups : []).filter(g => g.photos && g.photos.length);
+  return { total: gs.length, named: gs.filter(g => g.eventName).length, first: gs.find(g => !g.eventName) };
+}
 function gotoStep(n) {
-  const target = { 1: 'secImport', 2: 'secAnalyze', 3: 'secGroup', 4: 'secAnalyze', 5: 'statsStrip', 6: 'exportBar' }[n];
-  if (n === 3) { const d = document.getElementById('acGrp'); if (d) d.open = true; }   // v148
-  const el = document.getElementById(target); if (!el) return;
-  if ((n === 5 || n === 6) && el.style.display === 'none') { showToast('先完成「分析」才會有結果'); return gotoStep(4); }
-  el.scrollIntoView({ behavior: 'smooth', block: n === 4 ? 'end' : 'start' });
+  const analyzed = document.getElementById('exportBar')?.style.display !== 'none' && groups.length > 0;
+  if (n >= 4 && !analyzed) { showToast('先完成「分析」才會有結果'); return gotoStep(3); }
+  let el;
+  if (n === 1) el = document.getElementById('secImport');
+  else if (n === 2) el = document.getElementById('secAnalyze');
+  else if (n === 3) el = document.getElementById(window._acMode === 'album' ? 'btnAlbumSide' : 'btnAnalyzeSide') || document.getElementById('secAnalyze');
+  else if (n === 4) { const f = namingState().first; el = (f && document.querySelector(`.nt-btn[onclick="openNameTag(${f.id})"]`)) || document.querySelector('.nt-btn'); }
+  else if (n === 5) el = document.getElementById('statsStrip');
+  else el = document.getElementById('ecLibrary') || document.getElementById('exportBar');
+  if (!el) return;
+  el.scrollIntoView({ behavior: 'smooth', block: n === 1 || n === 2 || n === 5 ? 'start' : 'center' });
   el.classList.remove('flash-target'); void el.offsetWidth; el.classList.add('flash-target');
 }
 function _stepState() {
@@ -13574,11 +13642,15 @@ function _stepState() {
   const scenName = scenNeedPick() ? '還沒選' : scen ? scen.options[scen.selectedIndex].textContent.replace(/^\S+\s*/, '') : '';
   const customOn = document.querySelector('.tab-switch .tab-btn[data-mode="custom"]')?.classList.contains('active');
   const defs = customGroupDefs.filter(d => d.start && d.end).length;
-  const grp = albumMode ? '相簿・依日期與內容' : customOn && defs ? `${defs} 個時段` : `自動・每 ${document.getElementById('timeGap')?.value || 20} 分`;
+  const grp = customOn && defs ? `${defs} 個時段` : `每 ${document.getElementById('timeGap')?.value || 20} 分`;
+  // 2026v8: 整理方式＝情境＋分組；命名是新的一步
+  const album = albumMode || window._acMode === 'album';
+  const way = album ? '相簿一鍵整理' : scenNeedPick() ? '還沒選場合' : `${scenName}・${grp}`;
+  const nm = namingState(), needName = analyzed && nm.total > 0 && nm.named < nm.total;
   return {
-    sub: [n ? `${n} 張` : '選照片', scenName, grp, running ? '分析中…' : analyzed ? '完成' : '', analyzed ? `入選 ${sel}` : '', _exportedOnce ? '已匯出' : ''],
-    done: [n > 0, n > 0, n > 0, analyzed && !running, analyzed && _exportedOnce, _exportedOnce],
-    current: !n ? 1 : running ? 4 : !analyzed ? 4 : !_exportedOnce ? 5 : 6,
+    sub: [n ? `${n} 張` : '選照片', way, running ? '分析中…' : analyzed ? '完成' : '', analyzed ? `${nm.named}／${nm.total} 組` : '', analyzed ? `入選 ${sel}` : '', _exportedOnce ? '已匯出' : ''],
+    done: [n > 0, n > 0 && (album || !scenNeedPick()), analyzed && !running, analyzed && !needName, analyzed && _exportedOnce, _exportedOnce],
+    current: !n ? 1 : running ? 3 : !analyzed ? (!album && scenNeedPick() ? 2 : 3) : needName ? 4 : !_exportedOnce ? 5 : 6,
   };
 }
 let _stepSig = '';
@@ -13592,6 +13664,7 @@ function updateStepBar() {
     b.classList.toggle('current', st.current === k || (st.current === 5 && k === 6));
   });
   st.sub.forEach((t, i) => { const el = document.getElementById('sbSub' + (i + 1)); if (el) el.textContent = t; });
+  try { coachUpdate(st.current); } catch (e) { console.warn('coach', e); }   // 2026v8
   const meta = document.getElementById('sideAnalyzeMeta');
   if (meta) { const s = document.getElementById('analysisResolution'); meta.textContent = `${s ? s.options[s.selectedIndex].textContent.split('—')[0].trim() : ''} · AI 人臉 ${faceApiState.enabled ? 'ON' : 'OFF'} ·`; }
 }
@@ -13652,7 +13725,7 @@ function initStepBar() {
     const f = window[name]; if (typeof f !== 'function') continue;
     window[name] = async function (...args) { const r = await f.apply(this, args); _exportedOnce = true; updateStepBar(); return r; };
   }
-  setInterval(updateStepBar, 600); updateStepBar();
+  setInterval(() => { updateStepBar(); try { coachUpdate(); } catch {} }, 600); updateStepBar();
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initStepBar); else setTimeout(initStepBar, 0);
 
