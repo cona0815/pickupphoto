@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v11 (2026-11-01)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v17 (2026-11-01)　（原名：AI 照片篩選器）
+  2026v17 (2026-11-01, build v173): ⏱ 多位拍攝者自動對時 — 用大家拍到的相同畫面算出相機時間差並對齊，同一場活動不再被切成兩組
+  2026v16 (2026-11-01, build v172): 📲 Android 安裝成 App 後，手機相簿可以「分享 → 校園拾光」直接匯入；📤／📥 整理記錄可以匯出帶到別台電腦接著做
+  2026v15 (2026-11-01, build v171): 📖 學年回顧 — 相簿庫一鍵把一個學年度的活動排成 A4（代表照＋名稱＋日期＋張數），下載圖片、Word 或列印
+  2026v14 (2026-11-01, build v170): 🔍 相簿庫搜尋（2025、10月、114學年、人數>10、精選、#標籤、@地點…）；🍎 HEIC 轉檔保留拍攝時間、GPS、相機；分析剩餘時間更準
+  2026v13 (2026-11-01, build v169): 📤 成果包多「分享」：LINE 版（1280＋浮水印）／FB 版（2048）ZIP、複製群組訊息、手機直接分享；未通過的照片「⭐ 留下」（燈箱按 K）
+  2026v12 (2026-11-01, build v168): 🕘 記住這次整理 — 關掉網頁再匯入同一批照片，可以「▶ 接著做」：分組、名稱、標籤、勾選、移除的相簿都回來；
+        動畫播完自動捲到第一個還沒命名的組
   2026v11 (2026-11-01, build v167): 🎞 整理動畫在活動卡很多時不再被切掉 — 每邊自動排 1／2／3 欄，放不下就把卡片變矮；已移除的相簿不進動畫
   2026v10 (2026-11-01, build v166): 🗑 相簿可以勾選，按「不要了」整組移除（不入選、不匯出、不用命名）；每組也有「🗑 不要這組」；移除後可「↩ 復原」
         📅 沒命名的相簿一律用日期當名稱（例「10/28（三）上午」，同天同時段再加時間），不再是「賽程 1」；手機版面不再橫向捲動
@@ -174,7 +181,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v11 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v17 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2471,6 +2478,56 @@
   @media (max-width: 720px) { .coach-bar { bottom: calc(74px + env(safe-area-inset-bottom)); flex-wrap: wrap; font-size: 12.5px; } .coach-bar .coach-off { display: none; } }
   @media (prefers-reduced-motion: reduce) { .coach-pulse { animation: none; } }
   body.coach-shown .toast { bottom: 84px !important; }
+  /* 2026v17: 自動對時 */
+  .cs-box { margin-top: 6px; padding-top: 6px; border-top: 0.5px dashed var(--glass-edge-soft); }
+  /* 2026v16: 手機分享、裝置提示 */
+  .dev-hint { flex-basis: 100%; font-size: 11.5px; color: var(--yellow); line-height: 1.6; padding: 6px 10px; border-radius: 10px; background: rgba(255,209,102,0.08); border: 1px solid rgba(255,209,102,0.3); }
+  .sess-link + .sess-link { margin-left: 10px; }
+  /* 2026v15: 學年回顧 */
+  .yr-modal { width: 980px; max-width: 96vw; max-height: 92vh; display: flex; flex-direction: column; }
+  .yr-ctl { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin-bottom: 8px; font-size: 12px; }
+  .yr-ctl select { font-family: inherit; font-size: 13px; padding: 5px 8px; border-radius: 8px; background: var(--glass-1); color: var(--text); border: 0.5px solid var(--glass-edge-soft); }
+  .yr-cats { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+  .yr-cats label, .yr-rec { display: inline-flex; gap: 4px; align-items: center; cursor: pointer; }
+  .yr-grid { overflow-y: auto; flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; padding: 12px; border-radius: 14px; background: #f5f5f7; }
+  .yr-cell { position: relative; color: #1d1d1f; }
+  .yr-img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; background: #e3e3e8; display: block; }
+  .yr-mo { position: absolute; left: 6px; top: 6px; z-index: 2; font-size: 11px; font-weight: 700; color: #fff; background: rgba(255,138,76,0.95); padding: 2px 8px; border-radius: 999px; }
+  .yr-x { position: absolute; right: 6px; top: 6px; z-index: 2; width: 24px; height: 24px; border-radius: 50%; border: none; background: rgba(0,0,0,0.55); color: #fff; cursor: pointer; font-size: 12px; opacity: 0; transition: opacity .15s; }
+  .yr-cell:hover .yr-x { opacity: 1; } @media (hover: none) { .yr-x { opacity: 1; } }
+  .yr-n { font-size: 13px; font-weight: 700; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .yr-d { font-size: 11px; color: #6b6b70; }
+  .yr-busy { margin-top: 8px; font-size: 12px; color: var(--text-dim); }
+  /* 2026v14: 相簿庫搜尋、HEIC */
+  .lib-q { min-width: 300px; flex: 1 1 300px; }
+  .lib-qhints, .lib-qres { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin: 2px 0 6px; font-size: 11.5px; color: var(--text-dim); }
+  .lib-qh { font-size: 10.5px; color: var(--text-faint); margin-left: 6px; }
+  .lib-qh:first-child { margin-left: 0; }
+  .lib-qchip { font-family: inherit; font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 0.5px solid var(--glass-edge-soft); background: var(--glass-1); color: var(--text); cursor: pointer; }
+  .lib-qchip:hover { background: var(--glass-2); }
+  .lib-qres b { color: var(--text); }
+  .heic-fail { font-size: 10.5px; color: var(--yellow); margin-top: 4px; line-height: 1.5; }
+  /* 2026v13: 成果包 → 分享 */
+  .lp-share { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(90,200,140,0.08); border: 1px solid rgba(90,200,140,0.35); }
+  .lp-share-btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 4px; }
+  .lp-share-btns .modal-btn { font-size: 12px; padding: 7px 12px; }
+  .keep-btn { position: absolute; left: 6px; bottom: 6px; z-index: 3; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; border: 1px solid rgba(255,209,102,0.8); background: rgba(30,24,10,0.82); color: var(--yellow); cursor: pointer; font-family: inherit; opacity: 0; transition: opacity .15s; }
+  .photo-card:hover .keep-btn, .photo-card:focus-within .keep-btn { opacity: 1; }
+  @media (hover: none) { .keep-btn { opacity: 1; } }
+  /* 2026v12: 續做卡 */
+  .sess-card { padding: 10px 12px; border-radius: 14px; background: rgba(90,160,255,0.10); border: 1px solid rgba(90,160,255,0.45); }
+  .sess-t { font-size: 13px; font-weight: 700; }
+  .sess-s { font-size: 11px; color: var(--text-dim); margin-top: 3px; line-height: 1.5; }
+  .sess-s b { color: var(--yellow); font-weight: 600; }
+  .sess-btns { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .sess-btns button, .sess-row button { font-family: inherit; font-size: 12px; border-radius: 10px; padding: 6px 12px; cursor: pointer; border: 1px solid var(--glass-edge-soft); background: var(--glass-2); color: var(--text); }
+  .sess-btns .sess-go { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 700; }
+  .sess-link { background: none; border: none; color: var(--text-dim); font-size: 11.5px; cursor: pointer; padding: 2px 0; font-family: inherit; text-decoration: underline dotted; }
+  .sess-list { margin-top: 6px; display: grid; gap: 4px; }
+  .sess-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: 11.5px; padding: 6px 8px; border-radius: 10px; background: var(--glass-1); border: 0.5px solid var(--glass-edge-soft); }
+  .sess-row small { display: block; color: var(--text-faint); font-size: 10.5px; }
+  .sess-row button { padding: 2px 8px; }
+  .sess-tip { font-size: 10.5px; color: var(--text-faint); margin: 2px 0 0; }
   /* 2026v10: 勾選相簿 → 不要了 */
   .grp-pick { display: inline-flex; align-items: center; margin-right: 8px; cursor: pointer; padding: 4px; border-radius: 6px; }
   .grp-pick:hover { background: var(--glass-2); }
@@ -2777,7 +2834,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v11 · 2026-11-01</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v17 · 2026-11-01</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -2838,9 +2895,12 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <table class="pv-table">
         <tr><th>位置</th><th>內容</th><th>怎麼清除</th></tr>
         <tr><td>瀏覽器 IndexedDB（分析快取）</td><td>每張照片的分析數值，<b>含人臉位置、臉部縮圖雜湊</b>；勾了 128 維特徵時另含<b>臉部特徵向量（屬生物特徵）</b>。不含照片本身</td><td>設定 → 儲存 → 🗑️ 清除分析快取</td></tr>
-        <tr><td>瀏覽器 IndexedDB（設定）</td><td>相簿庫、備份資料夾的位置</td><td>清除瀏覽器網站資料</td></tr>
+        <tr><td>📲 從手機相簿分享進來（Android，安裝成 App 後）</td><td>你選的照片交給這個網頁 App，暫存在這支手機瀏覽器的 IndexedDB，打開頁面匯入後立刻刪掉；不經過任何伺服器</td><td>只在這支手機</td></tr>
+        <tr><td>📤 匯出整理記錄（.json）</td><td>檔名、分組、活動名稱、標籤、入選／淘汰（<b>不含照片</b>）存成檔案，由你自己帶到別台電腦</td><td>你放哪就在哪</td></tr>
+        <tr><td>📲 直接分享（手機）</td><td>你在成果包按「直接分享」時，縮好的照片（最多 9 張）與群組訊息交給你在手機上選的 App（LINE、FB…），由那個 App 送出</td><td>看你選的 App</td></tr>
+        <tr><td>瀏覽器 IndexedDB（設定）</td><td>相簿庫、備份資料夾的位置；<b>最近整理記錄</b>（每批照片的檔名、分組、活動名稱、標籤、入選／淘汰，不含照片，最多 20 批，匯出後 7 天自動清）</td><td>設定 → 儲存 →「清除整理記錄」；或清除瀏覽器網站資料</td></tr>
         <tr><td>瀏覽器 Cache Storage（網站版／安裝成 App）</td><td>工具本身、圖示，以及公開程式庫與人臉模型（離線用）。<b>不含照片、不含分析結果</b></td><td>解除安裝 App，或清除瀏覽器網站資料</td></tr>
-        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關、整理動畫的開關（都不含照片）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
+        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關、整理動畫的開關、分享浮水印的開關、相簿庫最近 5 次搜尋（都不含照片）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
         <tr><td>你選的相簿庫資料夾</td><td>匯出的照片、index.json（檔名、日期、活動、分數、人數、拍攝者名字、最愛、自建相簿名稱、照片本身帶的 <b>GPS 經緯度</b>、你設定的學校位置、自己取的地點名稱與查到的地標名稱）、索引歷史（_index_history）與每天的記錄備份（_相簿庫記錄備份，保留 30 天）。設為最愛的照片檔內會寫入「5 顆星」。在相簿庫刪除的照片先放進「_回收桶」資料夾，按「永久刪除」才真的刪掉</td><td>自行管理資料夾</td></tr>
       </table>
       <div class="pv-note">共用電腦用完請清除分析快取；離職或交接時一併刪除相簿庫與 Gemini Key。</div>
@@ -2850,7 +2910,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       網站版的 service worker 只快取工具與公開模型，<b>不會攔截或保存照片</b>；Gemini、Google、OpenStreetMap 的連線一律不經過快取。<br>
       本工具是單一 HTML 檔，可用文字編輯器搜尋 <code>fetch(</code>、<code>https://</code> 自行檢查所有連線。
 
-      <div class="pv-foot">本頁依 2026v11 程式逐項清點（2026-11-01）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v17 程式逐項清點（2026-11-01）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -2889,6 +2949,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
           <button class="import-sc" onclick="openMultiPhotographer()" title="好幾位老師各拍一批">
             <span class="isc-t">👥 多位拍攝者</span><span class="isc-s">合併多位老師的照片</span></button>
         </div>
+        <div id="sessBox" style="margin-top:8px;"></div>
         <div id="triagePanel" style="display:none;margin-top:8px;"></div>
         <div class="control-group" style="margin-top:8px;">
           <div class="control-row">
@@ -3195,6 +3256,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
               <option value="0">原圖</option><option value="3840">4K</option><option value="2560">2560px</option><option value="1920">1920px</option><option value="1600">1600px</option><option value="1280">1280px</option>
             </select></label>
             <button class="tip-link" onclick="exportReport()">📄 下載篩選報告</button>
+            <span id="deviceHint"></span>
           </div>
         </div>
       </div>
@@ -3274,7 +3336,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v11（2026-11-01）。</span>
+        <span style="font-size:11px;">本說明對應 2026v17（2026-11-01）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -3494,6 +3556,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
             <input type="file" id="multiRawTimeFile" accept=".json" style="display:none" onchange="handleMultiRawTimeFile(this.files[0])">
             <span id="multiRawTimeStatus" style="font-size:10px;color:var(--text-dim);"></span>
           </div>
+          <label style="font-size:11px;color:var(--text-dim);display:flex;align-items:flex-start;gap:4px;margin-top:4px;" title="每位老師的相機時間常常差幾分鐘，同一場活動會被切成兩組">
+            <input type="checkbox" id="multiRawClockSync" checked style="margin-top:2px;"> ⏱ 自動對時：用大家拍到的相同畫面，算出各相機的時間差並對齊</label>
         </div>
       </div>
 
@@ -3758,6 +3822,10 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div class="sd-sub" id="sd-storage"><h5>🗄 分析快取（瀏覽器）</h5>      <p class="sd-note">分析過的照片會快取在瀏覽器，同一批照片重跑幾乎是秒開。快取不含照片本身，但含<b>人臉位置與臉部雜湊</b>（勾 128 維特徵時另含臉部特徵向量）；共用電腦用完請清除。</p>
       <div class="sd-note" id="storageEstimate">計算中…</div>
       <div class="sd-btns"><button class="btn-export-report" onclick="clearAnalysisCache().then(updateStorageEstimate)">🗑️ 清除分析快取</button></div>
+      <h5 style="margin-top:14px;">🕘 最近整理記錄</h5>
+      <p class="sd-note">記住每批照片整理到哪（分組、名稱、勾選），關掉網頁再匯入同一批可以接著做。只存在這台電腦的瀏覽器，不含照片。</p>
+      <div class="sd-note" id="sessEstimate">計算中…</div>
+      <div class="sd-btns"><button class="btn-export-report" onclick="sessClearAll()">🗑️ 清除整理記錄</button></div>
       </div>
     </section>
     <section class="sd-sec" id="sd-about">
@@ -3868,8 +3936,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v11';
-const APP_BUILD = 'v167';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v17';
+const APP_BUILD = 'v173';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -4234,6 +4302,8 @@ async function handleFiles(files) {
   { const es = document.getElementById('emptyState'); if (es && photos.length) es.innerHTML = `<div class="big-icon">✅</div><h2>已載入 ${photos.length} 張</h2><p>確認左欄的「情境」與「時間分群」，再按 <b>▶ 開始分析</b>。</p>`; }
   uploadZone.innerHTML = `<div class="icon">✅</div><p>已載入 <strong>${photos.length}</strong> 張照片${triaged ? `<br><span style="color:var(--yellow);font-size:11px;">🧹 另有 ${triaged} 張已分流，見下方</span>` : ''}<br>按「▶ 開始分析」</p>`;
   showToast(`✅ 已載入 ${photos.length} 張照片${triaged ? `，${triaged} 張分流待確認` : ''}`);
+  window._sessId = null; try { sessCheck(); } catch (e) { console.warn('sess', e); }   // 2026v12
+  try { renderDeviceHint(); } catch {}   // 2026v16
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -5042,6 +5112,234 @@ async function idbCount() {
 }
 
 // Clear cache button handler (called from UI)
+// ══════════════════════════════════════════════════════════════
+// 2026v12 功能 A：記住這次整理（續做）
+// 存在 IndexedDB 的 kv store（key 'sess:<id>'），不升 DB 版本。只存檔案 key、分組與老師改過的狀態，不存照片。
+// ══════════════════════════════════════════════════════════════
+const SESS_MAX = 20, SESS_DONE_KEEP_MS = 7 * 86400000;
+function sessPhotoKey(p) { const f = p.file || {}; return `${f.name || p.name}|${f.size || 0}|${f.lastModified || 0}`; }
+function sessHash(s) { let h1 = 0x811c9dc5, h2 = 0x01000193 ^ s.length; for (let i = 0; i < s.length; i++) { const c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 16777619); h2 = Math.imul(h2 ^ c, 2246822519); } return ((h1 >>> 0).toString(36) + (h2 >>> 0).toString(36)).slice(0, 16); }
+async function idbKvAll(prefix) {
+  if (_idbDisabled) return [];
+  try {
+    const db = await idbOpen();
+    return await new Promise(res => {
+      try {
+        const out = [], req = db.transaction('kv', 'readonly').objectStore('kv').openCursor();
+        req.onsuccess = () => { const c = req.result; if (!c) return res(out); if (typeof c.key === 'string' && c.key.startsWith(prefix)) out.push({ key: c.key, val: c.value }); c.continue(); };
+        req.onerror = () => res(out);
+      } catch { res([]); }
+    });
+  } catch { return []; }
+}
+async function idbKvDel(key) {
+  if (_idbDisabled) return false;
+  try { const db = await idbOpen(); return await new Promise(res => { try { const r = db.transaction('kv', 'readwrite').objectStore('kv').delete(key); r.onsuccess = () => res(true); r.onerror = () => res(false); } catch { res(false); } }); } catch { return false; }
+}
+function sessAnalyzed() { return groups.length > 0 && document.getElementById('exportBar')?.style.display !== 'none' && !window._analysisInProgress; }
+function sessPlain(v) {   // 只留可以 JSON 的簡單值
+  if (v == null || typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') return v;
+  if (v instanceof Date) return isNaN(v) ? null : { $d: v.toISOString() };
+  if (Array.isArray(v)) return v.every(x => x == null || typeof x !== 'object') ? v : undefined;
+  return undefined;
+}
+const SESS_SKIP_G = new Set(['photos', 'droppedPhotos', 'id']);
+function sessBuild() {
+  const keys = photos.map(sessPhotoKey);
+  const idx = new Map(photos.map((p, i) => [p, i]));
+  const st = photos.map(p => { const s = p.droppedGroup ? !!p._preDropSel : p.selected; return s ? (p.tier === 'record' ? 'r' : 'p') : 'd'; }).join('');
+  const man = []; photos.forEach((p, i) => { if (p.manualOverride) man.push(i); });
+  const gs = groups.map(g => {
+    const o = {}; for (const [k, v] of Object.entries(g)) { if (SESS_SKIP_G.has(k) || k.startsWith('_')) continue; const x = sessPlain(v); if (x !== undefined) o[k] = x; }
+    o.idx = (g.dropped ? (g.droppedPhotos || []) : g.photos).map(p => idx.get(p)).filter(i => i != null);
+    return o;
+  });
+  const sc = document.getElementById('scenarioSelect');
+  const st2 = _stepState();
+  return { keys, st, man, groups: gs, scenario: sc ? sc.value : '', album: !!albumMode, acMode: window._acMode || 'one',
+    photographer: document.getElementById('photographerName')?.value || '', step: st2.current, named: namingState().named, total: namingState().total };
+}
+let _sessLastSig = '', _sessSaving = false;
+async function sessSaveNow() {
+  if (!sessAnalyzed() || _sessSaving || !photos.length) return;
+  const body = sessBuild(), sig = JSON.stringify(body) + '|' + (_exportedOnce ? 1 : 0);
+  if (sig === _sessLastSig) return;
+  _sessSaving = true;
+  try {
+    const id = window._sessId || ('s' + sessHash(body.keys.slice().sort().join('\n')));
+    window._sessId = id;
+    const prev = await idbKvGet('sess:' + id);
+    const rec = Object.assign(body, { id, savedAt: new Date().toISOString(), appBuild: APP_BUILD, n: body.keys.length,
+      done: !!(_exportedOnce || (prev && prev.done)), doneAt: _exportedOnce ? (prev && prev.doneAt) || new Date().toISOString() : (prev && prev.doneAt) || '' });
+    if (await idbKvSet('sess:' + id, rec)) _sessLastSig = sig;
+    sessPrune();
+  } finally { _sessSaving = false; }
+}
+async function sessList() {
+  const all = (await idbKvAll('sess:')).map(x => x.val).filter(x => x && Array.isArray(x.keys));
+  return all.sort((a, b) => String(b.savedAt).localeCompare(String(a.savedAt)));
+}
+async function sessPrune() {
+  const all = await sessList(), now = Date.now();
+  const expired = s => s.done && s.doneAt && now - Date.parse(s.doneAt) > SESS_DONE_KEEP_MS;
+  for (const s of all.filter(expired)) await idbKvDel('sess:' + s.id);
+  for (const s of all.filter(s => !expired(s)).slice(SESS_MAX)) await idbKvDel('sess:' + s.id);
+}
+async function sessClearAll() {
+  const all = await sessList();
+  if (!all.length) { showToast('🕘 沒有整理記錄'); return; }
+  if (!confirm(`清除 ${all.length} 筆最近整理記錄？（照片、分析快取、相簿庫都不受影響）`)) return;
+  for (const s of all) await idbKvDel('sess:' + s.id);
+  window._sessId = null; _sessLastSig = '';
+  showToast(`✅ 已清除 ${all.length} 筆整理記錄`); sessEstimate(); renderSessBox(null);
+}
+async function sessEstimate() {
+  const el = document.getElementById('sessEstimate'); if (!el) return;
+  const all = await sessList(); const kb = Math.ceil(all.reduce((s, x) => s + JSON.stringify(x).length, 0) / 1024);
+  el.textContent = all.length ? `${all.length} 筆，約 ${kb} KB` : '沒有記錄';
+}
+const SESS_STEP = ['', '匯入', '整理方式', '分析', '命名', '審核', '匯出'];
+function sessWhen(iso) { const d = new Date(iso); if (isNaN(d)) return ''; const p = n => String(n).padStart(2, '0'); return `${d.getMonth() + 1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+function sessMatch(list, keys) {
+  const cur = new Set(keys); let best = null, bestOv = 0;
+  for (const s of list) {
+    let ov = 0; for (const k of s.keys) if (cur.has(k)) ov++;
+    if (ov >= 0.8 * s.keys.length && ov >= 0.5 * keys.length && ov > bestOv) { best = s; bestOv = ov; }
+  }
+  return best ? { s: best, ov: bestOv } : null;
+}
+let _sessCand = null;
+async function sessCheck() {
+  if (!photos.length) { renderSessBox(null); return; }
+  const list = await sessList();
+  const m = sessMatch(list, photos.map(sessPhotoKey));
+  _sessCand = m;
+  renderSessBox(m, list.length);
+}
+function renderSessBox(m, total) {
+  const box = document.getElementById('sessBox'); if (!box) return;
+  if (!m) {
+    box.innerHTML = `${total ? `<button class="sess-link" onclick="sessShowList()">🕘 最近整理（${total}）</button>` : ''}<button class="sess-link" onclick="sessImportPick()" title="在手機或別台電腦匯出的整理記錄（.json）">📥 匯入整理記錄</button><div id="sessListBox"></div>`;
+    return;
+  }
+  const s = m.s, miss = s.keys.length - m.ov, extra = photos.length - m.ov;
+  const where = s.done ? `已匯出（${sessWhen(s.doneAt || s.savedAt)}）` : `整理到第 ${s.step} 步「${SESS_STEP[s.step] || ''}」`;
+  box.innerHTML = `<div class="sess-card" role="region" aria-label="上次的整理">
+    <div class="sess-t">🕘 這批照片上次${s.done ? '已經整理過' : '整理到一半'}</div>
+    <div class="sess-s">${sessWhen(s.savedAt)}・${where}・${s.named}／${s.total} 組已命名・${s.groups.length} 組${miss > 0 ? `・<b>少了 ${miss} 張</b>` : ''}${extra > 0 ? `・多了 ${extra} 張` : ''}</div>
+    <div class="sess-btns"><button class="sess-go" onclick="sessResume()">▶ ${s.done ? '打開上次的結果' : '接著做'}</button><button class="sess-x" onclick="sessDiscard()">✕ 重新開始</button></div></div>`;
+}
+async function sessShowList() {
+  const el = document.getElementById('sessListBox'); if (!el) return;
+  if (el.innerHTML) { el.innerHTML = ''; return; }
+  const list = await sessList();
+  el.innerHTML = `<div class="sess-list">${list.slice(0, 10).map(s => `<div class="sess-row"><span>${sessWhen(s.savedAt)}・${s.n} 張・${s.groups.length} 組・${s.done ? '已匯出' : '第 ' + s.step + ' 步'}<small>${escHtml((s.groups.find(g => g.eventName) || s.groups[0] || {}).name || '')}${s.groups.length > 1 ? ' 等' : ''}</small></span><button onclick="sessDelete('${s.id}')" title="刪掉這筆記錄">🗑</button></div>`).join('')}
+    <p class="sess-tip">把那批照片再拖進來，就會自動接上。</p></div>`;
+}
+async function sessDelete(id) { await idbKvDel('sess:' + id); const el = document.getElementById('sessListBox'); if (el) el.innerHTML = ''; sessCheck(); }
+async function sessDiscard() {
+  if (_sessCand) await idbKvDel('sess:' + _sessCand.s.id);
+  _sessCand = null; window._sessId = null; _sessLastSig = '';
+  renderSessBox(null, (await sessList()).length);
+  showToast('🆕 重新開始：選場合後按「▶ 開始分析」');
+}
+async function sessResume() {
+  const m = _sessCand; if (!m || window._analysisInProgress) return;
+  const s = m.s;
+  window._sessId = s.id; _sessLastSig = '';
+  if (s.scenario) { const sel = document.getElementById('scenarioSelect'); if (sel) { window._scenPicked = true; sel.value = s.scenario; try { applyScenario(); } catch {} } }
+  try { acSetMode(s.acMode === 'album' ? 'album' : 'one', true); } catch {}
+  albumMode = !!s.album;
+  const pn = document.getElementById('photographerName'); if (pn && s.photographer && !pn.value) pn.value = s.photographer;
+  if (s.done) _exportedOnce = true;
+  renderSessBox(null);
+  await startAnalysis({ keepAlbum: true, timeGroupMode: 'auto', noAnim: true, restore: s });
+}
+function sessApply(s) {
+  const at = new Map(photos.map(p => [sessPhotoKey(p), p]));
+  const byIdx = s.keys.map(k => at.get(k) || null);
+  const man = new Set(s.man || []);
+  // 入選／淘汰與手動修改
+  s.keys.forEach((k, i) => {
+    const p = byIdx[i]; if (!p) return;
+    const c = s.st[i];
+    p.selected = c !== 'd'; if (c === 'r') p.tier = 'record'; else if (c === 'p') p.tier = 'pick';
+    p.manualOverride = man.has(i);
+    delete p.droppedGroup; delete p._preDropSel;
+  });
+  const used = new Set();
+  const revive = v => (v && typeof v === 'object' && v.$d) ? new Date(v.$d) : v;
+  groups = s.groups.map((o, gi) => {
+    const g = {}; for (const [k, v] of Object.entries(o)) if (k !== 'idx') g[k] = revive(v);
+    g.id = gi;
+    const ph = (o.idx || []).map(i => byIdx[i]).filter(Boolean);
+    ph.forEach(p => { p.groupId = gi; used.add(p); });
+    if (g.dropped) { g.droppedPhotos = ph; g.photos = []; ph.forEach(p => { p._preDropSel = p.selected; p.selected = false; p.droppedGroup = true; }); }
+    else g.photos = ph;
+    g.name = g.name || albumDateName(g.start); g.folderName = g.folderName || safeName(g.name);
+    return g;
+  });
+  // 這次多出來的照片 → 放一組「新加入的照片」
+  const extra = photos.filter(p => !used.has(p));
+  if (extra.length) {
+    const t = extra.map(p => p.time).filter(d => d instanceof Date && !isNaN(d)).sort((a, b) => a - b);
+    const gi = groups.length;
+    groups.push({ id: gi, name: '新加入的照片', folderName: '新加入的照片', photos: extra, start: t[0] || null, end: t[t.length - 1] || null, timeRange: t.length ? `${sessWhen(t[0].toISOString())} — ${sessWhen(t[t.length - 1].toISOString())}` : '未知時間' });
+    extra.forEach(p => { p.groupId = gi; });
+  }
+  if (s.done) _exportedOnce = true;
+  const miss = byIdx.filter(x => !x).length;
+  if (miss) setTimeout(() => showToast(`ℹ️ 上次有 ${miss} 張照片不在這批裡，已略過`), 1800);
+  if (extra.length) setTimeout(() => showToast(`ℹ️ 這次多了 ${extra.length} 張，放在「新加入的照片」`), miss ? 4200 : 1800);
+}
+// ══════════════════════════════════════════════════════════════
+// 2026v16 功能 D：手機分享進來（share_target → sw.js → IndexedDB kv 'inbox'）＋ 整理記錄匯出／匯入
+// ══════════════════════════════════════════════════════════════
+async function shareInboxCheck() {
+  const qs = new URLSearchParams(location.search); if (!qs.has('share')) return;
+  try { history.replaceState(null, '', location.pathname + location.hash); } catch {}
+  const box = await idbKvGet('inbox');
+  await idbKvDel('inbox');   // 匯入後立刻刪掉暫存
+  const files = (box && Array.isArray(box.files) ? box.files : []).filter(f => f && f.size);
+  if (!files.length) { showToast('📲 沒有收到照片（可能是影片或不支援的格式）'); return; }
+  showToast(`📲 收到 ${files.length} 張照片`);
+  await handleFiles(files);
+}
+function sessCanLibrary() { return typeof window.showDirectoryPicker === 'function'; }
+function sessExport() {
+  if (!sessAnalyzed()) { showToast('⚠️ 先分析照片，才有整理記錄可以匯出'); return; }
+  const body = sessBuild(), d = new Date(), pad = n => String(n).padStart(2, '0');
+  const rec = Object.assign({ type: '校園拾光整理記錄', v: 1, app: APP_VERSION, savedAt: d.toISOString() }, body);
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(rec)], { type: 'application/json' }));
+  a.download = `整理記錄_${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}_${body.keys.length}張.json`; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  showToast('📤 整理記錄已下載（不含照片）。回電腦匯入同一批照片，再按「📥 匯入整理記錄」就能接著做');
+}
+async function sessImportFile(file) {
+  if (!file) return;
+  let j; try { j = JSON.parse(await file.text()); } catch { showToast('❌ 這不是整理記錄檔'); return; }
+  if (!j || j.type !== '校園拾光整理記錄' || !Array.isArray(j.keys) || !Array.isArray(j.groups) || typeof j.st !== 'string') { showToast('❌ 這不是校園拾光的整理記錄檔'); return; }
+  const id = 's' + sessHash(j.keys.slice().sort().join('\n'));
+  const rec = { keys: j.keys, st: j.st, man: Array.isArray(j.man) ? j.man : [], groups: j.groups, scenario: String(j.scenario || ''), album: !!j.album, acMode: j.acMode === 'album' ? 'album' : 'one',
+    photographer: String(j.photographer || ''), step: +j.step || 4, named: +j.named || 0, total: +j.total || j.groups.length,
+    id, savedAt: new Date().toISOString(), appBuild: APP_BUILD, n: j.keys.length, done: false, doneAt: '', imported: true };
+  await idbKvSet('sess:' + id, rec);
+  if (photos.length) { await sessCheck(); showToast(_sessCand ? '📥 已匯入整理記錄，按「▶ 接著做」' : '📥 已匯入整理記錄；這批照片跟記錄對不起來，請匯入記錄裡的那批照片'); }
+  else showToast(`📥 已匯入整理記錄（${rec.n} 張）。把那批照片拖進來，就會出現「接著做」`);
+}
+function sessImportPick() { const i = document.createElement('input'); i.type = 'file'; i.accept = '.json,application/json'; i.onchange = () => sessImportFile(i.files[0]); i.click(); }
+function renderDeviceHint() {
+  const el = document.getElementById('deviceHint'); if (!el) return;
+  el.innerHTML = sessCanLibrary() ? `<button class="tip-link" onclick="sessExport()" title="分組、名稱、勾選存成小檔案（不含照片），換台電腦也能接著做">📤 匯出整理記錄</button>`
+    : `<div class="dev-hint">📱 這個瀏覽器不能直接存進相簿庫。可以先「下載 ZIP」，或 <button class="tip-link" onclick="sessExport()">📤 匯出整理記錄</button>，回電腦匯入同一批照片後「📥 匯入整理記錄」接著做（進度也已記在這個瀏覽器）。</div>`;
+}
+// 有變動就存（每 2 秒比一次；沒變不寫）
+setInterval(() => { try { sessSaveNow(); } catch {} }, 2000);
+window.addEventListener('pagehide', () => { try { sessSaveNow(); } catch {} });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { try { sessSaveNow(); } catch {} } });
+setTimeout(() => { try { sessPrune(); } catch {} }, 3000);
+setTimeout(() => { try { if (!photos.length) sessList().then(l => { if (!photos.length) renderSessBox(null, l.length); }); renderDeviceHint(); } catch {} }, 600);
+
 async function clearAnalysisCache() {
   const count = await idbCount();
   if (count === 0) { showToast('📦 快取已經是空的'); return; }
@@ -5134,6 +5432,9 @@ async function runAnalysisPipeline(options = {}) {
     memMonLogEvent('cache_hit', `📦 快取命中 ${cacheHits}/${photos.length} 張`);
   }
   memMonLogEvent('phase_done', '🏁 Phase 1: 每張分析完成');
+  // 2026v17 功能 E：多位拍攝者自動對時（分群之前）
+  window._clockSync = null;
+  if (options.clockSync) { try { window._clockSync = clockSyncPhotographers(); } catch (e) { console.warn('clock sync', e); } }
 
   // ── Step 2: Burst detection & dedup ──
   let burstResult = { groups: 0, duplicates: 0 };
@@ -5196,11 +5497,17 @@ async function startAnalysis(opts = {}) {
     }));
     memMonLogEvent('analysis_end', `✅ 分析完成（${errorCount} 錯誤）`);
     await new Promise(r => setTimeout(r, 400));
-    try { if (orgAnimOn() && !opts.noAnim) await playOrganizeAnimation(); } catch (e) { console.warn('organize animation failed', e); }   // 2026v9
+    if (opts.restore) { try { sessApply(opts.restore); } catch (e) { console.warn('session restore failed', e); showToast('⚠️ 上次的整理套不回來，已照一般流程分析'); } }   // 2026v12
+    const _anim = orgAnimOn() && !opts.noAnim && !opts.restore;
+    try { if (_anim) await playOrganizeAnimation(); } catch (e) { console.warn('organize animation failed', e); }   // 2026v9
     renderResults();
     memMonLogEvent('render_done', '🎨 結果渲染完成');
     document.getElementById('exportBar').style.display = 'flex';
     if (errorCount > 0) showToast(`⚠️ ${errorCount} 張照片無法分析，已跳過`);
+    try { updateStepBar(); } catch {}
+    if (opts.restore) { const st = _stepState(); setTimeout(() => { try { gotoStep(Math.min(st.current, 6)); } catch {} }, 250); showToast(`🕘 已接上次的整理（${opts.restore.groups.length} 組）`); }
+    else if (_anim && namingState().first) setTimeout(() => { try { gotoStep(4); } catch {} }, 350);   // 2026v12 S3
+    try { sessSaveNow(); } catch {}
   } catch (err) {
     console.error('analysis failed:', err);
     showToast(`❌ 分析中斷：${err.message}`);
@@ -6014,6 +6321,46 @@ function computeTextScore(data, w, h) {
   return Math.max(0, Math.min(100, Math.round(raw)));
 }
 
+// 2026v17 功能 E：各位拍攝者對主要拍攝者的相機時間差
+function clockSyncPhotographers(opts = {}) {
+  const by = new Map();
+  for (const p of photos) { const k = p.photographer || ''; if (!k) continue; if (!by.has(k)) by.set(k, []); by.get(k).push(p); }
+  if (by.size < 2) return null;
+  const okT = p => p.time instanceof Date && !isNaN(p.time);
+  const names = [...by.keys()].sort((a, b) => by.get(b).length - by.get(a).length);
+  const base = names[0], B = by.get(base).filter(p => okT(p) && p.sig64);
+  const ham = (a, b) => { if (!a || !b || a.length !== b.length) return 99; let d = 0; for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) d++; return d; };
+  const out = [{ name: base, base: true, offsetSec: 0, pairs: 0, ok: true }];
+  for (const name of names.slice(1)) {
+    const A = by.get(name).filter(p => okT(p) && p.sig64);
+    const cand = [];
+    for (const a of A) for (const b of B) { const s = sigSimilarity(a.sig64, b.sig64); if (s < 0.92) continue; const h = ham(a.hash, b.hash); if (a.hash && b.hash && h > 10) continue; cand.push([s, -h, a, b]); }
+    cand.sort((x, y) => y[0] - x[0] || y[1] - x[1]);
+    const usedA = new Set(), usedB = new Set(), d = [];
+    for (const [, , a, b] of cand) { if (usedA.has(a) || usedB.has(b)) continue; usedA.add(a); usedB.add(b); d.push((a.time - b.time) / 1000); if (d.length >= 20) break; }
+    const r = { name, base: false, offsetSec: 0, pairs: d.length, ok: false, applied: false };
+    if (d.length >= 5) {
+      const med = arr => { const s = [...arr].sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+      const m = med(d), mad = med(d.map(x => Math.abs(x - m))) || 1;
+      const keep = d.filter(x => Math.abs(x - m) <= 3 * mad + 2);
+      const mean = keep.reduce((s, x) => s + x, 0) / keep.length;
+      const sd = Math.sqrt(keep.reduce((s, x) => s + (x - mean) ** 2, 0) / keep.length);
+      r.pairs = keep.length; r.sd = Math.round(sd);
+      if (keep.length >= 5 && sd <= 90) { r.ok = true; r.offsetSec = Math.round(mean); }
+    }
+    if (r.ok && Math.abs(r.offsetSec) >= 3 && !opts.dryRun) {
+      for (const p of by.get(name)) { if (!okT(p)) continue; if (!p.timeOriginal) p.timeOriginal = p.time; p.time = new Date(p.timeOriginal.getTime() - r.offsetSec * 1000); p.clockOffsetSec = -r.offsetSec; }
+      r.applied = true;
+    }
+    out.push(r);
+  }
+  return out;
+}
+function clockSyncLabel(sec) { const s = Math.abs(sec), m = Math.floor(s / 60), r = s % 60; return `${sec < 0 ? '慢' : '快'} ${m ? m + ' 分 ' : ''}${r} 秒`; }
+function clockSyncHtml(cs) {
+  if (!cs) return '';
+  return `<div class="cs-box"><b>⏱ 自動對時</b>${cs.map(r => `<div>📷 ${escHtml(r.name)}：${r.base ? '基準（照片最多）' : r.applied ? `相機${clockSyncLabel(r.offsetSec)}，已對齊（${r.pairs} 對相同畫面）` : r.ok ? `時間準（差 ${Math.abs(r.offsetSec)} 秒內），不用調` : `<span style="color:var(--yellow);">對不到（相同畫面不夠：${r.pairs} 對），沒調整</span>`}</div>`).join('')}</div>`;
+}
 function sigSimilarity(a, b) {
   if (!a || !b || a.length !== 64 || b.length !== 64) return -1;
   let d = 0; for (let i = 0; i < 64; i++) d += a[i] * b[i];
@@ -8347,6 +8694,7 @@ function photoCard(p, rej = false) {
     <img src="${p.thumbUrl}" alt="${p.name}" loading="lazy" decoding="async">
     ${rTag ? `<div class="reject-tag" title="${escHtml(p.selectReason || '')}">${rTag.label}</div>` : ''}
     <div class="photo-toggle ${toggleClass}" onclick="event.stopPropagation();togglePhoto(${idx})" title="${p.selected?'點擊移除':'點擊加入'}">${toggleIcon}</div>
+    ${p.selected ? '' : `<button class="keep-btn" onclick="event.stopPropagation();keepPhoto(${idx})" title="這張我要留（改成入選）">⭐ 留下</button>`}
     <div class="ocr-pin${p.ocrPinned ? ' on' : ''}" onclick="event.stopPropagation();toggleOcrPin(${idx})" title="${p.ocrPinned ? '已指定給 Gemini 讀（再按取消）' : '指定這張給 Gemini 讀布條／簡報（這個活動就只送指定的照片）'}">🔤</div>
     <div class="score-ring" style="color:${p.score>=70?'var(--green)':p.score>=40?'var(--accent2)':'var(--red)'}">${p.score}</div>
     <div class="badges">${renderStars(p.stars || 0)} ${badges.join('')}</div>
@@ -8681,6 +9029,15 @@ function startSequentialReview() {
   showToast(window.innerWidth < 720 ? '👈👉 左右滑切換，按「入選」切換保留' : '← → 切換，空白鍵 入選／移除，Esc 離開');
 }
 
+// 2026v13 S1: 未通過的照片一鍵留下
+function keepPhoto(idx) {
+  const p = photos[idx]; if (!p || p.selected) return;
+  if (!p.manualOverride) p.aiOriginalSelected = p.selected;
+  p.selected = true; p.manualOverride = true; if (p.tier !== 'record') p.tier = 'pick';
+  if (document.getElementById('lightbox')?.classList.contains('show')) try { updateLightboxContent(); } catch {}
+  window._quietRender = true; renderResults();
+  showToast('⭐ 已留下這張');
+}
 function toggleFromLightbox() {
   const p = photos[currentLightboxIdx];
   if (!p.manualOverride) p.aiOriginalSelected = p.selected;
@@ -9070,6 +9427,7 @@ function showAutoCompleteModal(stats) {
         🛡️ 搶救照片：${stats.rescueCount} 張<br>
         📂 已匯出到：<span style="color:var(--green);font-weight:600;">${stats.rootName}/</span><br>
         ${stats.errorCount > 0 ? `⚠️ ${stats.errorCount} 張分析失敗，已跳過<br>` : ''}
+        ${stats.clockSync ? clockSyncHtml(stats.clockSync) : ''}
       </div>
       <p style="font-size:11px;color:var(--text-dim);margin-bottom:12px;">下方可繼續瀏覽結果、手動調整選取、重新匯出</p>
       <button class="modal-btn confirm" onclick="document.getElementById('autoCompleteModal').classList.remove('show')" style="width:100%;padding:12px;font-size:15px;">👍 確認完成</button>
@@ -9203,6 +9561,7 @@ async function startMultiRawMode() {
     progressEnd: 70,
     timeGroupMode: pipelineTimeMode,
     yieldEvery: 3,
+    clockSync: document.getElementById('multiRawClockSync')?.checked !== false && multiRawSubfolders.length > 1,   // 2026v17
   });
 
   // Step 4: Export
@@ -9237,7 +9596,7 @@ async function startMultiRawMode() {
     total: photos.length, selected: photos.filter(p=>p.selected).length,
     rejected: photos.filter(p=>!p.selected).length, rootName,
     groupCount: groups.length, burstCount: burstGroupsData.length,
-    rescueCount: photos.filter(p=>p.isRescue&&p.selected).length, errorCount,
+    rescueCount: photos.filter(p=>p.isRescue&&p.selected).length, errorCount, clockSync: window._clockSync,
   });
 }
 
@@ -10116,13 +10475,17 @@ let _progressStart = 0;
 let _progressLastPct = 0;
 let _progressLastUpdate = 0;
 
+let _progressHist = [];   // 2026v14 S2: 最近 20 次 (時間, 進度)
 function updateProgress(pct, text) {
   const now = Date.now();
   // Reset tracker when starting fresh or going backwards
   if (pct <= 1 || pct < _progressLastPct - 5) {
     _progressStart = now;
     _progressLastPct = pct;
+    _progressHist = [];
   }
+  _progressHist.push([now, pct]); if (_progressHist.length > 20) _progressHist.shift();
+  _progressLastPct = Math.max(_progressLastPct, pct);
   _progressLastUpdate = now;
 
   const bar = document.getElementById('progressBar');
@@ -10135,17 +10498,19 @@ function updateProgress(pct, text) {
   if (pct > 2 && pct < 99) {
     const elapsed = (now - _progressStart) / 1000; // seconds
     if (elapsed > 2) {
-      // Speed estimate
-      const pctPerSec = pct / elapsed;
+      // Speed estimate — 2026v14: 用最近 20 次的速度（前面快取快、後面慢時才準）
+      const h0 = _progressHist[0], recent = _progressHist.length >= 4 && now - h0[0] > 1500 ? (pct - h0[1]) / ((now - h0[0]) / 1000) : 0;
+      const pctPerSec = recent > 0 ? recent : pct / elapsed;
       if (pctPerSec > 0) {
         const remainingPct = 100 - pct;
         const etaSec = Math.round(remainingPct / pctPerSec);
         // Format ETA
         let etaStr;
-        if (etaSec < 60) etaStr = `${etaSec} 秒`;
+        if (etaSec < 10) etaStr = null;
+        else if (etaSec < 60) etaStr = `${etaSec} 秒`;
         else if (etaSec < 3600) etaStr = `${Math.floor(etaSec/60)} 分 ${etaSec%60} 秒`;
         else etaStr = `${Math.floor(etaSec/3600)} 時 ${Math.floor((etaSec%3600)/60)} 分`;
-        enhanced += ` · ⏱️ 剩 ${etaStr}`;
+        enhanced += etaStr ? ` · ⏱️ 約剩 ${etaStr}` : ' · ⏱️ 快好了';
 
         // Try to extract throughput from text like "450/800"
         const match = text.match(/(\d+)\s*\/\s*(\d+)/);
@@ -10268,6 +10633,7 @@ document.addEventListener('keydown', e => {
     if (e.key === 'ArrowLeft') navLightbox(-1);
     if (e.key === 'ArrowRight') navLightbox(1);
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleFromLightbox(); }
+    if (e.key === 'k' || e.key === 'K') { e.preventDefault(); keepPhoto(currentLightboxIdx); }   // 2026v13
   }
 });
 
@@ -10640,7 +11006,7 @@ const TRIAGE_CATS = {
   screenshot: { label: '📱 截圖',      hint: '手機螢幕截圖（比例、檔名、無相機資訊）',        include: false },
   document:   { label: '📄 文件翻拍',  hint: '白底文件、學習單、公文、白板',                 include: false },
   line:       { label: '📲 Line／通訊軟體轉傳', hint: '同事轉來的照片（已被壓縮、無 EXIF）', include: true  },
-  heic:       { label: '🍎 HEIC（iPhone）', hint: '瀏覽器無法直接解碼，需先轉成 JPEG',       include: false },
+  heic:       { label: '🍎 HEIC（iPhone）', hint: '瀏覽器無法直接解碼，按「轉 JPEG 後納入」；拍攝時間與地點會保留',       include: false },
 };
 // state: category → [{file, thumbUrl, reason}]
 let triage = { screenshot: [], document: [], line: [], heic: [], videoCount: 0, dupCount: 0 };
@@ -10697,6 +11063,7 @@ function computeThumbStats(canvas, origW, origH) {
 
 function resetTriage() {
   for (const k of ['screenshot','document','line','heic']) triage[k] = [];
+  triage.heicFailed = 0;
   triage.videoCount = 0; triage.dupCount = 0;
   const el = document.getElementById('triagePanel'); if (el) el.style.display = 'none';
 }
@@ -10727,7 +11094,7 @@ function renderTriagePanel() {
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
         <div style="font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;"><span class="triage-art" data-art="triage-${k === 'line' ? 'line' : k}">${meta.label.split(' ')[0]}</span>${meta.label.replace(/^\S+\s*/, '')} <span style="color:var(--text-dim);font-weight:400;">× ${items.length}</span></div>
         ${k === 'heic'
-          ? `<button class="group-action-btn" onclick="convertHeic()" style="font-size:10px;">🔄 轉 JPEG 後納入</button>`
+          ? `<button class="group-action-btn" onclick="convertHeic()" style="font-size:10px;">🔄 轉 JPEG 後納入</button>${triage.heicFailed ? `<div class="heic-fail">⚠️ 有 ${triage.heicFailed} 張解不開（可能是 HDR 或原況照片）。iPhone「設定 → 相機 → 格式」選<b>最相容</b>，之後就直接拍成 JPEG。</div>` : ''}`
           : `<button class="group-action-btn" onclick="triageInclude('${k}')" style="font-size:10px;">＋ 納入分析</button>`}
       </div>
       <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;">${thumbs}${items.length > 5 ? `<span style="font-size:10px;color:var(--text-dim);align-self:center;">+${items.length-5}</span>` : ''}</div>
@@ -10753,6 +11120,68 @@ function triageInclude(cat) {
   showToast(`＋ 已納入 ${items.length} 張`);
 }
 
+// 2026v14 功能 G：從 HEIC（ISOBMFF）讀出 EXIF 的 TIFF 資料 — ftyp → meta → iinf（找 Exif item）→ iloc（位置）
+async function heicExifTiff(file) {
+  const head = await file.slice(0, Math.min(file.size, 2 * 1048576)).arrayBuffer(), dv = new DataView(head);
+  const cc = o => String.fromCharCode(dv.getUint8(o), dv.getUint8(o + 1), dv.getUint8(o + 2), dv.getUint8(o + 3));
+  const boxes = (start, end) => { const out = []; let o = start; while (o + 8 <= end) { let size = dv.getUint32(o), hdr = 8; const type = cc(o + 4);
+      if (size === 1) { size = Number(dv.getBigUint64(o + 8)); hdr = 16; } else if (size === 0) size = end - o;
+      if (size < hdr) break; out.push({ type, start: o + hdr, end: Math.min(o + size, end) }); o += size; } return out; };
+  const top = boxes(0, dv.byteLength);
+  if (!top.length || top[0].type !== 'ftyp') return null;
+  const meta = top.find(b => b.type === 'meta'); if (!meta) return null;
+  const kids = boxes(meta.start + 4, meta.end);   // meta 是 full box（4 bytes version+flags）
+  const iinf = kids.find(b => b.type === 'iinf'), iloc = kids.find(b => b.type === 'iloc'); if (!iinf || !iloc) return null;
+  let exifId = null;
+  { const v = dv.getUint8(iinf.start), n0 = iinf.start + 4 + (v === 0 ? 2 : 4);
+    for (const b of boxes(n0, iinf.end)) { if (b.type !== 'infe') continue; const iv = dv.getUint8(b.start); if (iv < 2) continue;
+      const id = iv === 2 ? dv.getUint16(b.start + 4) : dv.getUint32(b.start + 4), tp = b.start + 4 + (iv === 2 ? 2 : 4) + 2;
+      if (cc(tp) === 'Exif') { exifId = id; break; } } }
+  if (exifId == null) return null;
+  let o = iloc.start; const v = dv.getUint8(o); o += 4;
+  const b1 = dv.getUint8(o), b2 = dv.getUint8(o + 1); o += 2;
+  const offS = b1 >> 4, lenS = b1 & 15, baseS = b2 >> 4, idxS = (v === 1 || v === 2) ? (b2 & 15) : 0;
+  const rd = n => { let x = 0; for (let i = 0; i < n; i++) x = x * 256 + dv.getUint8(o + i); o += n; return x; };
+  const count = v < 2 ? rd(2) : rd(4);
+  for (let i = 0; i < count; i++) {
+    const id = v < 2 ? rd(2) : rd(4); let method = 0;
+    if (v === 1 || v === 2) method = rd(2) & 15;
+    rd(2); const base = rd(baseS), ext = rd(2); const parts = [];
+    for (let k = 0; k < ext; k++) { if (idxS) rd(idxS); parts.push([base + rd(offS), rd(lenS)]); }
+    if (id !== exifId) continue;
+    if (method !== 0 || !parts.length) return null;
+    const bufs = []; for (const [po, pl] of parts) bufs.push(new Uint8Array(await file.slice(po, po + pl).arrayBuffer()));
+    const data = new Uint8Array(bufs.reduce((s, x) => s + x.length, 0)); let w = 0; for (const x of bufs) { data.set(x, w); w += x.length; }
+    if (data.length < 12) return null;
+    const ddv = new DataView(data.buffer); let t = 4 + ddv.getUint32(0);
+    const isT = p => p + 4 <= data.length && ((data[p] === 0x4D && data[p + 1] === 0x4D) || (data[p] === 0x49 && data[p + 1] === 0x49));
+    if (!isT(t)) { t = -1; for (let p = 0; p < Math.min(32, data.length - 4); p++) if (isT(p)) { t = p; break; } if (t < 0) return null; }
+    return data.slice(t);
+  }
+  return null;
+}
+async function readHeicExif(file) {
+  const result = { shutterSpeed: null, focalLength: null, iso: null, model: '', exposureTime: null, dateTime: null, gps: null };
+  const tiff = await heicExifTiff(file); if (!tiff) return null;
+  try { parseExifSegment(new DataView(tiff.buffer, tiff.byteOffset, tiff.byteLength), 0, tiff.byteLength, result); } catch { return null; }
+  result.tiff = tiff; return result;
+}
+// TIFF 的 IFD0 方向（0x0112）改成 1：heic2any 輸出的像素已經轉正，不改的話會被轉兩次
+function tiffOrientation1(tiff) {
+  const t = new Uint8Array(tiff), dv = new DataView(t.buffer), le = t[0] === 0x49;
+  try { const ifd = dv.getUint32(4, le), n = dv.getUint16(ifd, le);
+    for (let i = 0; i < n; i++) { const e = ifd + 2 + i * 12; if (dv.getUint16(e, le) === 0x0112) dv.setUint16(e + 8, 1, le); } } catch {}
+  return t;
+}
+// 把 EXIF（TIFF）包成 APP1 塞到 JPEG 的 SOI 後面
+async function jpegWithExif(blob, tiff) {
+  const j = new Uint8Array(await blob.arrayBuffer());
+  if (!tiff || j[0] !== 0xFF || j[1] !== 0xD8 || tiff.length + 8 > 65535) return blob;
+  const t = tiffOrientation1(tiff), seg = new Uint8Array(4 + 6 + t.length);
+  seg[0] = 0xFF; seg[1] = 0xE1; seg[2] = (seg.length - 2) >> 8; seg[3] = (seg.length - 2) & 255;
+  seg.set([0x45, 0x78, 0x69, 0x66, 0, 0], 4); seg.set(t, 10);
+  return new Blob([j.subarray(0, 2), seg, j.subarray(2)], { type: 'image/jpeg' });
+}
 // HEIC → JPEG via heic2any (opt-in, downloads ~1.4MB from jsdelivr once)
 const HEIC2ANY_CDN = 'https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
 async function convertHeic() {
@@ -10762,25 +11191,29 @@ async function convertHeic() {
     const ok = await new Promise(res => { const s = document.createElement('script'); s.src = HEIC2ANY_CDN; s.onload = () => res(true); s.onerror = () => res(false); document.head.appendChild(s); });
     if (!ok || !window.heic2any) { showToast('❌ heic2any 載入失敗（網路？）'); return; }
   }
-  let done = 0, fail = 0;
+  let done = 0, fail = 0, withExif = 0; const failed = [];
   showExportProgress('HEIC 轉檔中...', 0, '');
   for (const t of items.slice()) {
     try {
-      const blob = await heic2any({ blob: t.file, toType: 'image/jpeg', quality: 0.9 });
-      const jpg = new File([Array.isArray(blob) ? blob[0] : blob], t.file.name.replace(/\.(heic|heif|hif)$/i, '.jpg'), { type: 'image/jpeg', lastModified: t.file.lastModified });
+      const ex = await readHeicExif(t.file).catch(() => null);   // 2026v14: 先讀原檔 EXIF
+      const blob0 = await heic2any({ blob: t.file, toType: 'image/jpeg', quality: 0.9 });
+      const blob = await jpegWithExif(Array.isArray(blob0) ? blob0[0] : blob0, ex && ex.tiff);
+      const jpg = new File([blob], t.file.name.replace(/\.(heic|heif|hif)$/i, '.jpg'), { type: 'image/jpeg', lastModified: t.file.lastModified });
       const thumbUrl = await generateThumbFromFile(jpg, 360);
-      photos.push(makePhotoRecord(jpg, thumbUrl, { importTag: 'HEIC' }));
+      const rec = makePhotoRecord(jpg, thumbUrl, { importTag: 'HEIC', importKind: 'camera' });
+      if (ex) { withExif++; rec.exifModel = ex.model || ''; if (ex.gps) rec.gps = ex.gps; if (ex.dateTime && ex.dateTime.getFullYear && ex.dateTime.getFullYear() > 1990) { rec.time = ex.dateTime; rec.timeSource = 'exif'; } }
+      photos.push(rec);
       done++;
-    } catch (e) { fail++; console.warn('heic convert failed', t.file.name, e); }
+    } catch (e) { fail++; failed.push(t); console.warn('heic convert failed', t.file.name, e); }
     showExportProgress('HEIC 轉檔中...', Math.round((done + fail) / items.length * 100), t.file.name);
   }
   hideExportProgress();
-  triage.heic = items.filter((_, i) => i >= done + fail); // all processed
-  triage.heic = [];
+  triage.heic = failed;   // 2026v14: 解不開的留在分流卡
+  triage.heicFailed = failed.length;
   renderTriagePanel();
   document.getElementById('btnAnalyze').disabled = photos.length === 0;
   uploadZone.innerHTML = `<div class="icon">✅</div><p>已載入 <strong>${photos.length}</strong> 張照片<br>按「▶ 開始分析」</p>`;
-  showToast(`🍎 HEIC 轉檔完成：${done} 成功${fail ? `、${fail} 失敗` : ''}`);
+  showToast(`🍎 HEIC 轉檔完成：${done} 成功${withExif ? `（${withExif} 張保留拍攝時間與地點）` : ''}${fail ? `、${fail} 張解不開，留在分流卡` : ''}`);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -11076,6 +11509,159 @@ async function buildDocx(title, subtitle, items, notes) {
   zip.file('word/_rels/document.xml.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${rels.map(r=>`<Relationship Id="${r.rId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/${r.fname}"/>`).join('')}</Relationships>`);
   for (const r of rels) zip.file(`word/media/${r.fname}`, r.blob);
   return await zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+}
+
+// ══════════════════════════════════════════════════════════════
+// 2026v15 功能 C：📖 學年回顧 — 一個學年度的活動，每個活動一格（代表照＋名稱＋日期＋張數）
+// ══════════════════════════════════════════════════════════════
+const YR_PER_PAGE = 12, YR_W = 1240, YR_H = 1754;   // A4 @150dpi
+let _yr = null;
+function yrDateLabel(d) { if (!d) return ''; const t = new Date(d + 'T00:00:00'); return isNaN(t) ? d : `${t.getMonth() + 1}/${t.getDate()}（${'日一二三四五六'[t.getDay()]}）`; }
+function yrModel() {
+  const all = (_libIndex?.entries || []).filter(e => String(e.sy) === String(_yr.sy) && (!_yr.cats.size || _yr.cats.has(e.category || '')) && (_yr.withRecord || e.tier !== 'record'));
+  const acts = new Map();
+  for (const e of all) {
+    const k = `${e.category}|${String(e.path || '').replace(/\/紀錄$/, '')}`;
+    if (!acts.has(k)) acts.set(k, { k, name: libActLabel(e) || e.activity || '活動', category: e.category || '', items: [] });
+    acts.get(k).items.push(e);
+  }
+  const list = [...acts.values()].map(a => {
+    const ds = a.items.map(e => e.date).filter(Boolean).sort();
+    const rep = a.items.find(e => e.fav) || [...a.items].filter(e => e.tier === 'pick').sort((x, y) => (+y.score || 0) - (+x.score || 0))[0] || a.items[0];
+    return Object.assign(a, { from: ds[0] || '', to: ds[ds.length - 1] || '', n: a.items.length, rep });
+  }).sort((x, y) => (x.from || '9').localeCompare(y.from || '9') || x.name.localeCompare(y.name));
+  return { list, shown: list.filter(a => !_yr.hidden.has(a.k)), photos: all.length };
+}
+function openYearReview() {
+  const all = _libIndex?.entries || [];
+  if (!all.length) { showToast('📚 相簿庫是空的，先存一些照片進來'); return; }
+  const sys = [...new Set(all.map(e => e.sy).filter(x => x !== '' && x != null))].sort((a, b) => b - a);
+  _yr = { sy: String(_libFilter.sy || sys[0] || ''), cats: new Set(), hidden: new Set(), withRecord: true, sub: '', sys };
+  let m = document.getElementById('yrModal');
+  if (!m) { m = document.createElement('div'); m.id = 'yrModal'; m.className = 'modal-overlay'; m.style.zIndex = '960'; m.onclick = ev => { if (ev.target === m && !_yr?.busy) m.classList.remove('show'); }; document.body.appendChild(m); }
+  yrRender(); m.classList.add('show');
+}
+function yrRender() {
+  const m = document.getElementById('yrModal'); if (!m || !_yr) return;
+  const mod = yrModel(), cats = [...new Set((_libIndex?.entries || []).filter(e => String(e.sy) === _yr.sy).map(e => e.category || ''))].sort();
+  const pages = Math.max(1, Math.ceil(mod.shown.length / YR_PER_PAGE)), busy = !!_yr.busy;
+  let lastMonth = '';
+  m.innerHTML = `<div class="modal yr-modal">
+    <h3 style="margin-bottom:6px;">📖 學年回顧 <span style="font-size:12px;font-weight:500;color:var(--text-dim);">${mod.shown.length} 個活動・${mod.photos} 張・${pages} 頁 A4</span></h3>
+    <div class="yr-ctl">
+      <select id="yrSy" onchange="_yr.sy=this.value;_yr.hidden.clear();_yr.cats.clear();yrRender()">${_yr.sys.map(s => `<option value="${s}"${String(s) === _yr.sy ? ' selected' : ''}>${s} 學年度</option>`).join('')}</select>
+      <span class="yr-cats">${cats.map(c => `<label><input type="checkbox" ${!_yr.cats.size || _yr.cats.has(c) ? 'checked' : ''} onchange="yrCat(${escHtml(JSON.stringify(c))},this.checked)">${escHtml(c || '未分類')}</label>`).join('')}</span>
+      <label class="yr-rec"><input type="checkbox" ${_yr.withRecord ? 'checked' : ''} onchange="_yr.withRecord=this.checked;yrRender()"> 算進「紀錄」照片</label>
+    </div>
+    <div class="yr-ctl"><input id="yrSub" class="modal-input" style="margin:0;flex:1;" placeholder="副標（可不寫）：例 大橋國小　一起走過的一年" value="${escHtml(_yr.sub)}" oninput="_yr.sub=this.value">
+      ${_yr.hidden.size ? `<button class="tip-link" onclick="_yr.hidden.clear();yrRender()">拿回 ${_yr.hidden.size} 個隱藏的活動</button>` : ''}</div>
+    <div class="yr-grid">${mod.shown.length ? mod.shown.map(a => { const mo = a.from ? `${+a.from.slice(5, 7)} 月` : ''; const head = mo && mo !== lastMonth ? (lastMonth = mo) : '';
+      return `<div class="yr-cell" data-k="${escHtml(a.k)}">${head ? `<span class="yr-mo">${head}</span>` : ''}<img class="yr-img" data-k="${escHtml(a.k)}" alt=""><button class="yr-x" title="這個活動不放進回顧" onclick="yrHide(${escHtml(JSON.stringify(a.k))})">✕</button>
+        <div class="yr-n">${escHtml(a.name)}</div><div class="yr-d">${yrDateLabel(a.from)}${a.to && a.to !== a.from ? ' ～ ' + yrDateLabel(a.to) : ''}・${a.n} 張</div></div>`; }).join('') : '<div class="lib-empty">這個學年度沒有符合的活動</div>'}</div>
+    <div class="modal-actions" style="margin-top:10px;">
+      <button class="modal-btn" onclick="document.getElementById('yrModal').classList.remove('show')" ${busy ? 'disabled' : ''}>關閉</button>
+      <button class="modal-btn" onclick="yrPrint()" ${busy || !mod.shown.length ? 'disabled' : ''}>🖨 列印／PDF</button>
+      <button class="modal-btn" onclick="yrDocx()" ${busy || !mod.shown.length ? 'disabled' : ''}>📄 Word</button>
+      <button class="modal-btn confirm" onclick="yrPng()" ${busy || !mod.shown.length ? 'disabled' : ''}>🖼 下載圖片${pages > 1 ? `（${pages} 頁 ZIP）` : ''}</button></div>
+    ${busy ? `<div class="yr-busy">${escHtml(_yr.busy)}</div>` : ''}
+  </div>`;
+  m.querySelectorAll('.yr-img').forEach(img => { const a = mod.shown.find(x => x.k === img.dataset.k); if (a) libThumbUrl(a.rep).then(u => { if (u) img.src = u; }); });
+}
+function yrCat(c, on) {
+  const cats = [...new Set((_libIndex?.entries || []).filter(e => String(e.sy) === _yr.sy).map(e => e.category || ''))];
+  if (!_yr.cats.size) cats.forEach(x => _yr.cats.add(x));
+  if (on) _yr.cats.add(c); else _yr.cats.delete(c);
+  if (_yr.cats.size === cats.length) _yr.cats.clear();
+  if (!_yr.cats.size && !on) _yr.cats.add('\u0000');   // 全部取消 → 一個都不顯示
+  yrRender();
+}
+function yrHide(k) { _yr.hidden.add(k); yrRender(); }
+function yrTitle() { return `${_yr.sy} 學年度　活動回顧`; }
+function yrBusy(t) { _yr.busy = t; yrRender(); }
+async function yrBitmap(e, maxDim) {
+  const f = await libPackFile(e); const pre = await preloadImage(f); if (!pre) return null;
+  try { const s = Math.min(1, maxDim / Math.max(pre.img.naturalWidth, pre.img.naturalHeight)); const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(pre.img.naturalWidth * s)); c.height = Math.max(1, Math.round(pre.img.naturalHeight * s)); c.getContext('2d').drawImage(pre.img, 0, 0, c.width, c.height); return c; }
+  finally { releaseImage(pre); }
+}
+// 一頁 A4：標題、副標、3×4 格（照片＋名稱＋日期・張數），月份換了在格子左上角標月份
+async function yrPages() {
+  const mod = yrModel(), list = mod.shown, pages = [];
+  const F = '"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif';
+  const pad = 70, top = 210, cols = 3, rows = 4, gap = 28, cw = (YR_W - pad * 2 - gap * (cols - 1)) / cols, chh = (YR_H - top - pad - gap * (rows - 1)) / rows, ih = chh - 96;
+  let lastMonth = '';
+  for (let p = 0; p * YR_PER_PAGE < list.length; p++) {
+    lastMonth = '';   // 每頁第一格都標月份
+    const c = document.createElement('canvas'); c.width = YR_W; c.height = YR_H; const x = c.getContext('2d');
+    x.fillStyle = '#ffffff'; x.fillRect(0, 0, YR_W, YR_H);
+    x.fillStyle = '#1d1d1f'; x.font = `800 54px ${F}`; x.textBaseline = 'alphabetic'; x.fillText(yrTitle(), pad, 120);
+    x.fillStyle = '#6b6b70'; x.font = `500 26px ${F}`; x.fillText(`${_yr.sub ? _yr.sub + '　' : ''}${list.length} 個活動・${list.reduce((s, a) => s + a.n, 0)} 張照片${list.length > YR_PER_PAGE ? `　第 ${p + 1} / ${Math.ceil(list.length / YR_PER_PAGE)} 頁` : ''}`, pad, 166);
+    const part = list.slice(p * YR_PER_PAGE, (p + 1) * YR_PER_PAGE);
+    for (let i = 0; i < part.length; i++) {
+      const a = part[i], cx = pad + (i % cols) * (cw + gap), cy = top + Math.floor(i / cols) * (chh + gap);
+      yrBusy(`🖼 第 ${p + 1} 頁：${i + 1} / ${part.length}　${a.name}`);
+      let bm = null; try { bm = await yrBitmap(a.rep, 700); } catch {}
+      x.save(); x.beginPath(); x.roundRect ? x.roundRect(cx, cy, cw, ih, 16) : x.rect(cx, cy, cw, ih); x.clip();
+      x.fillStyle = '#ececf0'; x.fillRect(cx, cy, cw, ih);
+      if (bm) { const sc = Math.max(cw / bm.width, ih / bm.height), sw = cw / sc, sh = ih / sc; x.drawImage(bm, (bm.width - sw) / 2, (bm.height - sh) / 2, sw, sh, cx, cy, cw, ih); bm.width = bm.height = 1; }
+      x.restore();
+      const mo = a.from ? `${+a.from.slice(5, 7)} 月` : '';
+      if (mo && mo !== lastMonth) { lastMonth = mo; x.font = `700 22px ${F}`; const w = x.measureText(mo).width + 24; x.fillStyle = 'rgba(255,138,76,0.95)'; x.beginPath(); x.roundRect ? x.roundRect(cx + 12, cy + 12, w, 36, 18) : x.rect(cx + 12, cy + 12, w, 36); x.fill(); x.fillStyle = '#fff'; x.fillText(mo, cx + 24, cy + 38); }
+      x.fillStyle = '#1d1d1f'; x.font = `700 26px ${F}`;
+      let name = a.name; while (name.length > 1 && x.measureText(name).width > cw) name = name.slice(0, -2) + '…';
+      x.fillText(name, cx, cy + ih + 40);
+      x.fillStyle = '#6b6b70'; x.font = `500 21px ${F}`; x.fillText(`${yrDateLabel(a.from)}${a.to && a.to !== a.from ? ' ～ ' + yrDateLabel(a.to) : ''}・${a.n} 張`, cx, cy + ih + 74);
+    }
+    x.fillStyle = '#a1a1a6'; x.font = `400 18px ${F}`; x.textAlign = 'right'; x.fillText(`校園拾光 ${APP_VERSION}`, YR_W - pad, YR_H - 30); x.textAlign = 'left';
+    pages.push(c);
+  }
+  return pages;
+}
+async function yrPng() {
+  if (!_yr || _yr.busy) return;
+  try {
+    const pages = await yrPages(); const blobs = [];
+    for (const c of pages) { blobs.push(await new Promise(r => c.toBlob(r, 'image/png'))); c.width = c.height = 1; }
+    const base = `${_yr.sy}學年度_活動回顧`;
+    if (blobs.length === 1) libPackDl(blobs[0], `${base}.png`);
+    else { if (typeof JSZip === 'undefined') throw new Error('JSZip 未載入'); const z = new JSZip(); blobs.forEach((b, i) => z.file(`${base}_第${i + 1}頁.png`, b)); libPackDl(await z.generateAsync({ type: 'blob' }), `${base}.zip`); }
+    showToast(`🖼 學年回顧已下載（${blobs.length} 頁）`);
+  } catch (e) { showToast(`❌ 沒做成：${e.message || e}`); }
+  finally { _yr.busy = ''; yrRender(); }
+}
+async function yrDocx() {
+  if (!_yr || _yr.busy) return;
+  if (typeof JSZip === 'undefined') { showToast('⚠️ JSZip 未載入，請確認網路後重試'); return; }
+  const list = yrModel().shown, out = [];
+  try {
+    for (let i = 0; i < list.length; i++) {
+      const a = list[i]; yrBusy(`📄 ${i + 1} / ${list.length}　${a.name}`);
+      let r = null; try { r = await resizeToBlobUnder(await libPackFile(a.rep), 900, 400 * 1024); } catch {}
+      if (!r?.blob) continue;
+      out.push({ blob: r.blob, w: r.w, h: r.h, caption: `${a.name}　${yrDateLabel(a.from)}${a.to && a.to !== a.from ? '～' + yrDateLabel(a.to) : ''}・${a.n} 張` });
+      if (r.canvas) { r.canvas.width = r.canvas.height = 1; }
+    }
+    if (!out.length) throw new Error('代表照都讀不到');
+    libPackDl(await buildDocx(yrTitle(), `${_yr.sub ? _yr.sub + '　' : ''}${list.length} 個活動・${list.reduce((s, a) => s + a.n, 0)} 張照片`, out), `${_yr.sy}學年度_活動回顧.docx`);
+    showToast(`📄 Word 已下載（${out.length} 個活動）`);
+  } catch (e) { showToast(`❌ 沒做成：${e.message || e}`); }
+  finally { _yr.busy = ''; yrRender(); }
+}
+async function yrPrint() {
+  if (!_yr || _yr.busy) return;
+  try {
+    const pages = await yrPages(); const urls = [];
+    for (const c of pages) { urls.push(URL.createObjectURL(await new Promise(r => c.toBlob(r, 'image/jpeg', 0.92)))); c.width = c.height = 1; }
+    let f = document.getElementById('yrPrintFrame'); if (f) f.remove();
+    f = document.createElement('iframe'); f.id = 'yrPrintFrame'; f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;';
+    document.body.appendChild(f);
+    const d = f.contentDocument; d.open();
+    d.write(`<!doctype html><html><head><meta charset="utf-8"><title>${escHtml(yrTitle())}</title><style>@page{size:A4;margin:0}html,body{margin:0}img{display:block;width:210mm;height:297mm;object-fit:contain;page-break-after:always}img:last-child{page-break-after:auto}</style></head><body>${urls.map(u => `<img src="${u}">`).join('')}</body></html>`);
+    d.close();
+    await Promise.all([...d.images].map(im => im.complete ? 0 : new Promise(r => { im.onload = im.onerror = r; })));
+    f.contentWindow.focus(); f.contentWindow.print();
+    setTimeout(() => urls.forEach(u => URL.revokeObjectURL(u)), 60000);
+  } catch (e) { showToast(`❌ 沒做成：${e.message || e}`); }
+  finally { _yr.busy = ''; yrRender(); }
 }
 
 // ── Main export ──
@@ -12380,12 +12966,53 @@ async function openLibraryModal() {
   _libIndex = await libraryIndexRead(h);
   renderLibraryModal();
 }
+// 2026v14 功能 F：搜尋語法 — 一般字詞全部要符合；特殊：2025、2025/10、10月、114學年、人數>10、精選、紀錄、最愛、#標籤、@地點、-排除
+function libParseQuery(q) {
+  return String(q || '').trim().split(/\s+/).filter(Boolean).map(raw => {
+    let neg = false, w = raw;
+    if (w.length > 1 && (w[0] === '-' || w[0] === '－')) { neg = true; w = w.slice(1); }
+    let m, t;
+    if ((m = w.match(/^(\d{4})(?:[\/\-.年](\d{1,2})月?)?$/))) { const y = m[1], mo = m[2] ? String(+m[2]).padStart(2, '0') : ''; t = e => (e.date || '').startsWith(mo ? `${y}-${mo}` : y); }
+    else if ((m = w.match(/^(\d{1,2})月$/))) { const mo = String(+m[1]).padStart(2, '0'); t = e => (e.date || '').slice(5, 7) === mo; }
+    else if ((m = w.match(/^(\d{2,3})學年(?:度)?$/))) { const sy = m[1]; t = e => String(e.sy) === sy; }
+    else if ((m = w.match(/^(?:人數|人|臉|faces?)(>=|<=|>|<|=|＞|＜|＝)(\d+)$/i))) { const op = m[1].replace('＞', '>').replace('＜', '<').replace('＝', '='), n = +m[2]; t = e => { const v = +e.faces || 0; return op === '>' ? v > n : op === '<' ? v < n : op === '>=' ? v >= n : op === '<=' ? v <= n : v === n; }; }
+    else if (/^(精選|pick)$/i.test(w)) t = e => e.tier === 'pick';
+    else if (/^(紀錄|記錄|record)$/i.test(w)) t = e => e.tier === 'record';
+    else if (/^(最愛|⭐|★|fav)$/i.test(w)) t = e => !!e.fav;
+    else if (w[0] === '#' && w.length > 1) { const k = w.slice(1).toLowerCase(); t = e => libTags(e).some(x => x.toLowerCase().includes(k)); }
+    else if (w[0] === '@' && w.length > 1) { const k = w.slice(1).toLowerCase(); t = e => `${libPlaceManual(e)} ${libPlaceLabel(e)}`.toLowerCase().includes(k); }
+    else { const k = w.toLowerCase(); t = e => `${e.activity} ${e.topic} ${e.event || ''} ${e.tags || ''} ${e.file} ${e.path} ${e.category || ''} ${e.photographer || ''} ${libAlbumNames(e)} ${libPlaceManual(e)} ${libPlaceLabel(e)}`.toLowerCase().includes(k); }
+    return neg ? (e => !t(e)) : t;
+  });
+}
 function libFiltered() {
-  const f = _libFilter, q = f.q.trim().toLowerCase();
+  const f = _libFilter, tests = libParseQuery(f.q);
   return (_libIndex?.entries || []).filter(e =>
     (!f.sy || String(e.sy) === f.sy) && (!f.cat || e.category === f.cat) &&
     (!f.from || (e.date || '') >= f.from) && (!f.to || (e.date || '') <= f.to) &&
-    (!q || q.split(/\s+/).every(w => `${e.activity} ${e.topic} ${e.event || ''} ${e.tags || ''} ${e.file} ${e.path} ${libAlbumNames(e)}`.toLowerCase().includes(w))));
+    tests.every(t => { try { return t(e); } catch { return false; } }));
+}
+function libRecentQ(add) {
+  let a = []; try { a = JSON.parse(localStorage.getItem('libRecentQ') || '[]'); if (!Array.isArray(a)) a = []; } catch {}
+  if (add !== undefined) { const q = String(add).trim(); if (!q) return a; a = [q, ...a.filter(x => x !== q)].slice(0, 5); try { localStorage.setItem('libRecentQ', JSON.stringify(a)); } catch {} }
+  return a;
+}
+function libSearchSet(q) { _libFilter.q = q; renderLibraryModal(); const i = document.getElementById('libQ'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
+function libSearchKey(ev, el) {
+  if (ev.key === 'Enter') { ev.preventDefault(); clearTimeout(window._libQT); _libFilter.q = el.value; libRecentQ(el.value); renderLibraryModal();
+    const a = document.querySelector('#libList .lib-act'); if (a) { a.scrollIntoView({ block: 'start' }); try { libLoadThumbs(0, 0, 999); } catch {} a.classList.add('flash-target'); } }
+  else if (ev.key === 'Escape' && el.value) { ev.preventDefault(); ev.stopPropagation(); libSearchSet(''); }
+}
+function libSearchHints(all) {
+  const cnt = (arr) => { const m = new Map(); arr.forEach(x => { if (x) m.set(x, (m.get(x) || 0) + 1); }); return [...m.entries()].sort((a, b) => b[1] - a[1]).map(x => x[0]); };
+  const tags = cnt(all.flatMap(e => libTags(e).filter(t => !LIB_PLACE_TAGS.includes(t)))).slice(0, 8);
+  const places = cnt(all.map(e => libPlaceManual(e) || '')).slice(0, 6);
+  const rec = libRecentQ();
+  const chip = (q, label) => `<button class="lib-qchip" onclick="libSearchSet(${escHtml(JSON.stringify(q))})">${escHtml(label || q)}</button>`;
+  return `<div class="lib-qhints">${rec.length ? `<span class="lib-qh">最近</span>${rec.map(q => chip(q)).join('')}` : ''}
+    ${tags.length ? `<span class="lib-qh">標籤</span>${tags.map(t => chip('#' + t)).join('')}` : ''}
+    ${places.length ? `<span class="lib-qh">地點</span>${places.map(t => chip('@' + t)).join('')}` : ''}
+    <span class="lib-qh" title="空白分隔，全部都要符合">寫法</span>${chip('精選')}${chip('人數>10')}${chip(new Date().getFullYear() + '')}${chip('最愛')}</div>`;
 }
 // ── v130 相冊：依活動／全部／日期／最愛／自建相簿／地點／截圖／文件／轉傳／標籤 ──
 let _libView = 'act', _libAlbum = '', _libTag = '', _libPlace = '', _libLimit = 400;
@@ -12527,14 +13154,16 @@ function renderLibraryModal() {
     <div class="lib-filters">
       <select onchange="_libFilter.sy=this.value;renderLibraryModal()">${opt(sys, _libFilter.sy, '全部學年度')}</select>
       <select onchange="_libFilter.cat=this.value;renderLibraryModal()">${opt(cats, _libFilter.cat, '全部分類')}</select>
-      <input type="text" placeholder="🔍 活動、主題、標籤、相簿、檔名（空白分隔多個）…" value="${escHtml(_libFilter.q)}" oninput="_libFilter.q=this.value;clearTimeout(window._libQT);window._libQT=setTimeout(()=>{renderLibraryModal();const i=document.querySelector('.lib-filters input[type=text]');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}},250)">
+      <input type="search" id="libQ" class="lib-q" placeholder="🔍 搜尋：運動會 2025・114學年・10月・人數>10・精選・#拔河・@操場・-淘汰字…" title="空白分隔，全部都要符合。2025／2025/10／10月＝日期；114學年；人數>10；精選／紀錄／最愛；#標籤；@地點；前面加 - 表示排除。Enter 打開第一個活動，Esc 清空" value="${escHtml(_libFilter.q)}" onkeydown="libSearchKey(event,this)" oninput="_libFilter.q=this.value;clearTimeout(window._libQT);clearTimeout(window._libQR);window._libQR=setTimeout(()=>libRecentQ(this.value),2500);window._libQT=setTimeout(()=>libSearchSet(this.value),200)">
       <input type="date" value="${_libFilter.from}" onchange="_libFilter.from=this.value;renderLibraryModal()" title="起"> ～ <input type="date" value="${_libFilter.to}" onchange="_libFilter.to=this.value;renderLibraryModal()" title="迄">
       <button class="tip-link" onclick="_libFilter={sy:'',cat:'',q:'',from:'',to:''};renderLibraryModal()">清除</button>
       <span style="flex:1"></span>
+      <button class="tip-link" onclick="openYearReview()" title="一個學年度辦過的活動，排成一頁（圖片、Word、列印）">📖 學年回顧</button>
       <button class="tip-link" onclick="libraryExportCsv()" title="目前篩選結果匯出成 CSV（Excel 可開）">📄 匯出 CSV</button>
       <button class="tip-link" onclick="openLibraryModal()" title="重新讀取 index.json">↻ 重新整理</button>
       <select id="libHistorySel" title="索引歷史版本（每次匯出前自動備份）" onchange="if(this.value){libraryIndexRestore(this.value);this.value='';}"><option value="">🕘 索引歷史…</option></select>
     </div>
+    ${_libFilter.q.trim() ? `<div class="lib-qres">🔍 找到 <b>${rows.length}</b> 張・<b>${actList.length}</b> 個活動<button class="tip-link" onclick="libSearchSet('')">清除搜尋</button></div>` : libSearchHints(all)}
     <div class="lib-stats"><span>索引 <b>${all.length}</b> 張</span><span>符合 <b>${rows.length}</b> 張</span><span>活動 <b>${actList.length}</b> 個</span><span>精選 <b>${rows.filter(e => e.tier === 'pick').length}</b>・紀錄 <b>${rows.filter(e => e.tier === 'record').length}</b></span><span>⭐ <b>${rows.filter(e => e.fav).length}</b></span>${_libIndex?.updated ? `<span>更新 ${escHtml(_libIndex.updated.slice(0, 16).replace('T', ' '))}</span>` : ''}</div>
     <div id="libUntracked"></div>
     <div class="lib-body">
@@ -13103,6 +13732,7 @@ function libPackRender() {
       <button class="tip-link" onclick="libPackCopyPost()" ${_libPack.post ? '' : 'disabled'}>📋 複製</button></div>
       <textarea id="lpPost" placeholder="按「✨ AI 寫 FB 貼文」產生 200–300 字的貼文，也可以自己寫。發布前請再看一次：沒有學生姓名、照片沒有不該公開的孩子（例如家長不同意公開的）。" oninput="_libPack.post=this.value;const l=fbBodyLen(this.value);const s=document.getElementById('lpLen');s.textContent=this.value?l+' 字':'';s.classList.toggle('warn',!!this.value&&(l<200||l>300))">${escHtml(_libPack.post)}</textarea>
       <label class="lp-chk"><input type="checkbox" id="lpPostInDoc" ${_libPack.postInDoc ? 'checked' : ''} onchange="_libPack.postInDoc=this.checked"> 把貼文放進成果表最後（活動紀要）</label></div>
+    ${libShareHtml(busy)}
     <div class="modal-actions" style="margin-top:10px;">
       <button class="modal-btn" onclick="libPackSync();document.getElementById('libPackModal').classList.remove('show')" ${busy ? 'disabled' : ''}>關閉</button>
       <button class="modal-btn" onclick="libPackDocx()" ${busy ? 'disabled' : ''} title="只要 Word 檔">⬇ 只要成果表.docx</button>
@@ -13183,6 +13813,95 @@ async function libPackAiPost() {
 function libPackCopyPost() {
   libPackSync(); const t = _libPack?.post || ''; if (!t) return;
   (navigator.clipboard?.writeText(t) || Promise.reject()).then(() => showToast('📋 貼文已複製，可以貼到 FB')).catch(() => { const ta = document.getElementById('lpPost'); ta?.select(); document.execCommand?.('copy'); showToast('📋 已選取貼文，按 Ctrl+C 複製'); });
+}
+// ══════════════════════════════════════════════════════════════
+// 2026v13 功能 B：一鍵分享 — LINE 版（1280＋浮水印）、FB 版（2048）、複製文字、手機直接分享
+// 全部在本機縮圖；「直接分享」是把照片交給老師在手機上選的 App（LINE、FB…）
+// ══════════════════════════════════════════════════════════════
+const SHARE_MAX = 20, SHARE_NATIVE_MAX = 9;
+function shareWmPref(v) { try { if (v === undefined) return localStorage.getItem('shareWm') !== '0'; localStorage.setItem('shareWm', v ? '1' : '0'); } catch {} return v !== false; }
+function shareCanNative() { try { return !!(navigator.canShare && navigator.share && navigator.canShare({ files: [new File([new Uint8Array(1)], 'a.jpg', { type: 'image/jpeg' })] })); } catch { return false; } }
+function shareDateLabel() { const d = libPackDates(); return d.replace(/-/g, '/').replace(/\/0(\d)/g, '/$1'); }
+function shareWmText() { return `${(_libPack.act || '').trim()}${shareDateLabel() ? '・' + shareDateLabel().split(' ')[0] : ''}`; }
+function libShareHtml(busy) {
+  if (!_libPack) return '';
+  const n = Math.min(SHARE_MAX, _libPack.items.length), nat = shareCanNative();
+  return `<div class="lp-share"><div class="lp-post-h"><b>📤 分享</b><span class="lp-note">前 ${n} 張${_libPack.items.length > SHARE_MAX ? `（最多 ${SHARE_MAX}）` : ''}，順序同上；照片在這台電腦縮好，不經過任何伺服器</span></div>
+    <div class="lp-share-btns">
+      <button class="modal-btn" onclick="libShareZip('line')" ${busy ? 'disabled' : ''} title="長邊 1280px，傳 LINE 群組剛好">⬇ LINE 版（${n} 張）</button>
+      <button class="modal-btn" onclick="libShareZip('fb')" ${busy ? 'disabled' : ''} title="長邊 2048px，FB 不會再壓糊">⬇ FB 版（${n} 張）</button>
+      <button class="modal-btn" onclick="libShareCopyMsg()" title="【活動】日期＋一句話＋照片張數">📋 複製群組訊息</button>
+      ${nat ? `<button class="modal-btn confirm" id="lpNative" onclick="libShareNative()" ${busy ? 'disabled' : ''} title="交給手機上的 LINE、FB…（一次最多 ${SHARE_NATIVE_MAX} 張）">📲 直接分享…</button>` : ''}
+    </div>
+    <label class="lp-chk"><input type="checkbox" id="lpWm" ${shareWmPref() ? 'checked' : ''} onchange="shareWmPref(this.checked)"> LINE 版右下角加浮水印「${escHtml(shareWmText())}」</label></div>`;
+}
+function libShareMsg() {
+  const post = String(_libPack.post || '').trim();
+  const first = post ? (post.split(/\n+/).map(s => s.trim()).find(s => s && !s.startsWith('#')) || '').split(/(?<=[。！？!?])/)[0] : '';
+  const n = Math.min(SHARE_MAX, _libPack.items.length);
+  return `【${(_libPack.act || '').trim()}】${shareDateLabel()}\n${first ? first + '\n' : ''}（照片 ${n} 張）`;
+}
+function libShareCopyMsg() {
+  libPackSync(); if (!_libPack) return;
+  const t = libShareMsg();
+  (navigator.clipboard?.writeText(t) || Promise.reject()).then(() => showToast('📋 群組訊息已複製，可以貼到 LINE')).catch(() => { prompt('複製這段文字：', t); });
+}
+// 讀檔 → 縮到長邊 maxDim → （可選）右下角浮水印 → JPEG
+async function shareRender(file, maxDim, wm, q) {
+  const pre = await preloadImage(file); if (!pre) throw new Error('讀不到照片');
+  try {
+    const iw = pre.img.naturalWidth, ih = pre.img.naturalHeight, s = Math.min(1, maxDim / Math.max(iw, ih));
+    const w = Math.max(1, Math.round(iw * s)), h = Math.max(1, Math.round(ih * s));
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(pre.img, 0, 0, w, h);
+    if (wm) {
+      const fs = Math.max(14, Math.round(Math.max(w, h) / 1280 * 18)), pad = Math.round(fs * 0.8);
+      x.font = `600 ${fs}px "Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif`; x.textAlign = 'right'; x.textBaseline = 'bottom';
+      const tw = x.measureText(wm).width;
+      x.fillStyle = 'rgba(0,0,0,0.38)'; const bx = w - pad - tw - fs * 0.5, by = h - pad - fs * 1.3;
+      x.beginPath(); x.roundRect ? x.roundRect(bx, by, tw + fs, fs * 1.55, fs * 0.4) : x.rect(bx, by, tw + fs, fs * 1.55); x.fill();
+      x.fillStyle = 'rgba(255,255,255,0.92)'; x.fillText(wm, w - pad - fs * 0.5, h - pad - fs * 0.05);
+    }
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', q || 0.85));
+    c.width = c.height = 1;
+    return { blob, w, h };
+  } finally { releaseImage(pre); }
+}
+async function libShareFiles(kind, max) {
+  const items = _libPack.items.slice(0, max), wm = kind === 'line' && shareWmPref() ? shareWmText() : '';
+  const act = safeName(_libPack.act) || '活動', out = [], miss = [];
+  for (let i = 0; i < items.length; i++) {
+    libPackProg((i + 1) / items.length * 90, `縮圖 ${i + 1} / ${items.length}：${items[i].e.file}`);
+    try { const r = await shareRender(await libPackFile(items[i].e), kind === 'line' ? 1280 : 2048, wm, kind === 'line' ? 0.82 : 0.9); out.push(new File([r.blob], `${String(i + 1).padStart(2, '0')}_${act}.jpg`, { type: 'image/jpeg' })); }
+    catch { miss.push(items[i].e.file); }
+  }
+  return { out, miss, act };
+}
+async function libShareZip(kind) {
+  libPackSync(); if (!_libPack || _libPack.busy) return;
+  if (typeof JSZip === 'undefined') { showToast('⚠️ JSZip 未載入，請確認網路後重試'); return; }
+  libPackStart(kind === 'line' ? '⬇ LINE 版' : '⬇ FB 版');
+  try {
+    const { out, miss, act } = await libShareFiles(kind, SHARE_MAX);
+    if (!out.length) throw new Error('照片都讀不到');
+    const zip = new JSZip(), root = `${act}_${kind === 'line' ? 'LINE' : 'FB'}`;
+    out.forEach(f => zip.file(`${root}/${f.name}`, f));
+    zip.file(`${root}/${kind === 'line' ? '群組訊息' : 'FB貼文'}.txt`, '﻿' + (kind === 'line' ? libShareMsg() : (String(_libPack.post || '').trim() || libShareMsg())) + '\n');
+    libPackProg(96, '壓縮中…');
+    libPackDl(await zip.generateAsync({ type: 'blob' }), `${root}_${libPackStamp()}.zip`);
+    showToast(`⬇ ${kind === 'line' ? 'LINE' : 'FB'} 版已下載（${out.length} 張）${miss.length ? `；${miss.length} 張讀不到` : ''}`);
+  } catch (e) { showToast(`❌ 沒做成：${e.message || e}`); }
+  finally { libPackEnd(); }
+}
+async function libShareNative() {
+  libPackSync(); if (!_libPack || _libPack.busy) return;
+  libPackStart('📲 準備分享');
+  let files = [];
+  try { files = (await libShareFiles('line', SHARE_NATIVE_MAX)).out; } catch (e) { showToast(`❌ ${e.message || e}`); }
+  finally { libPackEnd(); }
+  if (!files.length) return;
+  try { await navigator.share({ files, text: libShareMsg(), title: _libPack.act }); showToast('📲 已交給你選的 App'); }
+  catch (e) { if (e?.name !== 'AbortError') showToast(`❌ 分享沒成功：${e.message || e}`); }
 }
 function libPackDl(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); }
 function libPackStamp() { return libPackDates().slice(0, 10) || new Date().toISOString().slice(0, 10); }
@@ -13633,7 +14352,7 @@ function openSettings(sec) {
   document.getElementById('settingsScrim').classList.add('open');
   { const c = document.getElementById('sdCoachOn'); if (c) c.checked = coachOn(); }   // 2026v8
   { const c = document.getElementById('sdOrgAnim'); if (c) c.checked = orgAnimOn(); }   // 2026v9
-  updateStorageEstimate(); refreshGeminiKeyUi(); renderPromoSettings(); try { refreshBackupUi(); } catch {} try { renderEventListSettings(); } catch {}
+  updateStorageEstimate(); try { sessEstimate(); } catch {} refreshGeminiKeyUi(); renderPromoSettings(); try { refreshBackupUi(); } catch {} try { renderEventListSettings(); } catch {}
   try { const cs = document.getElementById('sdCapStyle'); if (cs) cs.innerHTML = Object.entries(LIB_STYLES).map(([k, v]) => `<option value="${k}"${capStylePref() === k ? ' selected' : ''}>${v.label}</option>`).join('');
         const pu = document.getElementById('sdPackUnit'); if (pu) pu.value = libPackUnit(); } catch {}
   try { updateResTooltip(); updateResAdvice(); } catch {}
@@ -14016,7 +14735,7 @@ function initStepBar() {
   if (a) new MutationObserver(syncSideAnalyze).observe(a, { attributes: true, childList: true, subtree: true, characterData: true });
   syncSideAnalyze();
   // count an export as done once any export path resolves
-  for (const name of ['exportToFolder', 'exportZip', 'exportResultPack']) {
+  for (const name of ['exportToFolder', 'exportZip', 'exportResultPack', 'exportToLibraryCard']) {   // 2026v12: 存進相簿庫也算
     const f = window[name]; if (typeof f !== 'function') continue;
     window[name] = async function (...args) { const r = await f.apply(this, args); _exportedOnce = true; updateStepBar(); return r; };
   }
@@ -14033,6 +14752,7 @@ let _scenarioTuned = false;
 let _pwaPrompt = null;
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(e => console.warn('sw', e)); });
+  window.addEventListener('load', () => { setTimeout(() => { try { shareInboxCheck(); } catch (e) { console.warn('inbox', e); } }, 300); });   // 2026v16
 }
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); _pwaPrompt = e; const b = document.getElementById('btnInstallApp'); if (b) b.hidden = false; });
 window.addEventListener('appinstalled', () => { _pwaPrompt = null; const b = document.getElementById('btnInstallApp'); if (b) b.hidden = true; showToast('📲 已安裝「校園拾光」，桌面／開始選單可以直接開'); });
