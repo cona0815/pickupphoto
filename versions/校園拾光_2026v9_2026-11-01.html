@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v8 (2026-10-28)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v9 (2026-11-01)　（原名：AI 照片篩選器）
+  2026v9 (2026-11-01, build v165): 🎞 整理動畫 — 分析完成後，照片先堆成一團，再一張張沿弧線飛進各活動的資料夾卡
+        （⭐ 精選亮金框、📁 紀錄灰框、🗑 淘汰飛進淘汰盤），數字同步跳動，結束才顯示結果；可點畫面或 Esc 跳過、
+        統計列有「▶ 重播」、設定→關於可關閉；尊重「減少動態」；上千張也順（只量一次位置、只動 transform/opacity）
   2026v8: 步驟列改成 匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出；每一步有「下一步」提示（要按的地方會發光）
   2026v7: 拿掉 sportstime 連結；網站 repo 改為新的乾淨 repo
   2026v6: 拿掉網頁裡學校行事曆的確切日期資料（183 筆）；推薦只看月份，功能不變
@@ -168,7 +171,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v8 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v9 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2528,6 +2531,51 @@
   .pt-gname { font-size: 11px; font-weight: 700; color: var(--accent); margin: 6px 0 2px; }
   .pt-item { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px; font-size: 11.5px; padding: 2px 0; cursor: pointer; }
   .pt-item small { width: 100%; padding-left: 20px; font-size: 9.5px; color: var(--text-dim); }
+  /* ═══ 2026v9 整理動畫 ═══ */
+  #orgStage { position: fixed; inset: 0; z-index: 880; background: radial-gradient(1200px 800px at 20% 10%, rgba(201,179,255,0.18), transparent 60%), radial-gradient(1000px 700px at 85% 90%, rgba(255,138,76,0.16), transparent 60%), rgba(14, 11, 30, 0.97); display: grid; grid-template-rows: auto auto 1fr; gap: 10px; padding: 18px 22px 22px; color: var(--text); user-select: none; cursor: pointer; opacity: 0; transition: opacity .35s; }
+  #orgStage.show { opacity: 1; }
+  #orgStage .org-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  #orgStage .org-title { font-size: 20px; font-weight: 800; letter-spacing: .5px; }
+  #orgStage .org-title small { font-size: 12px; font-weight: 500; color: var(--text-dim); margin-left: 10px; }
+  #orgStage .org-skip { font-size: 12px; color: var(--text-dim); }
+  #orgStage .org-nums { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  #orgStage .org-num { background: var(--glass-1); border: 0.5px solid var(--glass-edge-soft); border-radius: 14px; padding: 8px 12px; text-align: center; }
+  #orgStage .org-num b { display: block; font-size: 24px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  #orgStage .org-num span { font-size: 10.5px; color: var(--text-dim); letter-spacing: 1px; }
+  #orgStage .org-num.pick b { color: var(--yellow); } #orgStage .org-num.rec b { color: var(--blue); } #orgStage .org-num.drop b { color: var(--red); } #orgStage .org-num.fold b { color: var(--green); }
+  #orgStage .org-main { display: grid; grid-template-columns: 1fr 0.9fr 1fr; gap: 14px; min-height: 0; }
+  #orgStage .org-col { display: grid; grid-auto-rows: min-content; gap: 8px; align-content: start; min-height: 0; overflow: hidden; }
+  #orgStage .org-col.two { grid-template-columns: 1fr 1fr; }
+  #orgStage .org-card { position: relative; background: var(--glass-1); border: 0.5px solid var(--glass-edge-soft); border-radius: 16px; padding: 8px 10px 10px; transition: background .25s, border-color .25s; min-height: 72px; }
+  #orgStage .org-card.lit { background: rgba(255, 209, 102, 0.10); border-color: rgba(255, 209, 102, 0.55); }
+  #orgStage .org-card.drop-card { border-style: dashed; border-color: rgba(255,112,129,0.4); }
+  #orgStage .org-card.drop-card.lit { background: rgba(255,112,129,0.10); border-color: rgba(255,112,129,0.7); }
+  #orgStage .org-card h6 { margin: 0 0 6px; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #orgStage .org-card h6 .cnt { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--text-dim); font-weight: 600; }
+  #orgStage .org-card h6 .cnt b { color: var(--yellow); }
+  #orgStage .org-card .org-grid { display: grid; grid-template-columns: repeat(auto-fill, 18px); grid-auto-rows: 18px; gap: 3px; min-height: 39px; }
+  #orgStage .org-grid img { width: 18px; height: 18px; object-fit: cover; border-radius: 5px; box-shadow: 0 0 0 1.5px rgba(255,255,255,0.85); }
+  #orgStage .org-grid img.rec { box-shadow: 0 0 0 1.5px rgba(255,255,255,0.35); opacity: .75; }
+  #orgStage .org-grid img.pk { box-shadow: 0 0 0 1.5px var(--yellow); }
+  #orgStage .org-mid { position: relative; overflow: hidden; display: grid; place-items: center; }
+  #orgStage .org-ring { position: absolute; border-radius: 50%; border: 1px solid rgba(255,209,102,0.18); pointer-events: none; }
+  #orgStage .org-ring.dash { border-style: dashed; }
+  #orgStage .org-pile { position: absolute; left: 50%; top: 50%; width: 0; height: 0; will-change: transform; }
+  #orgStage .org-pile.spin { animation: orgSpin 120s linear infinite; }
+  @keyframes orgSpin { to { transform: rotate(360deg); } }
+  #orgStage .org-pile img { position: absolute; left: 0; top: 0; object-fit: cover; border-radius: 22%; box-shadow: 0 0 0 2px rgba(255,250,240,0.9); will-change: transform, opacity; opacity: 0; }
+  #orgStage .org-fly { position: fixed; inset: 0; pointer-events: none; z-index: 2; }
+  #orgStage .org-fly img { position: absolute; left: 0; top: 0; object-fit: cover; border-radius: 22%; box-shadow: 0 0 0 2px rgba(255,250,240,0.9); will-change: transform; }
+  #orgStage .org-done { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%) scale(.6); opacity: 0; text-align: center; transition: transform .45s var(--ease-spring, cubic-bezier(.34,1.56,.64,1)), opacity .3s; pointer-events: none; }
+  #orgStage .org-done.show { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+  #orgStage .org-done .ok { width: 84px; height: 84px; border-radius: 50%; margin: 0 auto 12px; background: linear-gradient(135deg, #ffe3a3, var(--yellow) 55%, #e0a93c); display: grid; place-items: center; font-size: 44px; color: #3a2a00; box-shadow: 0 16px 40px rgba(255,209,102,0.35); }
+  #orgStage .org-done .t1 { font-size: 22px; font-weight: 800; }
+  #orgStage .org-done .t2 { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
+  #orgStage .org-done .t3 { font-size: 11.5px; color: var(--text-faint); margin-top: 10px; }
+  @media (max-width: 900px) { #orgStage { padding: 12px; } #orgStage .org-main { grid-template-columns: 1fr; grid-template-rows: 220px auto auto; overflow-y: auto; } #orgStage .org-mid { order: -1; } #orgStage .org-nums { grid-template-columns: repeat(3, 1fr); } }
+  html.reduce-motion #orgStage .org-pile.spin { animation: none; }
+  .btn-org-replay { font-size: 11px; padding: 3px 10px; border-radius: 999px; cursor: pointer; background: rgba(255,209,102,0.14); color: var(--text); border: 0.5px solid rgba(255,209,102,0.45); }
+
   /* manual reduce-motion switch mirrors the media query */
   html.reduce-motion body::before, html.reduce-motion body::after { animation: none !important; }
   html.reduce-motion .liquid-rim::before, html.reduce-motion .stat-card::before, html.reduce-motion .header::before, html.reduce-motion .modal::before { animation: none !important; opacity: 0.6; }
@@ -2691,7 +2739,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v8 · 2026-10-28</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v9 · 2026-11-01</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -2754,7 +2802,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><td>瀏覽器 IndexedDB（分析快取）</td><td>每張照片的分析數值，<b>含人臉位置、臉部縮圖雜湊</b>；勾了 128 維特徵時另含<b>臉部特徵向量（屬生物特徵）</b>。不含照片本身</td><td>設定 → 儲存 → 🗑️ 清除分析快取</td></tr>
         <tr><td>瀏覽器 IndexedDB（設定）</td><td>相簿庫、備份資料夾的位置</td><td>清除瀏覽器網站資料</td></tr>
         <tr><td>瀏覽器 Cache Storage（網站版／安裝成 App）</td><td>工具本身、圖示，以及公開程式庫與人臉模型（離線用）。<b>不含照片、不含分析結果</b></td><td>解除安裝 App，或清除瀏覽器網站資料</td></tr>
-        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關（都不含照片）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
+        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔、「下一步」提示與整理動畫的開關與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關（都不含照片）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
         <tr><td>你選的相簿庫資料夾</td><td>匯出的照片、index.json（檔名、日期、活動、分數、人數、拍攝者名字、最愛、自建相簿名稱、照片本身帶的 <b>GPS 經緯度</b>、你設定的學校位置、自己取的地點名稱與查到的地標名稱）、索引歷史（_index_history）與每天的記錄備份（_相簿庫記錄備份，保留 30 天）。設為最愛的照片檔內會寫入「5 顆星」。在相簿庫刪除的照片先放進「_回收桶」資料夾，按「永久刪除」才真的刪掉</td><td>自行管理資料夾</td></tr>
       </table>
       <div class="pv-note">共用電腦用完請清除分析快取；離職或交接時一併刪除相簿庫與 Gemini Key。</div>
@@ -2764,7 +2812,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       網站版的 service worker 只快取工具與公開模型，<b>不會攔截或保存照片</b>；Gemini、Google、OpenStreetMap 的連線一律不經過快取。<br>
       本工具是單一 HTML 檔，可用文字編輯器搜尋 <code>fetch(</code>、<code>https://</code> 自行檢查所有連線。
 
-      <div class="pv-foot">本頁依 2026v8 程式逐項清點（2026-10-28）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v9 程式逐項清點（2026-11-01）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3188,7 +3236,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v8（2026-10-28）。</span>
+        <span style="font-size:11px;">本說明對應 2026v9（2026-11-01）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -3678,6 +3726,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <h4>ℹ️ 關於</h4>      <div class="sd-btns">
         <button class="btn-export-report" onclick="closeSettings();showManual()">❓ 操作說明</button>
         <label class="sd-row" style="cursor:pointer;"><span>顯示「下一步」提示<small>畫面下方告訴你下一步要按哪裡，要按的地方會發光</small></span><input type="checkbox" id="sdCoachOn" checked onchange="setCoachOn(this.checked)"></label>
+        <label class="sd-row" style="cursor:pointer;"><span>🎞 分析完播放整理動畫<small>照片一張張飛進各活動的資料夾；隨時可點畫面跳過。開「減少動態」時會縮短</small></span><input type="checkbox" id="sdOrgAnim" checked onchange="setOrgAnim(this.checked)"></label>
         <button class="btn-export-report" id="btnInstallApp" hidden onclick="pwaInstall()" title="在桌面建立「校園拾光」圖示，用自己的視窗開啟；離線也能篩照片">📲 安裝成 App</button>
         <button class="btn-export-report" onclick="closeSettings();document.getElementById('securityModal').classList.add('show')">🔒 資安與隱私</button>
         <button class="btn-export-report" onclick="closeSettings();showDownloadHelp()">📦 ZIP 安全性</button>
@@ -3781,8 +3830,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v8';
-const APP_BUILD = 'v164';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v9';
+const APP_BUILD = 'v165';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -5109,6 +5158,7 @@ async function startAnalysis(opts = {}) {
     }));
     memMonLogEvent('analysis_end', `✅ 分析完成（${errorCount} 錯誤）`);
     await new Promise(r => setTimeout(r, 400));
+    try { if (orgAnimOn() && !opts.noAnim) await playOrganizeAnimation(); } catch (e) { console.warn('organize animation failed', e); }   // 2026v9
     renderResults();
     memMonLogEvent('render_done', '🎨 結果渲染完成');
     document.getElementById('exportBar').style.display = 'flex';
@@ -8026,7 +8076,7 @@ function renderResults() {
   const exifCount = photos.filter(p => p.exifShutterSpeed).length;
   const st = document.getElementById('statsStrip'); st.style.display = 'grid';
   st.innerHTML = `
-    <div class="stat-card"><div class="stat-number">${photos.length}</div><div class="stat-label">總照片數</div></div>
+    <div class="stat-card" style="position:relative;"><div class="stat-number">${photos.length}</div><div class="stat-label">總照片數</div><button class="btn-org-replay" style="position:absolute;right:8px;top:8px;" onclick="event.stopPropagation();playOrganizeAnimation({ replay: true })" title="再看一次照片飛進資料夾的整理動畫">▶ 重播</button></div>
     <div class="stat-card"><div class="stat-number" style="color:var(--green)">${sel.filter(p => photoTier(p) === 'pick').length}</div><div class="stat-label">⭐ 精選</div></div>
     ${sel.some(p => photoTier(p) === 'record') ? `<div class="stat-card" title="單張保護：只有一張的畫面不刪，放進各活動的「紀錄」資料夾"><div class="stat-number" style="color:var(--yellow)">${sel.filter(p => photoTier(p) === 'record').length}</div><div class="stat-label">📁 紀錄</div></div>` : ''}
     <div class="stat-card"><div class="stat-number" style="color:var(--blue)">${groups.length}</div><div class="stat-label">時間分群</div></div>
@@ -13485,6 +13535,7 @@ function openSettings(sec) {
   d.classList.add('open'); d.setAttribute('aria-hidden', 'false');
   document.getElementById('settingsScrim').classList.add('open');
   { const c = document.getElementById('sdCoachOn'); if (c) c.checked = coachOn(); }   // 2026v8
+  { const c = document.getElementById('sdOrgAnim'); if (c) c.checked = orgAnimOn(); }   // 2026v9
   updateStorageEstimate(); refreshGeminiKeyUi(); renderPromoSettings(); try { refreshBackupUi(); } catch {} try { renderEventListSettings(); } catch {}
   try { const cs = document.getElementById('sdCapStyle'); if (cs) cs.innerHTML = Object.entries(LIB_STYLES).map(([k, v]) => `<option value="${k}"${capStylePref() === k ? ' selected' : ''}>${v.label}</option>`).join('');
         const pu = document.getElementById('sdPackUnit'); if (pu) pu.value = libPackUnit(); } catch {}
@@ -13575,6 +13626,146 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
 // ══════════════════════════════════════════════════════════════
 let _exportedOnce = false;
 // 2026v8: 1 匯入 → 2 整理方式（情境＋分組）→ 3 分析 → 4 命名 → 5 審核 → 6 匯出
+// ══════════════════════════════════════════════════════════════
+// 2026v9 🎞 整理動畫 — 分析完成後，縮圖從中央檔案堆沿弧線飛進各活動卡
+//  效能規則：開始時只量一次位置；起飛點用數學算；只動 transform/opacity；數字每幀統一寫一次；
+//  超過 OrgMax 張時只飛抽樣（卡片數字照樣全算）。可點畫面／Esc 跳過；reduce-motion 時縮短。
+// ══════════════════════════════════════════════════════════════
+function orgAnimOn() { try { return localStorage.getItem('orgAnimOff') !== '1'; } catch { return true; } }
+function setOrgAnim(on) { try { on ? localStorage.removeItem('orgAnimOff') : localStorage.setItem('orgAnimOff', '1'); } catch {} const c = document.getElementById('sdOrgAnim'); if (c) c.checked = on; }
+let _orgToken = 0;
+function playOrganizeAnimation(opts = {}) {
+  return new Promise(resolve => {
+    const token = ++_orgToken;
+    const acts = groups.filter(g => g.photos && g.photos.length);
+    const all = photos.filter(p => p.thumbUrl);
+    if (!acts.length || !all.length) return resolve();
+    const reduce = document.documentElement.classList.contains('reduce-motion') || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const OrgMax = 420;                                   // 最多飛幾張（其餘只進數字）
+    const N = all.length;
+    let fly = all;
+    if (N > OrgMax) { const step = N / OrgMax; fly = []; for (let i = 0; i < OrgMax; i++) fly.push(all[Math.floor(i * step)]); }
+    const D = reduce ? 900 : Math.max(3800, Math.min(16000, N * 22));   // 整理總時間
+
+    // ── 舞台 ──
+    let stage = document.getElementById('orgStage');
+    if (stage) stage.remove();
+    stage = document.createElement('div'); stage.id = 'orgStage';
+    const tiers = { pick: 0, record: 0, drop: 0 };
+    all.forEach(p => tiers[photoTier(p)]++);
+    const actCards = acts.map(g => ({ g, pick: g.photos.filter(p => photoTier(p) === 'pick').length, total: g.photos.length }));
+    const half = Math.ceil(actCards.length / 2);
+    const cardHtml = (c, i) => `<div class="org-card" data-gid="${c.g.id}"><h6><span>📂</span><span style="overflow:hidden;text-overflow:ellipsis;">${escHtml(c.g.name || '活動')}</span><span class="cnt">⭐<b>0</b> · <span class="lan">0</span> / <span class="tot">0</span></span></h6><div class="org-grid"></div></div>`;
+    stage.innerHTML = `
+      <div class="org-top"><div class="org-title">🎞 整理中<small id="orgStatus">準備 ${N.toLocaleString()} 張照片…</small></div><div class="org-skip">點畫面或按 Esc 跳過</div></div>
+      <div class="org-nums">
+        <div class="org-num"><b id="orgNTotal">${N.toLocaleString()}</b><span>總照片</span></div>
+        <div class="org-num pick"><b id="orgNPick">0</b><span>⭐ 精選</span></div>
+        <div class="org-num rec"><b id="orgNRec">0</b><span>📁 紀錄</span></div>
+        <div class="org-num drop"><b id="orgNDrop">0</b><span>🗑 淘汰</span></div>
+        <div class="org-num fold"><b id="orgNFold">0</b><span>資料夾</span></div>
+      </div>
+      <div class="org-main">
+        <div class="org-col ${half > 4 ? 'two' : ''}" id="orgColL">${actCards.slice(0, half).map(cardHtml).join('')}</div>
+        <div class="org-mid" id="orgMid"><div class="org-pile" id="orgPile"></div><div class="org-done" id="orgDone"><div class="ok">✓</div><div class="t1"></div><div class="t2"></div><div class="t3">點一下繼續</div></div></div>
+        <div class="org-col ${actCards.length - half > 4 ? 'two' : ''}" id="orgColR">${actCards.slice(half).map(cardHtml).join('')}<div class="org-card drop-card" data-gid="__drop"><h6><span>🗑</span><span>淘汰（連拍重複、太相似、拍壞的）</span><span class="cnt"><span class="lan">0</span> 張</span></h6><div class="org-grid"></div></div></div>
+      </div>
+      <div class="org-fly" id="orgFly"></div>`;
+    document.body.appendChild(stage);
+    requestAnimationFrame(() => stage.classList.add('show'));
+
+    // ── 檔案堆（向日葵螺旋） ──
+    const mid = document.getElementById('orgMid'), pile = document.getElementById('orgPile');
+    const mr = mid.getBoundingClientRect();
+    const R = Math.min(mr.width, mr.height) * 0.4;
+    [2, 2.24, 2.48].forEach((k, i) => { const r = document.createElement('div'); r.className = 'org-ring' + (i === 1 ? ' dash' : ''); r.style.width = r.style.height = (R * k) + 'px'; mid.appendChild(r); });
+    const size = Math.max(26, Math.min(60, R * 3.4 / Math.sqrt(fly.length)));
+    const c0 = (R - size * 0.35) / Math.sqrt(fly.length);
+    const pos = fly.map((p, i) => { const r = c0 * Math.sqrt(i + 0.5), th = i * 2.39996323; return { x: r * Math.cos(th), y: r * Math.sin(th), rot: (Math.random() - .5) * 28, z: (Math.random() * 100) | 0 }; });
+    const imgs = fly.map((p, i) => { const im = document.createElement('img'); im.src = p.thumbUrl; im.width = im.height = size; im.style.width = im.style.height = size + 'px'; im.style.zIndex = pos[i].z; im.style.transform = `translate(${pos[i].x - size / 2}px, ${pos[i].y - size / 2}px) rotate(${pos[i].rot}deg) scale(.2)`; pile.appendChild(im); return im; });
+    const bloom = reduce ? 150 : 1400;
+    imgs.forEach((im, i) => { im.animate([{ opacity: 0, transform: `translate(${pos[i].x - size / 2}px, ${pos[i].y - size / 2}px) rotate(${pos[i].rot}deg) scale(.2)` }, { opacity: 1, transform: `translate(${pos[i].x - size / 2}px, ${pos[i].y - size / 2}px) rotate(${pos[i].rot}deg) scale(1)` }], { duration: 420, delay: (i / imgs.length) * bloom, easing: 'cubic-bezier(.34,1.4,.64,1)', fill: 'forwards' }); });
+    if (!reduce) pile.classList.add('spin');
+    const spinAnim = pile.getAnimations ? pile.getAnimations()[0] : null;
+
+    // ── 目標卡：量一次 ──
+    const cards = {}; stage.querySelectorAll('.org-card').forEach(el => { const grid = el.querySelector('.org-grid'); const r = grid.getBoundingClientRect(); const cols = Math.max(1, Math.floor((r.width + 3) / 21)); const rows = Math.max(2, Math.floor((r.height + 3) / 21)); cards[el.dataset.gid] = { el, grid, r, cols, rows, cap: cols * rows, used: 0, n: 0, pick: 0, lit: 0, cntB: el.querySelector('.cnt b'), lan: el.querySelector('.lan'), tot: el.querySelector('.tot') }; });
+    actCards.forEach(c => { const k = cards[String(c.g.id)]; if (k && k.tot) k.tot.textContent = c.total; });
+    const pileCenter = { x: mr.left + mr.width / 2, y: mr.top + mr.height / 2 };
+    const flyLayer = document.getElementById('orgFly');
+    const counts = { pick: 0, rec: 0, drop: 0, fold: new Set(), done: 0 };
+    // 沒飛的照片（抽樣外）平均分配到各時段，讓數字最後正確
+    const extra = all.filter(p => !fly.includes(p));
+    const order = fly.map((p, i) => i).sort(() => Math.random() - .5);
+    const total = fly.length;
+    let finished = false, dirty = false;
+    const nEl = { pick: document.getElementById('orgNPick'), rec: document.getElementById('orgNRec'), drop: document.getElementById('orgNDrop'), fold: document.getElementById('orgNFold'), st: document.getElementById('orgStatus') };
+    const paint = () => { if (!dirty) return; dirty = false; nEl.pick.textContent = counts.pick.toLocaleString(); nEl.rec.textContent = counts.rec.toLocaleString(); nEl.drop.textContent = counts.drop.toLocaleString(); nEl.fold.textContent = counts.fold.size; nEl.st.textContent = `整理中… ${(counts.done).toLocaleString()} / ${N.toLocaleString()}${next < total ? `（飛行中 ${flyLayer.childElementCount}）` : ''}`; Object.values(cards).forEach(k => { if (k.cntB) k.cntB.textContent = k.pick; if (k.lan) k.lan.textContent = k.n; }); };
+    const land = (p, tier, withThumb) => {
+      const gid = tier === 'drop' ? '__drop' : String(p.groupId);
+      const k = cards[gid] || cards['__drop']; if (!k) return;
+      k.n++; if (tier === 'pick') k.pick++;
+      if (tier === 'pick') counts.pick++; else if (tier === 'record') counts.rec++; else counts.drop++;
+      counts.fold.add(gid); counts.done++; dirty = true;
+      if (withThumb && k.used < k.cap) { const im = document.createElement('img'); im.src = p.thumbUrl; im.className = tier === 'pick' ? 'pk' : tier === 'record' ? 'rec' : ''; im.style.gridColumn = (k.used % k.cols) + 1; im.style.gridRow = Math.floor(k.used / k.cols) + 1; k.grid.appendChild(im); k.used++; }
+      const now = performance.now(); if (now - k.lit > 250) { k.lit = now; k.el.classList.add('lit'); setTimeout(() => k.el.classList.remove('lit'), 220); }
+    };
+    const slotOf = (gid) => { const k = cards[gid] || cards['__drop']; const idx = Math.min(k.used, k.cap - 1); return { x: k.r.left + (idx % k.cols) * 21 + 9, y: k.r.top + Math.floor(idx / k.cols) * 21 + 9 }; };
+    const launch = (i) => {
+      const p = fly[i], im = imgs[i], tier = photoTier(p);
+      const ang = spinAnim ? ((spinAnim.currentTime || 0) / 120000) * Math.PI * 2 : 0;
+      const cos = Math.cos(ang), sin = Math.sin(ang);
+      const sx = pileCenter.x + pos[i].x * cos - pos[i].y * sin, sy = pileCenter.y + pos[i].x * sin + pos[i].y * cos;
+      const rot0 = pos[i].rot + ang * 180 / Math.PI;
+      im.style.visibility = 'hidden';
+      const gid = tier === 'drop' ? '__drop' : String(p.groupId);
+      const to = slotOf(gid);
+      const f = document.createElement('img'); f.src = p.thumbUrl; f.style.width = f.style.height = size + 'px'; flyLayer.appendChild(f);
+      const cx = (sx + to.x) / 2 + (Math.random() - .5) * 120, cy = Math.min(sy, to.y) - 60 - Math.random() * 100;
+      const frames = []; const steps = 12;
+      for (let k = 0; k <= steps; k++) { const t = k / steps, u = 1 - t; const x = u * u * sx + 2 * u * t * cx + t * t * to.x, y = u * u * sy + 2 * u * t * cy + t * t * to.y; const sc = (t < .15 ? 1 + t / .15 * .15 : 1.15 - (t - .15) / .85 * (1.15 - 18 / size)); frames.push({ transform: `translate(${x - size / 2}px, ${y - size / 2}px) rotate(${rot0 * (1 - t)}deg) scale(${sc})`, offset: t }); }
+      const dur = reduce ? 200 : 900 + Math.random() * 400;
+      const a = f.animate(frames, { duration: dur, easing: 'cubic-bezier(.45,.05,.25,1)', fill: 'forwards' });
+      a.onfinish = () => { if (token !== _orgToken) return; f.remove(); land(p, tier, true); };
+    };
+    // ── 發射排程 ──
+    let t0 = 0, next = 0, raf = 0;
+    const tick = (now) => {
+      if (token !== _orgToken) return;
+      if (!t0) t0 = now;
+      const el = now - t0;
+      while (next < total && D * Math.pow(next / total, 0.6) <= el) { launch(order[next]); next++; dirty = true; }
+      paint();
+      if (next < total) raf = requestAnimationFrame(tick);
+      else { // 等最後一張落地
+        const wait = () => { if (token !== _orgToken) return; paint(); if (flyLayer.childElementCount) { raf = requestAnimationFrame(wait); return; } finish(); };
+        raf = requestAnimationFrame(wait);
+      }
+    };
+    const finish = () => {
+      if (finished || token !== _orgToken) return; finished = true;
+      extra.forEach(p => land(p, photoTier(p), false)); dirty = true; paint();
+      nEl.st.textContent = `完成，建立了 ${counts.fold.size} 個資料夾`;
+      const d = document.getElementById('orgDone');
+      d.querySelector('.t1').textContent = `${N.toLocaleString()} 張照片整理好了`;
+      d.querySelector('.t2').textContent = `⭐ 精選 ${counts.pick} · 📁 紀錄 ${counts.rec} · 🗑 淘汰 ${counts.drop} · ${counts.fold.size} 個資料夾`;
+      d.classList.add('show'); pile.style.opacity = '0'; pile.style.transition = 'opacity .5s';
+      if (!opts.replay) setTimeout(close, reduce ? 500 : 2200); else setTimeout(close, 2600);
+    };
+    const close = () => {
+      if (token !== _orgToken) return;
+      _orgToken++; cancelAnimationFrame(raf);
+      document.removeEventListener('keydown', onKey);
+      stage.classList.remove('show'); setTimeout(() => stage.remove(), 350);
+      resolve();
+    };
+    const onKey = e => { if (e.key === 'Escape') { e.preventDefault(); close(); } };
+    document.addEventListener('keydown', onKey);
+    stage.addEventListener('click', close);
+    setTimeout(() => { if (token === _orgToken) raf = requestAnimationFrame(tick); }, reduce ? 200 : Math.min(1500, bloom + 300));
+  });
+}
+
 // 2026v8: 「下一步」提示 — 下方提示列＋要按的東西發光；localStorage coachOff='1' 關掉
 function coachOn() { try { return localStorage.getItem('coachOff') !== '1'; } catch { return true; } }
 function setCoachOn(on) { try { on ? localStorage.removeItem('coachOff') : localStorage.setItem('coachOff', '1'); } catch {} window._coachSig = ''; coachUpdate(); const c = document.getElementById('sdCoachOn'); if (c) c.checked = on; }
