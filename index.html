@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v9 (2026-11-01)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v10 (2026-11-01)　（原名：AI 照片篩選器）
+  2026v10 (2026-11-01, build v166): 🗑 相簿可以勾選，按「不要了」整組移除（不入選、不匯出、不用命名）；每組也有「🗑 不要這組」；移除後可「↩ 復原」
+        📅 沒命名的相簿一律用日期當名稱（例「10/28（三）上午」，同天同時段再加時間），不再是「賽程 1」；手機版面不再橫向捲動
   2026v9 (2026-11-01, build v165): 🎞 整理動畫 — 分析完成後，照片先堆成一團，再一張張沿弧線飛進各活動的資料夾卡
         （⭐ 精選亮金框、📁 紀錄灰框、🗑 淘汰飛進淘汰盤），數字同步跳動，結束才顯示結果；可點畫面或 Esc 跳過、
         統計列有「▶ 重播」、設定→關於可關閉；尊重「減少動態」；上千張也順（只量一次位置、只動 transform/opacity）
@@ -171,7 +173,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v9 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v10 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -1860,7 +1862,8 @@
   .video-thumb-grid img { width: 100%; border-radius: 4px; aspect-ratio: 16/9; object-fit: cover; }
 
   @media (max-width: 900px) {
-    .app { grid-template-columns: 1fr; }
+    .app { grid-template-columns: minmax(0, 1fr); }
+    .group-title { flex-wrap: wrap; row-gap: 6px; }
     .sidebar { max-height: none; }
     .stats-strip { grid-template-columns: repeat(2, 1fr); }
     /* Larger touch targets */
@@ -2467,6 +2470,24 @@
   @media (max-width: 720px) { .coach-bar { bottom: calc(74px + env(safe-area-inset-bottom)); flex-wrap: wrap; font-size: 12.5px; } .coach-bar .coach-off { display: none; } }
   @media (prefers-reduced-motion: reduce) { .coach-pulse { animation: none; } }
   body.coach-shown .toast { bottom: 84px !important; }
+  /* 2026v10: 勾選相簿 → 不要了 */
+  .grp-pick { display: inline-flex; align-items: center; margin-right: 8px; cursor: pointer; padding: 4px; border-radius: 6px; }
+  .grp-pick:hover { background: var(--glass-2); }
+  .grp-pick input { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; margin: 0; }
+  .group:has(.grp-pick input:checked) { outline: 2px solid var(--red); outline-offset: -2px; }
+  .grp-drop-btn { color: var(--red) !important; }
+  .grp-dropped { opacity: .75; }
+  .grp-dropped-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 18px; font-size: 13px; color: var(--text-dim); }
+  .grp-dropped-row small { margin-left: 8px; color: var(--text-faint); font-size: 11px; }
+  .grp-pick-bar { position: fixed; left: 50%; transform: translateX(-50%); bottom: 20px; z-index: 9990; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;
+    padding: 10px 14px; border-radius: 16px; background: rgba(24,20,40,.94); border: 1px solid var(--red); box-shadow: 0 10px 30px rgba(0,0,0,.45); color: var(--text); font-size: 13px; max-width: calc(100vw - 32px); }
+  .grp-pick-bar[hidden] { display: none; }
+  .grp-pick-bar button { border: 1px solid var(--glass-edge-soft); background: var(--glass-2); color: var(--text); border-radius: 10px; padding: 6px 12px; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .grp-pick-bar .gpb-drop { background: var(--red); border-color: var(--red); color: #fff; font-weight: 700; }
+  body.coach-shown .grp-pick-bar { bottom: 84px; }
+  body.grp-picking .toast { bottom: 84px !important; }
+  body.coach-shown.grp-picking .toast { bottom: 148px !important; }
+  @media (max-width: 720px) { body.coach-shown .grp-pick-bar { bottom: calc(150px + env(safe-area-inset-bottom)); } body.coach-shown.grp-picking .toast { bottom: calc(214px + env(safe-area-inset-bottom)) !important; } }
   @media (max-width: 720px) { body.coach-shown .toast { bottom: calc(150px + env(safe-area-inset-bottom)) !important; } }
   /* 2026v3: 摘要一行 = 文字（可換行）＋按鈕（不拆開、靠右） */
   #acGrp > summary, #acAdv > summary { display: flex; align-items: center; gap: 6px; line-height: 1.45; }
@@ -2739,7 +2760,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v9 · 2026-11-01</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v10 · 2026-11-01</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -2802,7 +2823,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><td>瀏覽器 IndexedDB（分析快取）</td><td>每張照片的分析數值，<b>含人臉位置、臉部縮圖雜湊</b>；勾了 128 維特徵時另含<b>臉部特徵向量（屬生物特徵）</b>。不含照片本身</td><td>設定 → 儲存 → 🗑️ 清除分析快取</td></tr>
         <tr><td>瀏覽器 IndexedDB（設定）</td><td>相簿庫、備份資料夾的位置</td><td>清除瀏覽器網站資料</td></tr>
         <tr><td>瀏覽器 Cache Storage（網站版／安裝成 App）</td><td>工具本身、圖示，以及公開程式庫與人臉模型（離線用）。<b>不含照片、不含分析結果</b></td><td>解除安裝 App，或清除瀏覽器網站資料</td></tr>
-        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔、「下一步」提示與整理動畫的開關與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關（都不含照片）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
+        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關、整理動畫的開關（都不含照片）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
         <tr><td>你選的相簿庫資料夾</td><td>匯出的照片、index.json（檔名、日期、活動、分數、人數、拍攝者名字、最愛、自建相簿名稱、照片本身帶的 <b>GPS 經緯度</b>、你設定的學校位置、自己取的地點名稱與查到的地標名稱）、索引歷史（_index_history）與每天的記錄備份（_相簿庫記錄備份，保留 30 天）。設為最愛的照片檔內會寫入「5 顆星」。在相簿庫刪除的照片先放進「_回收桶」資料夾，按「永久刪除」才真的刪掉</td><td>自行管理資料夾</td></tr>
       </table>
       <div class="pv-note">共用電腦用完請清除分析快取；離職或交接時一併刪除相簿庫與 Gemini Key。</div>
@@ -2812,7 +2833,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       網站版的 service worker 只快取工具與公開模型，<b>不會攔截或保存照片</b>；Gemini、Google、OpenStreetMap 的連線一律不經過快取。<br>
       本工具是單一 HTML 檔，可用文字編輯器搜尋 <code>fetch(</code>、<code>https://</code> 自行檢查所有連線。
 
-      <div class="pv-foot">本頁依 2026v9 程式逐項清點（2026-11-01）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v10 程式逐項清點（2026-11-01）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3236,7 +3257,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v9（2026-11-01）。</span>
+        <span style="font-size:11px;">本說明對應 2026v10（2026-11-01）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -3830,8 +3851,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v9';
-const APP_BUILD = 'v165';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v10';
+const APP_BUILD = 'v166';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -7463,7 +7484,7 @@ function groupByAutoTime() {
   if (cur) groups.push(cur);
   const fmt = d => `${d.getFullYear() !== new Date().getFullYear() ? d.getFullYear() + '/' : ''}${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; // v117: 不是今年就顯示年份
   groups.forEach((g, i) => { g.timeRange = g.start ? `${fmt(g.start)} — ${fmt(g.end)}` : '未知時間'; g.name = `賽程 ${i+1}`; g.folderName = `賽程_${i+1}`; });
-  if (albumMode) {
+  {   // 2026v10: 不只相簿模式 — 自動分群一律先用日期當名稱（例「10/28（三）上午」），老師有命名就換成活動名
     const seen = {};
     groups.forEach(g => {
       let n = albumDateName(g.start); seen[n] = (seen[n] || 0) + 1;
@@ -7482,6 +7503,15 @@ function groupByCustomTime() {
   defs.forEach((def, i) => {
     groups.push({ id: i, name: def.name || `賽程 ${i+1}`, folderName: (def.name || `賽程_${i+1}`).replace(/[\/\\:*?"<>|]/g,'_'), photos: [], start: def.startDate, end: def.endDate, timeRange: `${fmt(def.startDate)} — ${fmt(def.endDate)}` });
   });
+  {   // 2026v10: 時段沒取名（還是「賽程 N」）→ 用日期當名稱
+    const seen = {};
+    groups.forEach(g => {
+      if (!isDefaultGroupName(g.name) || ALBUM_NAME_RE.test(g.name)) return;
+      let n = albumDateName(g.start); seen[n] = (seen[n] || 0) + 1;
+      if (seen[n] > 1 && g.start instanceof Date && !isNaN(g.start)) n = `${n} ${String(g.start.getHours()).padStart(2,'0')}:${String(g.start.getMinutes()).padStart(2,'0')}`;
+      g.name = n; g.folderName = safeName(n);
+    });
+  }
   // v102: camera-clock offset (minutes; camera fast = positive) and gap-fill to nearest group
   const offsetMs = (parseFloat(document.getElementById('camOffsetMin')?.value) || 0) * 60000;
   const gapFill = document.getElementById('gapFillToggle')?.classList.contains('on');
@@ -8079,7 +8109,7 @@ function renderResults() {
     <div class="stat-card" style="position:relative;"><div class="stat-number">${photos.length}</div><div class="stat-label">總照片數</div><button class="btn-org-replay" style="position:absolute;right:8px;top:8px;" onclick="event.stopPropagation();playOrganizeAnimation({ replay: true })" title="再看一次照片飛進資料夾的整理動畫">▶ 重播</button></div>
     <div class="stat-card"><div class="stat-number" style="color:var(--green)">${sel.filter(p => photoTier(p) === 'pick').length}</div><div class="stat-label">⭐ 精選</div></div>
     ${sel.some(p => photoTier(p) === 'record') ? `<div class="stat-card" title="單張保護：只有一張的畫面不刪，放進各活動的「紀錄」資料夾"><div class="stat-number" style="color:var(--yellow)">${sel.filter(p => photoTier(p) === 'record').length}</div><div class="stat-label">📁 紀錄</div></div>` : ''}
-    <div class="stat-card"><div class="stat-number" style="color:var(--blue)">${groups.length}</div><div class="stat-label">時間分群</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:var(--blue)">${groups.filter(g => !g.dropped).length}</div><div class="stat-label">時間分群</div></div>
     <div class="stat-card"><div class="stat-number" style="color:var(--accent2)">${burstGroups}</div><div class="stat-label">連拍組</div></div>
     <div class="stat-card"><div class="stat-number" style="color:var(--purple)">${soloPhotos}</div><div class="stat-label">單張照片</div></div>
     ${exifCount > 0 ? `<div class="stat-card"><div class="stat-number" style="color:var(--blue)">📷 ${exifCount}</div><div class="stat-label">EXIF 偵測</div></div>` : ''}
@@ -8091,6 +8121,7 @@ function renderResults() {
     renderAiMode();
   }
   renderReviewFilter(); applyReviewFilter();
+  try { grpPickBar(); } catch (e) {}   // 2026v10
   if (window._quietRender) { window._quietRender = false; return; }
   showToast(`🎉 篩選完成：${sel.length} 張入選，${burstGroups} 組連拍`);
 }
@@ -8098,6 +8129,7 @@ function renderResults() {
 function renderAiMode() {
   let html = albumSummaryHtml();
   for (const g of groups) {
+    if (g.dropped) { html += grpDroppedRow(g); continue; }   // 2026v10
     const gs = g.photos.filter(p => p.selected), gr = g.photos.filter(p => !p.selected);
     if (!g.photos.length) continue;
     const gsSorted = [...gs].sort((a,b) => b.score - a.score);
@@ -8106,7 +8138,7 @@ function renderAiMode() {
     html += `<div class="group" data-group-id="${g.id}">
       <div class="group-header open" onclick="toggleGroup(this)">
         <div class="group-title">
-          📂 <span class="group-name-display" onclick="event.stopPropagation();openRenameModal(${g.id})" title="點擊修改名稱">${escHtml(g.name)}</span>${g.ocrName && g.ocrName !== g.name ? `<span style="font-size:10px;color:var(--purple);margin-left:6px;cursor:pointer;" onclick="event.stopPropagation();applyOcrName(${g.id})" title="點擊採用辨識結果">🔤 建議：${escHtml(g.ocrName)}</span>` : ''}${ntChipHtml(g)}${ocrGroupChipsHtml(g)}
+          ${grpPickBox(g)}📂 <span class="group-name-display" onclick="event.stopPropagation();openRenameModal(${g.id})" title="點擊修改名稱">${escHtml(g.name)}</span>${g.ocrName && g.ocrName !== g.name ? `<span style="font-size:10px;color:var(--purple);margin-left:6px;cursor:pointer;" onclick="event.stopPropagation();applyOcrName(${g.id})" title="點擊採用辨識結果">🔤 建議：${escHtml(g.ocrName)}</span>` : ''}${ntChipHtml(g)}${ocrGroupChipsHtml(g)}
           ${g.category ? `<span class="cat-chip">${escHtml(g.category)}</span>` : ''}<span class="group-time-range">${g.timeRange}</span>
           <span class="group-badge">${gs.length} / ${g.photos.length} 張入選</span>
         </div>
@@ -8120,6 +8152,7 @@ function renderAiMode() {
         <div class="group-actions">
           <button class="group-action-btn" onclick="selectAllInGroup(${g.id}, true)">✅ 全選此組</button>
           <button class="group-action-btn" onclick="selectAllInGroup(${g.id}, false)">🚫 全不選</button>
+          <button class="group-action-btn grp-drop-btn" onclick="dropGroups([${g.id}])" title="這整組相簿不要了（不匯出，可復原）">🗑 不要這組</button>
           <span class="sort-info">依分數高→低排列</span>
         </div>
         <div class="photo-grid">${gsSorted.map(p => photoCard(p)).join('')}</div>
@@ -8148,15 +8181,16 @@ function renderAiMode() {
 function renderReviewMode() {
   let html = '';
   for (const g of groups) {
+    if (g.dropped) { html += grpDroppedRow(g); continue; }   // 2026v10
     if (!g.photos.length) continue;
 
     html += `<div class="group" data-group-id="${g.id}">
       <div class="group-header open" onclick="toggleGroup(this)">
         <div class="group-title">
-          📂 <span class="group-name-display" onclick="event.stopPropagation();openRenameModal(${g.id})">${escHtml(g.name)}</span>${ntChipHtml(g)}${ocrGroupChipsHtml(g)}
+          ${grpPickBox(g)}📂 <span class="group-name-display" onclick="event.stopPropagation();openRenameModal(${g.id})">${escHtml(g.name)}</span>${ntChipHtml(g)}${ocrGroupChipsHtml(g)}
           ${g.category ? `<span class="cat-chip">${escHtml(g.category)}</span>` : ''}<span class="group-time-range">${g.timeRange}</span>
         </div>
-        <div class="group-meta"><span class="group-arrow">▼</span></div>
+        <div class="group-meta"><button class="rename-btn grp-drop-btn" onclick="event.stopPropagation();dropGroups([${g.id}])" title="這整組相簿不要了（不匯出，可復原）">🗑 不要這組</button><span class="group-arrow">▼</span></div>
       </div>
       <div class="group-body open">`;
 
@@ -8333,6 +8367,52 @@ function togglePhoto(idx) {
   showToast(p.selected ? `✅ 已手動加入「${p.name}」` : `❌ 已手動移除「${p.name}」`);
 }
 
+// 2026v10: 勾選相簿 → 🗑 不要了（整組不入選、不匯出；可復原）
+const _grpPick = new Set();
+function grpPickBox(g) {
+  return `<label class="grp-pick" onclick="event.stopPropagation()" title="勾選這個相簿（勾好按下方「🗑 不要了」）"><input type="checkbox" data-gid="${g.id}" ${_grpPick.has(g.id) ? 'checked' : ''} onchange="grpPickToggle(${g.id}, this.checked)" aria-label="勾選相簿「${escHtml(g.name)}」"></label>`;
+}
+function grpPickToggle(id, on) { if (on) _grpPick.add(id); else _grpPick.delete(id); grpPickBar(); }
+function grpPickClear() { _grpPick.clear(); document.querySelectorAll('.grp-pick input').forEach(i => { i.checked = false; }); grpPickBar(); }
+function grpPickAll() { groups.forEach(g => { if (!g.dropped && g.photos.length) _grpPick.add(g.id); }); document.querySelectorAll('.grp-pick input').forEach(i => { i.checked = true; }); grpPickBar(); }
+function grpPickBar() {
+  for (const id of [..._grpPick]) { const g = groups.find(x => x.id === id); if (!g || g.dropped || !g.photos.length) _grpPick.delete(id); }
+  let bar = document.getElementById('grpPickBar');
+  if (!bar) { bar = document.createElement('div'); bar.id = 'grpPickBar'; bar.className = 'grp-pick-bar'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', '勾選的相簿'); document.body.appendChild(bar); }
+  const n = _grpPick.size;
+  bar.hidden = !n; document.body.classList.toggle('grp-picking', !!n);
+  if (!n) { bar.innerHTML = ''; return; }
+  const np = groups.filter(g => _grpPick.has(g.id)).reduce((s, g) => s + g.photos.length, 0);
+  const all = groups.filter(g => !g.dropped && g.photos.length).length;
+  bar.innerHTML = `<span class="gpb-n">已勾 <b>${n}</b> 個相簿（${np} 張）</span>${n < all ? `<button class="gpb-all" onclick="grpPickAll()">全勾</button>` : ''}<button class="gpb-drop" onclick="dropGroups([..._grpPick])">🗑 不要了</button><button class="gpb-x" onclick="grpPickClear()">取消勾選</button>`;
+}
+function dropGroups(ids) {
+  let n = 0, np = 0;
+  for (const id of ids) {
+    const g = groups.find(x => x.id === id);
+    if (!g || g.dropped || !g.photos.length) continue;
+    g.dropped = true; g.droppedPhotos = g.photos; g.photos = [];
+    for (const p of g.droppedPhotos) { p._preDropSel = p.selected; p.selected = false; p.droppedGroup = true; }
+    _grpPick.delete(id); n++; np += g.droppedPhotos.length;
+  }
+  if (!n) return;
+  window._quietRender = true; renderResults();
+  try { updateStepBar(); } catch (e) {}
+  showToast(`🗑 已移除 ${n} 個相簿（${np} 張）— 不會匯出；要拿回來按「↩ 復原」`);
+}
+function restoreGroup(id) {
+  const g = groups.find(x => x.id === id);
+  if (!g || !g.dropped) return;
+  g.photos = g.droppedPhotos || []; g.dropped = false; delete g.droppedPhotos;
+  for (const p of g.photos) { p.selected = !!p._preDropSel; delete p._preDropSel; delete p.droppedGroup; }
+  window._quietRender = true; renderResults();
+  try { updateStepBar(); } catch (e) {}
+  showToast(`↩ 已拿回「${g.name}」`);
+}
+function grpDroppedRow(g) {
+  const n = (g.droppedPhotos || []).length;
+  return `<div class="group grp-dropped" data-group-id="${g.id}"><div class="grp-dropped-row"><span>🗑 已移除「${escHtml(g.name)}」<small>${n} 張・不會匯出</small></span><button class="group-action-btn" onclick="restoreGroup(${g.id})">↩ 復原</button></div></div>`;
+}
 function toggleGroup(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
 
 // Lazy-load rejected photos: only render when user clicks to expand
@@ -11921,7 +12001,7 @@ function libraryFolderFor(g, p) {
   const sy = groupSchoolYear(g).sy;
   // 「賽程 1」這種預設名稱在不同天會撞名 → 前面加日期，避免不同活動併進同一個資料夾
   let actName = safeName(g.name) || '未命名';
-  if (isDefaultGroupName(g.name) && g.start instanceof Date && !isNaN(g.start)) actName = `${String(g.start.getMonth()+1).padStart(2,'0')}${String(g.start.getDate()).padStart(2,'0')} ${actName}`;
+  if (isDefaultGroupName(g.name) && !ALBUM_NAME_RE.test((g.name || '').trim()) && g.start instanceof Date && !isNaN(g.start)) actName = `${String(g.start.getMonth()+1).padStart(2,'0')}${String(g.start.getDate()).padStart(2,'0')} ${actName}`;
   const base = `${sy}學年度/${safeName(libraryCategory(g))}/${actName}`;
   return photoTier(p) === 'record' ? `${base}/紀錄` : base;
 }
@@ -13778,7 +13858,7 @@ function coachTarget(step) {
   if (step === 3) { const b = document.getElementById(album ? 'btnAlbumSide' : 'btnAnalyzeSide');
     return window._analysisInProgress ? { el: null, t: '⏳ 分析中，請稍等…' } : { el: vis(b) ? b : document.getElementById('btnAnalyze'), t: album ? '👆 第 3 步：按「📱 開始整理」' : '👆 第 3 步：按「▶ 開始分析」（② 分組、③ 進階可以先調整）' }; }
   if (step === 4) { const nm = namingState(); const b = nm.first && document.querySelector(`.nt-btn[onclick="openNameTag(${nm.first.id})"]`);
-    return { el: b, t: `👆 第 4 步：按「📁 命名・標籤」幫每一組取名字（還有 ${nm.total - nm.named} 組）` }; }
+    return { el: b, t: `👆 第 4 步：按「📁 命名・標籤」幫每一組取名字（還有 ${nm.total - nm.named} 組；沒取名的會用日期當名稱）` }; }
   if (step === 5) return { el: document.getElementById('ecLibrary'), t: '👆 第 5 步：看一下入選的照片（綠框入選，點照片可放大），沒問題就按「📚 存進相簿庫」' };
   if (step === 6) return { el: document.getElementById('btnLibrary'), t: '✅ 完成！到右上角「📚 相簿庫」可以做成果包（Word、照片說明、FB 貼文）' };
   return null;
