@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v17 (2026-11-01)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v18 (2026-11-01)　（原名：AI 照片篩選器）
+  2026v18 (2026-11-01, build v174): 🐞 實測修正 — 手機勾選列與提示列重疊、提示列半寬；「✅ ✅」與大通知蓋住視窗按鈕；成果包照片清單被擠扁；
+        學年回顧手機一排兩格；HEIC 轉檔／納入後重新比對上次的整理
   2026v17 (2026-11-01, build v173): ⏱ 多位拍攝者自動對時 — 用大家拍到的相同畫面算出相機時間差並對齊，同一場活動不再被切成兩組
   2026v16 (2026-11-01, build v172): 📲 Android 安裝成 App 後，手機相簿可以「分享 → 校園拾光」直接匯入；📤／📥 整理記錄可以匯出帶到別台電腦接著做
   2026v15 (2026-11-01, build v171): 📖 學年回顧 — 相簿庫一鍵把一個學年度的活動排成 A4（代表照＋名稱＋日期＋張數），下載圖片、Word 或列印
@@ -181,7 +183,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v17 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v18 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2478,6 +2480,21 @@
   @media (max-width: 720px) { .coach-bar { bottom: calc(74px + env(safe-area-inset-bottom)); flex-wrap: wrap; font-size: 12.5px; } .coach-bar .coach-off { display: none; } }
   @media (prefers-reduced-motion: reduce) { .coach-pulse { animation: none; } }
   body.coach-shown .toast { bottom: 84px !important; }
+  /* 2026v18: 實測修正 */
+  body:has(.modal-overlay.show) #exportSuccessMsg, body:has(.modal-overlay.show) .grp-pick-bar { display: none !important; }
+  #exportSuccessMsg { cursor: pointer; }
+  .toast:not(.show) { pointer-events: none; }
+  .lp-modal { overflow-y: auto; }
+  .lp-modal > * { flex-shrink: 0; }
+  .lp-modal .lp-list { flex: 0 0 auto; height: min(42vh, 360px); min-height: 0; }
+  @media (max-width: 720px) {
+    .coach-bar { left: 12px !important; right: 12px !important; transform: none !important; max-width: none !important; }
+    .grp-pick-bar { left: 12px !important; right: 12px !important; transform: none !important; max-width: none !important; }
+    html body.grp-picking .toast, html body.coach-shown.grp-picking .toast { top: calc(12px + env(safe-area-inset-top)) !important; bottom: auto !important; }
+    .yr-modal .yr-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 10px; }
+    .yr-modal .modal-actions { flex-wrap: wrap; }
+    #exportSuccessMsg { bottom: calc(84px + env(safe-area-inset-bottom)) !important; }
+  }
   /* 2026v17: 自動對時 */
   .cs-box { margin-top: 6px; padding-top: 6px; border-top: 0.5px dashed var(--glass-edge-soft); }
   /* 2026v16: 手機分享、裝置提示 */
@@ -2834,7 +2851,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v17 · 2026-11-01</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v18 · 2026-11-01</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -2910,7 +2927,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       網站版的 service worker 只快取工具與公開模型，<b>不會攔截或保存照片</b>；Gemini、Google、OpenStreetMap 的連線一律不經過快取。<br>
       本工具是單一 HTML 檔，可用文字編輯器搜尋 <code>fetch(</code>、<code>https://</code> 自行檢查所有連線。
 
-      <div class="pv-foot">本頁依 2026v17 程式逐項清點（2026-11-01）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v18 程式逐項清點（2026-11-01）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3336,7 +3353,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v17（2026-11-01）。</span>
+        <span style="font-size:11px;">本說明對應 2026v18（2026-11-01）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -3936,8 +3953,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v17';
-const APP_BUILD = 'v173';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v18';
+const APP_BUILD = 'v174';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -5156,7 +5173,7 @@ function sessBuild() {
   });
   const sc = document.getElementById('scenarioSelect');
   const st2 = _stepState();
-  return { keys, st, man, groups: gs, scenario: sc ? sc.value : '', album: !!albumMode, acMode: window._acMode || 'one',
+  return { keys, st, man, groups: gs, scenario: sc ? sc.value : '', album: !!albumMode, acMode: window._acMode || 'one', outputMode: typeof outputMode === 'string' ? outputMode : 'ai',
     photographer: document.getElementById('photographerName')?.value || '', step: st2.current, named: namingState().named, total: namingState().total };
 }
 let _sessLastSig = '', _sessSaving = false;
@@ -5288,6 +5305,7 @@ function sessApply(s) {
     extra.forEach(p => { p.groupId = gi; });
   }
   if (s.done) _exportedOnce = true;
+  if (s.outputMode === 'review' && typeof outputMode === 'string' && outputMode !== 'review') { try { switchOutputMode('review'); } catch {} }   // 2026v18
   const miss = byIdx.filter(x => !x).length;
   if (miss) setTimeout(() => showToast(`ℹ️ 上次有 ${miss} 張照片不在這批裡，已略過`), 1800);
   if (extra.length) setTimeout(() => showToast(`ℹ️ 這次多了 ${extra.length} 張，放在「新加入的照片」`), miss ? 4200 : 1800);
@@ -8747,10 +8765,21 @@ function grpPickBar() {
   const n = _grpPick.size;
   bar.hidden = !n; document.body.classList.toggle('grp-picking', !!n);
   if (!n) { bar.innerHTML = ''; return; }
+  grpPickPlace();
   const np = groups.filter(g => _grpPick.has(g.id)).reduce((s, g) => s + g.photos.length, 0);
   const all = groups.filter(g => !g.dropped && g.photos.length).length;
   bar.innerHTML = `<span class="gpb-n">已勾 <b>${n}</b> 個相簿（${np} 張）</span>${n < all ? `<button class="gpb-all" onclick="grpPickAll()">全勾</button>` : ''}<button class="gpb-drop" onclick="dropGroups([..._grpPick])">🗑 不要了</button><button class="gpb-x" onclick="grpPickClear()">取消勾選</button>`;
 }
+// 2026v18: 勾選列放在「下一步」提示列上面（提示列在手機上會換行變高）
+function grpPickPlace() {
+  const bar = document.getElementById('grpPickBar'); if (!bar || bar.hidden) return;
+  const c = document.getElementById('coachBar');
+  const r = c && !c.hidden ? c.getBoundingClientRect() : null;
+  if (r && r.height > 0) { bar.style.bottom = Math.max(12, Math.round(innerHeight - r.top + 8)) + 'px'; }
+  else bar.style.bottom = '';
+}
+setInterval(() => { try { if (_grpPick.size) grpPickPlace(); } catch {} }, 700);
+window.addEventListener('resize', () => { try { grpPickPlace(); } catch {} });
 function dropGroups(ids) {
   let n = 0, np = 0;
   for (const id of ids) {
@@ -9839,7 +9868,9 @@ function hideExportProgress() {
 function showExportSuccess(msg) {
   const el = document.getElementById('exportSuccessMsg');
   el.style.display = 'block';
-  el.innerHTML = `✅ ${msg}`;
+  el.innerHTML = /^\s*✅/.test(msg) ? msg : `✅ ${msg}`;   // 2026v18: 不再「✅ ✅」
+  el.title = '點一下關閉'; el.onclick = () => { el.style.display = 'none'; };
+  if (el.parentElement !== document.body) document.body.appendChild(el);   // 2026v18: 移出匯出區（那裡的毛玻璃會把它壓在步驟列底下）
   setTimeout(() => { el.style.display = 'none'; }, 8000);
 }
 
@@ -11118,6 +11149,7 @@ function triageInclude(cat) {
   document.getElementById('btnAnalyze').disabled = photos.length === 0;
   uploadZone.innerHTML = `<div class="icon">✅</div><p>已載入 <strong>${photos.length}</strong> 張照片<br>按「▶ 開始分析」</p>`;
   showToast(`＋ 已納入 ${items.length} 張`);
+  try { sessCheck(); } catch {}   // 2026v18
 }
 
 // 2026v14 功能 G：從 HEIC（ISOBMFF）讀出 EXIF 的 TIFF 資料 — ftyp → meta → iinf（找 Exif item）→ iloc（位置）
@@ -11214,6 +11246,7 @@ async function convertHeic() {
   document.getElementById('btnAnalyze').disabled = photos.length === 0;
   uploadZone.innerHTML = `<div class="icon">✅</div><p>已載入 <strong>${photos.length}</strong> 張照片<br>按「▶ 開始分析」</p>`;
   showToast(`🍎 HEIC 轉檔完成：${done} 成功${withExif ? `（${withExif} 張保留拍攝時間與地點）` : ''}${fail ? `、${fail} 張解不開，留在分流卡` : ''}`);
+  try { sessCheck(); } catch {}   // 2026v18
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -11544,10 +11577,10 @@ function openYearReview() {
 function yrRender() {
   const m = document.getElementById('yrModal'); if (!m || !_yr) return;
   const mod = yrModel(), cats = [...new Set((_libIndex?.entries || []).filter(e => String(e.sy) === _yr.sy).map(e => e.category || ''))].sort();
-  const pages = Math.max(1, Math.ceil(mod.shown.length / YR_PER_PAGE)), busy = !!_yr.busy;
+  const pages = Math.ceil(mod.shown.length / YR_PER_PAGE), busy = !!_yr.busy;
   let lastMonth = '';
   m.innerHTML = `<div class="modal yr-modal">
-    <h3 style="margin-bottom:6px;">📖 學年回顧 <span style="font-size:12px;font-weight:500;color:var(--text-dim);">${mod.shown.length} 個活動・${mod.photos} 張・${pages} 頁 A4</span></h3>
+    <h3 style="margin-bottom:6px;">📖 學年回顧 <span style="font-size:12px;font-weight:500;color:var(--text-dim);">${mod.shown.length} 個活動・${mod.photos} 張${pages ? `・${pages} 頁 A4` : ''}</span></h3>
     <div class="yr-ctl">
       <select id="yrSy" onchange="_yr.sy=this.value;_yr.hidden.clear();_yr.cats.clear();yrRender()">${_yr.sys.map(s => `<option value="${s}"${String(s) === _yr.sy ? ' selected' : ''}>${s} 學年度</option>`).join('')}</select>
       <span class="yr-cats">${cats.map(c => `<label><input type="checkbox" ${!_yr.cats.size || _yr.cats.has(c) ? 'checked' : ''} onchange="yrCat(${escHtml(JSON.stringify(c))},this.checked)">${escHtml(c || '未分類')}</label>`).join('')}</span>
