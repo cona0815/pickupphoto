@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v10 (2026-11-01)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v11 (2026-11-01)　（原名：AI 照片篩選器）
+  2026v11 (2026-11-01, build v167): 🎞 整理動畫在活動卡很多時不再被切掉 — 每邊自動排 1／2／3 欄，放不下就把卡片變矮；已移除的相簿不進動畫
   2026v10 (2026-11-01, build v166): 🗑 相簿可以勾選，按「不要了」整組移除（不入選、不匯出、不用命名）；每組也有「🗑 不要這組」；移除後可「↩ 復原」
         📅 沒命名的相簿一律用日期當名稱（例「10/28（三）上午」，同天同時段再加時間），不再是「賽程 1」；手機版面不再橫向捲動
   2026v9 (2026-11-01, build v165): 🎞 整理動畫 — 分析完成後，照片先堆成一團，再一張張沿弧線飛進各活動的資料夾卡
@@ -173,7 +174,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v10 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v11 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2564,9 +2565,24 @@
   #orgStage .org-num b { display: block; font-size: 24px; font-variant-numeric: tabular-nums; line-height: 1.1; }
   #orgStage .org-num span { font-size: 10.5px; color: var(--text-dim); letter-spacing: 1px; }
   #orgStage .org-num.pick b { color: var(--yellow); } #orgStage .org-num.rec b { color: var(--blue); } #orgStage .org-num.drop b { color: var(--red); } #orgStage .org-num.fold b { color: var(--green); }
-  #orgStage .org-main { display: grid; grid-template-columns: 1fr 0.9fr 1fr; gap: 14px; min-height: 0; }
-  #orgStage .org-col { display: grid; grid-auto-rows: min-content; gap: 8px; align-content: start; min-height: 0; overflow: hidden; }
-  #orgStage .org-col.two { grid-template-columns: 1fr 1fr; }
+  #orgStage .org-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr) minmax(0, 1fr); gap: 14px; min-height: 0; }   /* 2026v11: minmax(0) — 卡多時不再被撐出畫面 */
+  #orgStage .org-col { display: grid; grid-template-columns: minmax(0, 1fr); grid-auto-rows: min-content; gap: 8px; align-content: start; min-height: 0; overflow: hidden; }
+  #orgStage .org-col.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #orgStage .org-col.three { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  #orgStage .org-card { min-width: 0; }
+  #orgStage .org-card.drop-card { grid-column: 1 / -1; }
+  #orgStage .org-card h6 > span:nth-child(2) { min-width: 0; flex: 0 1 auto; }
+  #orgStage .org-card h6 .cnt { flex-shrink: 0; }
+  #orgStage .org-col.three .org-card h6, #orgStage .org-col.four .org-card h6 { font-size: 11px; gap: 4px; }
+  #orgStage .org-col.three .cnt .pk, #orgStage .org-col.four .cnt .pk, #orgStage .org-col.three .org-card:not(.drop-card) h6 > span:first-child, #orgStage .org-col.four .org-card:not(.drop-card) h6 > span:first-child { display: none; }
+  #orgStage.compact .org-card { min-height: 0; padding: 6px 8px 7px; border-radius: 12px; }
+  #orgStage.compact .org-card h6 { font-size: 11.5px; margin-bottom: 4px; }
+  #orgStage.compact .org-card .org-grid { min-height: 18px; max-height: 18px; overflow: hidden; }
+  #orgStage.tiny .org-col { gap: 5px; }
+  #orgStage.tiny .org-card { min-height: 0; padding: 5px 8px; border-radius: 10px; }
+  #orgStage .org-col.four { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
+  #orgStage.tiny .org-card h6 { font-size: 11px; margin: 0; }
+  #orgStage.tiny .org-card .org-grid { min-height: 0; max-height: 0; overflow: hidden; }
   #orgStage .org-card { position: relative; background: var(--glass-1); border: 0.5px solid var(--glass-edge-soft); border-radius: 16px; padding: 8px 10px 10px; transition: background .25s, border-color .25s; min-height: 72px; }
   #orgStage .org-card.lit { background: rgba(255, 209, 102, 0.10); border-color: rgba(255, 209, 102, 0.55); }
   #orgStage .org-card.drop-card { border-style: dashed; border-color: rgba(255,112,129,0.4); }
@@ -2593,7 +2609,8 @@
   #orgStage .org-done .t1 { font-size: 22px; font-weight: 800; }
   #orgStage .org-done .t2 { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
   #orgStage .org-done .t3 { font-size: 11.5px; color: var(--text-faint); margin-top: 10px; }
-  @media (max-width: 900px) { #orgStage { padding: 12px; } #orgStage .org-main { grid-template-columns: 1fr; grid-template-rows: 220px auto auto; overflow-y: auto; } #orgStage .org-mid { order: -1; } #orgStage .org-nums { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 900px) { #orgStage .org-col.three { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 900px) { #orgStage { padding: 12px; } #orgStage .org-main { grid-template-columns: minmax(0, 1fr); grid-template-rows: 220px auto auto; overflow-y: auto; } #orgStage .org-mid { order: -1; } #orgStage .org-nums { grid-template-columns: repeat(3, 1fr); } }
   html.reduce-motion #orgStage .org-pile.spin { animation: none; }
   .btn-org-replay { font-size: 11px; padding: 3px 10px; border-radius: 999px; cursor: pointer; background: rgba(255,209,102,0.14); color: var(--text); border: 0.5px solid rgba(255,209,102,0.45); }
 
@@ -2760,7 +2777,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v10 · 2026-11-01</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v11 · 2026-11-01</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -2833,7 +2850,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       網站版的 service worker 只快取工具與公開模型，<b>不會攔截或保存照片</b>；Gemini、Google、OpenStreetMap 的連線一律不經過快取。<br>
       本工具是單一 HTML 檔，可用文字編輯器搜尋 <code>fetch(</code>、<code>https://</code> 自行檢查所有連線。
 
-      <div class="pv-foot">本頁依 2026v10 程式逐項清點（2026-11-01）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v11 程式逐項清點（2026-11-01）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3257,7 +3274,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v10（2026-11-01）。</span>
+        <span style="font-size:11px;">本說明對應 2026v11（2026-11-01）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -3851,8 +3868,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v10';
-const APP_BUILD = 'v166';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v11';
+const APP_BUILD = 'v167';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -13718,7 +13735,7 @@ function playOrganizeAnimation(opts = {}) {
   return new Promise(resolve => {
     const token = ++_orgToken;
     const acts = groups.filter(g => g.photos && g.photos.length);
-    const all = photos.filter(p => p.thumbUrl);
+    const all = photos.filter(p => p.thumbUrl && !p.droppedGroup);   // 2026v11: 🗑 已移除的相簿不飛
     if (!acts.length || !all.length) return resolve();
     const reduce = document.documentElement.classList.contains('reduce-motion') || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
     const OrgMax = 420;                                   // 最多飛幾張（其餘只進數字）
@@ -13735,7 +13752,8 @@ function playOrganizeAnimation(opts = {}) {
     all.forEach(p => tiers[photoTier(p)]++);
     const actCards = acts.map(g => ({ g, pick: g.photos.filter(p => photoTier(p) === 'pick').length, total: g.photos.length }));
     const half = Math.ceil(actCards.length / 2);
-    const cardHtml = (c, i) => `<div class="org-card" data-gid="${c.g.id}"><h6><span>📂</span><span style="overflow:hidden;text-overflow:ellipsis;">${escHtml(c.g.name || '活動')}</span><span class="cnt">⭐<b>0</b> · <span class="lan">0</span> / <span class="tot">0</span></span></h6><div class="org-grid"></div></div>`;
+    const colCls = n => n > 10 ? 'three' : n > 4 ? 'two' : '';   // 2026v11
+    const cardHtml = (c, i) => `<div class="org-card" data-gid="${c.g.id}"><h6><span>📂</span><span style="overflow:hidden;text-overflow:ellipsis;" title="${escHtml(c.g.name || '活動')}">${escHtml(c.g.name || '活動')}</span><span class="cnt"><span class="pk">⭐<b>0</b> · </span><span class="lan">0</span> / <span class="tot">0</span></span></h6><div class="org-grid"></div></div>`;
     stage.innerHTML = `
       <div class="org-top"><div class="org-title">🎞 整理中<small id="orgStatus">準備 ${N.toLocaleString()} 張照片…</small></div><div class="org-skip">點畫面或按 Esc 跳過</div></div>
       <div class="org-nums">
@@ -13746,12 +13764,18 @@ function playOrganizeAnimation(opts = {}) {
         <div class="org-num fold"><b id="orgNFold">0</b><span>資料夾</span></div>
       </div>
       <div class="org-main">
-        <div class="org-col ${half > 4 ? 'two' : ''}" id="orgColL">${actCards.slice(0, half).map(cardHtml).join('')}</div>
+        <div class="org-col ${colCls(half)}" id="orgColL">${actCards.slice(0, half).map(cardHtml).join('')}</div>
         <div class="org-mid" id="orgMid"><div class="org-pile" id="orgPile"></div><div class="org-done" id="orgDone"><div class="ok">✓</div><div class="t1"></div><div class="t2"></div><div class="t3">點一下繼續</div></div></div>
-        <div class="org-col ${actCards.length - half > 4 ? 'two' : ''}" id="orgColR">${actCards.slice(half).map(cardHtml).join('')}<div class="org-card drop-card" data-gid="__drop"><h6><span>🗑</span><span>淘汰（連拍重複、太相似、拍壞的）</span><span class="cnt"><span class="lan">0</span> 張</span></h6><div class="org-grid"></div></div></div>
+        <div class="org-col ${colCls(actCards.length - half)}" id="orgColR">${actCards.slice(half).map(cardHtml).join('')}<div class="org-card drop-card" data-gid="__drop"><h6><span>🗑</span><span>淘汰（連拍重複、太相似、拍壞的）</span><span class="cnt"><span class="lan">0</span> 張</span></h6><div class="org-grid"></div></div></div>
       </div>
       <div class="org-fly" id="orgFly"></div>`;
     document.body.appendChild(stage);
+    {   // 2026v11: 卡片放不下 → 變矮；還放不下 → 只留標題列
+      const over = () => ['orgColL', 'orgColR'].some(id => { const c = document.getElementById(id); return c && c.scrollHeight > c.clientHeight + 1; });
+      if (over()) stage.classList.add('compact');
+      if (over()) { stage.classList.remove('compact'); stage.classList.add('tiny'); }
+      if (over()) ['orgColL', 'orgColR'].forEach(id => { const c = document.getElementById(id); c.classList.remove('two', 'three'); c.classList.add('four'); });
+    }
     requestAnimationFrame(() => stage.classList.add('show'));
 
     // ── 檔案堆（向日葵螺旋） ──
