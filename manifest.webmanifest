@@ -26,6 +26,9 @@
       "purpose": "maskable"
     }
   ],
+  "shortcuts": [
+    { "name": "⏱ 時間記錄器", "short_name": "記錄器", "description": "活動當天記下每個項目的開始／結束時間", "url": "./?rec=1" }
+  ],
   "share_target": {
     "action": "./share-target",
     "method": "POST",

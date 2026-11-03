@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v18 (2026-11-01)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v19 (2026-11-03)　（原名：AI 照片篩選器）
+  2026v19 (2026-11-03, build v175): ⏱ 內建時間記錄器 — 不用另外的 App：活動當天用手機或電腦開同一個網址（?rec=1 直達），
+        輸入行程、按 ▶ 開始／■ 結束（可分小項：大隊接力 → 一年級、二年級…），匯出「時段設定檔」或同一台裝置一鍵套用到分組；
+        記錄存在瀏覽器（localStorage recState），可匯入／匯出行程樣板，與舊的 sportstime 檔案格式相容；PWA 捷徑「⏱ 時間記錄器」
   2026v18 (2026-11-01, build v174): 🐞 實測修正 — 手機勾選列與提示列重疊、提示列半寬；「✅ ✅」與大通知蓋住視窗按鈕；成果包照片清單被擠扁；
         學年回顧手機一排兩格；HEIC 轉檔／納入後重新比對上次的整理
   2026v17 (2026-11-01, build v173): ⏱ 多位拍攝者自動對時 — 用大家拍到的相同畫面算出相機時間差並對齊，同一場活動不再被切成兩組
@@ -183,7 +186,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v18 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v19 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2688,6 +2691,47 @@
   html.reduce-motion #orgStage .org-pile.spin { animation: none; }
   .btn-org-replay { font-size: 11px; padding: 3px 10px; border-radius: 999px; cursor: pointer; background: rgba(255,209,102,0.14); color: var(--text); border: 0.5px solid rgba(255,209,102,0.45); }
 
+  /* ═══ 2026v19 ⏱ 內建時間記錄器 ═══ */
+  #recStage { position: fixed; inset: 0; z-index: 890; background: var(--bg); color: var(--text); display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#recStage) .coach-bar { display: none !important; }
+  #recStage .rec-top { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 0.5px solid var(--glass-edge-soft); background: var(--glass-1); flex-wrap: wrap; }
+  #recStage .rec-top input { font-size: 15px; font-weight: 700; background: transparent; border: 0; border-bottom: 1px dashed var(--glass-edge); color: var(--text); padding: 4px 2px; min-width: 0; }
+  #recStage .rec-top input[type=date] { font-size: 13px; font-weight: 500; color: var(--text-dim); width: 150px; }
+  #recStage .rec-top input#recName { flex: 1 1 160px; }
+  #recStage .rec-clock { font-family: var(--mono); font-size: 15px; color: var(--yellow); font-variant-numeric: tabular-nums; }
+  #recStage .rec-ic { width: 38px; height: 38px; border-radius: 12px; border: 0.5px solid var(--glass-edge); background: var(--glass-1); color: var(--text); font-size: 17px; cursor: pointer; display: grid; place-items: center; }
+  #recStage .rec-list { flex: 1; min-height: 0; overflow-y: auto; padding: 10px 12px 24px; -webkit-overflow-scrolling: touch; }
+  #recStage .rec-item { border: 0.5px solid var(--glass-edge-soft); border-radius: 16px; background: var(--glass-1); padding: 10px 12px; margin-bottom: 10px; }
+  #recStage .rec-item.running { border-color: var(--green); background: rgba(75,232,168,0.08); box-shadow: 0 0 0 2px rgba(75,232,168,0.25); }
+  #recStage .rec-item.done { opacity: .72; }
+  #recStage .rec-row { display: flex; align-items: center; gap: 8px; }
+  #recStage .rec-row .nm { flex: 1; font-size: 16px; font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #recStage .rec-row .exp { font-size: 12px; color: var(--text-dim); font-family: var(--mono); }
+  #recStage .rec-times { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; font-size: 12.5px; color: var(--text-dim); font-family: var(--mono); }
+  #recStage .rec-times b { color: var(--text); font-weight: 600; cursor: pointer; border-bottom: 1px dashed var(--glass-edge); }
+  #recStage .rec-times b.na { color: var(--text-faint); border-bottom-color: transparent; }
+  #recStage .rec-sub { margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--glass-edge); font-size: 13px; }
+  #recStage .rec-sub .s { display: flex; gap: 8px; align-items: center; padding: 3px 0; color: var(--text-dim); }
+  #recStage .rec-sub .s.cur { color: var(--text); font-weight: 700; } #recStage .rec-sub .s.ok { color: var(--green); }
+  #recStage .rec-sub .s .t { margin-left: auto; font-family: var(--mono); font-size: 11.5px; }
+  #recStage .rec-btns { display: flex; gap: 8px; margin-top: 10px; }
+  #recStage .rec-btn { flex: 1; padding: 13px 10px; border-radius: 14px; border: 0; font-size: 16px; font-weight: 800; cursor: pointer; color: #1a1530; }
+  #recStage .rec-btn.start { background: linear-gradient(135deg, #8df0c6, var(--green)); }
+  #recStage .rec-btn.end { background: linear-gradient(135deg, #ffb3bb, var(--red)); }
+  #recStage .rec-btn.next { background: linear-gradient(135deg, #ffe3a3, var(--yellow)); }
+  #recStage .rec-btn.ghost { background: var(--glass-2); color: var(--text); font-weight: 600; flex: 0 0 auto; padding: 13px 14px; }
+  #recStage .rec-foot { flex: 0 0 auto; padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); background: var(--glass-1); border-top: 0.5px solid var(--glass-edge-soft); display: flex; gap: 8px; flex-wrap: wrap; }
+  #recStage .rec-foot button { flex: 1 1 140px; padding: 12px 10px; border-radius: 14px; border: 0.5px solid var(--glass-edge); background: var(--glass-2); color: var(--text); font-size: 14px; font-weight: 700; cursor: pointer; }
+  #recStage .rec-foot button.pri { background: linear-gradient(135deg, var(--accent), #ff6b35); border: 0; color: #fff; }
+  #recStage .rec-empty { text-align: center; color: var(--text-dim); padding: 50px 20px; line-height: 1.9; font-size: 13.5px; }
+  #recStage .rec-add { display: flex; gap: 6px; margin: 4px 0 12px; }
+  #recStage .rec-add input { flex: 1; font-size: 15px; padding: 11px 12px; border-radius: 12px; border: 0.5px solid var(--glass-edge); background: var(--glass-1); color: var(--text); min-width: 0; }
+  #recStage .rec-add input.tm { flex: 0 0 96px; font-family: var(--mono); }
+  #recStage .rec-add button { padding: 0 16px; border-radius: 12px; border: 0; background: var(--accent); color: #fff; font-size: 20px; font-weight: 800; cursor: pointer; }
+  #recStage .rec-menu { position: absolute; right: 12px; top: 56px; background: var(--glass-3); backdrop-filter: blur(20px); border: 0.5px solid var(--glass-edge); border-radius: 14px; padding: 6px; z-index: 3; display: grid; gap: 2px; min-width: 220px; }
+  #recStage .rec-menu button { text-align: left; padding: 10px 12px; border-radius: 10px; border: 0; background: transparent; color: var(--text); font-size: 13.5px; cursor: pointer; }
+  #recStage .rec-menu button:hover { background: var(--glass-2); }
+
   /* manual reduce-motion switch mirrors the media query */
   html.reduce-motion body::before, html.reduce-motion body::after { animation: none !important; }
   html.reduce-motion .liquid-rim::before, html.reduce-motion .stat-card::before, html.reduce-motion .header::before, html.reduce-motion .modal::before { animation: none !important; opacity: 0.6; }
@@ -2851,7 +2895,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v18 · 2026-11-01</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v19 · 2026-11-03</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -2917,7 +2961,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><td>📲 直接分享（手機）</td><td>你在成果包按「直接分享」時，縮好的照片（最多 9 張）與群組訊息交給你在手機上選的 App（LINE、FB…），由那個 App 送出</td><td>看你選的 App</td></tr>
         <tr><td>瀏覽器 IndexedDB（設定）</td><td>相簿庫、備份資料夾的位置；<b>最近整理記錄</b>（每批照片的檔名、分組、活動名稱、標籤、入選／淘汰，不含照片，最多 20 批，匯出後 7 天自動清）</td><td>設定 → 儲存 →「清除整理記錄」；或清除瀏覽器網站資料</td></tr>
         <tr><td>瀏覽器 Cache Storage（網站版／安裝成 App）</td><td>工具本身、圖示，以及公開程式庫與人臉模型（離線用）。<b>不含照片、不含分析結果</b></td><td>解除安裝 App，或清除瀏覽器網站資料</td></tr>
-        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關、整理動畫的開關、分享浮水印的開關、相簿庫最近 5 次搜尋（都不含照片）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
+        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關、整理動畫的開關、分享浮水印的開關、相簿庫最近 5 次搜尋、⏱ 時間記錄器的行程與按下的時間（都不含照片）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
         <tr><td>你選的相簿庫資料夾</td><td>匯出的照片、index.json（檔名、日期、活動、分數、人數、拍攝者名字、最愛、自建相簿名稱、照片本身帶的 <b>GPS 經緯度</b>、你設定的學校位置、自己取的地點名稱與查到的地標名稱）、索引歷史（_index_history）與每天的記錄備份（_相簿庫記錄備份，保留 30 天）。設為最愛的照片檔內會寫入「5 顆星」。在相簿庫刪除的照片先放進「_回收桶」資料夾，按「永久刪除」才真的刪掉</td><td>自行管理資料夾</td></tr>
       </table>
       <div class="pv-note">共用電腦用完請清除分析快取；離職或交接時一併刪除相簿庫與 Gemini Key。</div>
@@ -2927,7 +2971,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       網站版的 service worker 只快取工具與公開模型，<b>不會攔截或保存照片</b>；Gemini、Google、OpenStreetMap 的連線一律不經過快取。<br>
       本工具是單一 HTML 檔，可用文字編輯器搜尋 <code>fetch(</code>、<code>https://</code> 自行檢查所有連線。
 
-      <div class="pv-foot">本頁依 2026v18 程式逐項清點（2026-11-01）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v19 程式逐項清點（2026-11-03）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3039,6 +3083,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
             <div class="control-group" style="margin-top:8px;">
               <div class="section-subtitle">📱 手機時間記錄器（四種情境都適用）</div>
               <p style="font-size:10px;color:var(--text-dim);line-height:1.5;margin-bottom:6px;">運動會、學校活動、頒獎、畢業典禮都一樣：活動當天用手機「時間記錄器」按實際開始／結束，匯出<b>時段設定檔</b>後用「📥 匯入時段」載入；同一台裝置可直接貼上。時段只決定分群與資料夾，挑片規則仍由情境決定。</p>
+              <button class="btn-schedule-upload" onclick="openRecorder()" style="width:100%;font-size:11px;margin-bottom:6px;border-color:var(--accent);color:var(--accent);" title="內建的時間記錄器：活動當天用手機或電腦開這個網址（網址後面加 ?rec=1 可直接開），按開始／結束記下每個項目的實際時間">⏱ 開啟時間記錄器（內建）</button>
               <button class="btn-schedule-upload" onclick="pasteSchedule()" style="width:100%;font-size:11px;">📋 貼上時段 JSON</button>
               <div id="scheduleSourceInfo" style="display:none;font-size:10px;line-height:1.6;margin-top:6px;padding:6px 8px;border-radius:6px;background:rgba(45,212,160,0.10);border:1px solid var(--green);color:var(--green);"></div>
               <div class="control-row" style="margin-top:8px;">
@@ -3353,7 +3398,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v18（2026-11-01）。</span>
+        <span style="font-size:11px;">本說明對應 2026v19（2026-11-03）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -3953,8 +3998,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v18';
-const APP_BUILD = 'v174';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v19';
+const APP_BUILD = 'v175';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -7989,7 +8034,7 @@ function parseScheduleJson(text) {
   if (!groups.length) throw new Error('檔案中沒有時段資料');
   for (const g of groups) { if (!g.name && !g.start && !g.end) throw new Error('時段資料格式不正確'); }
   const desc = String(data.description || '');
-  const fromRecorder = data.source === 'sportstime' || /時段設定檔/.test(desc) && !/照片篩選器/.test(desc);
+  const fromRecorder = data.source === 'sportstime' || data.source === 'recorder' || /時段設定檔/.test(desc) && !/照片篩選器/.test(desc);
   const meta = {
     fromRecorder,
     eventName: data.eventName || (fromRecorder ? desc.replace(/\s*-\s*時段設定檔.*$/, '') : ''),
@@ -14621,6 +14666,207 @@ function playOrganizeAnimation(opts = {}) {
     setTimeout(() => { if (token === _orgToken) raf = requestAnimationFrame(tick); }, reduce ? 200 : Math.min(1500, bloom + 300));
   });
 }
+
+// ══════════════════════════════════════════════════════════════
+// 2026v19 ⏱ 內建時間記錄器 — 取代另外的 sportstime App
+//  活動當天用手機／電腦開同一個網址；按 ▶ 開始／■ 結束記實際時間；可分小項（大隊接力 → 一年級…）
+//  匯出「時段設定檔」(source:'recorder'，與 sportstime 相容) 或同一台裝置直接套用到分組
+// ══════════════════════════════════════════════════════════════
+const REC_KEY = 'recState';
+let rec = null, _recTimer = 0;
+const recNow = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`; };
+const recToday = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
+function recLoad() {
+  try { const j = JSON.parse(localStorage.getItem(REC_KEY) || 'null'); if (j && Array.isArray(j.items)) return j; } catch {}
+  return { name: '', date: recToday(), items: [] };
+}
+function recSave() { try { localStorage.setItem(REC_KEY, JSON.stringify(rec)); } catch {} }
+function recUid() { return Math.random().toString(36).slice(2, 9); }
+function recRunning() { return rec.items.find(it => it.start && !it.end); }
+function openRecorder() {
+  rec = recLoad();
+  let st = document.getElementById('recStage'); if (st) st.remove();
+  st = document.createElement('div'); st.id = 'recStage'; document.body.appendChild(st);
+  recRender();
+  clearInterval(_recTimer); _recTimer = setInterval(() => { const c = document.getElementById('recClock'); if (c) c.textContent = recNow(); }, 1000);
+  document.addEventListener('keydown', recKey);
+  try { if (!location.search.includes('rec=1')) history.replaceState(null, '', location.pathname + '?rec=1' + location.hash); } catch {}
+}
+function closeRecorder() {
+  const st = document.getElementById('recStage'); if (st) st.remove();
+  clearInterval(_recTimer); document.removeEventListener('keydown', recKey);
+  try { history.replaceState(null, '', location.pathname + location.hash); } catch {}
+}
+function recKey(e) { if (e.key === 'Escape') { const m = document.getElementById('recMenu'); if (m) m.remove(); else closeRecorder(); } }
+function recRender() {
+  const st = document.getElementById('recStage'); if (!st) return;
+  const running = recRunning();
+  const items = rec.items.map((it, i) => {
+    const subs = it.subs && it.subs.length ? it.subs : null;
+    const cur = subs ? (it.subIdx || 0) : -1;
+    const state = it.end ? 'done' : (it.start ? 'running' : '');
+    const subHtml = subs ? `<div class="rec-sub">${subs.map((sb, j) => `<div class="s ${j < cur || (it.end && j <= cur) ? 'ok' : j === cur && it.start && !it.end ? 'cur' : ''}"><span>${j < cur || (it.end && j <= cur) ? '✓' : j === cur && it.start && !it.end ? '▶' : '○'}</span><span>${escHtml(sb.name)}</span><span class="t">${sb.start ? sb.start.slice(0, 5) : ''}${sb.end ? '–' + sb.end.slice(0, 5) : ''}</span></div>`).join('')}</div>` : '';
+    let btns = '';
+    if (!it.start) btns = `<button class="rec-btn start" onclick="recStart(${i})">▶ 開始</button><button class="rec-btn ghost" onclick="recEdit(${i})" title="改名／分小項／預定時間">✏️</button>`;
+    else if (!it.end) btns = (subs && cur < subs.length - 1 ? `<button class="rec-btn next" onclick="recNextSub(${i})">⏭ 下一項（${escHtml(subs[cur + 1].name)}）</button>` : '') + `<button class="rec-btn end" onclick="recEnd(${i})">■ 結束</button>`;
+    else btns = `<button class="rec-btn ghost" onclick="recClear(${i})" title="清掉時間，重新記">↺ 重記</button><button class="rec-btn ghost" onclick="recEdit(${i})">✏️</button>`;
+    return `<div class="rec-item ${state}" data-i="${i}">
+      <div class="rec-row"><span class="nm">${i + 1}. ${escHtml(it.name)}</span>${it.expected ? `<span class="exp">預定 ${escHtml(it.expected)}</span>` : ''}<button class="rec-ic" style="width:30px;height:30px;font-size:13px;" onclick="recMove(${i},-1)" title="上移">↑</button><button class="rec-ic" style="width:30px;height:30px;font-size:13px;" onclick="recMove(${i},1)" title="下移">↓</button><button class="rec-ic" style="width:30px;height:30px;font-size:13px;" onclick="recDel(${i})" title="刪除">🗑</button></div>
+      <div class="rec-times"><span>開始 <b class="${it.start ? '' : 'na'}" onclick="recEditTime(${i},'start')">${it.start || '—'}</b></span><span>結束 <b class="${it.end ? '' : 'na'}" onclick="recEditTime(${i},'end')">${it.end || '—'}</b></span>${it.start && it.end ? `<span>⏱ ${recDur(it.start, it.end)}</span>` : ''}</div>
+      ${subHtml}<div class="rec-btns">${btns}</div></div>`;
+  }).join('');
+  st.innerHTML = `
+    <div class="rec-top">
+      <button class="rec-ic" onclick="closeRecorder()" title="回到校園拾光">✕</button>
+      <input id="recName" placeholder="活動名稱（例：115學年度 校慶運動會）" value="${escHtml(rec.name || '')}" oninput="rec.name=this.value;recSave()">
+      <input type="date" id="recDate" value="${escHtml(rec.date || recToday())}" onchange="rec.date=this.value;recSave()">
+      <span class="rec-clock" id="recClock">${recNow()}</span>
+      <button class="rec-ic" onclick="recMenuToggle()" title="更多">⋯</button>
+    </div>
+    <div class="rec-list" id="recList">
+      <div class="rec-add"><input id="recNewName" placeholder="新增項目，例：開幕進場、大隊接力" onkeydown="if(event.key==='Enter')recAdd()"><input id="recNewTime" class="tm" placeholder="預定 09:30" inputmode="numeric"><button onclick="recAdd()" title="新增">＋</button></div>
+      ${items || `<div class="rec-empty">還沒有項目。<br>把今天的行程一項一項加進來（或 ⋯ → 匯入行程樣板），<br>活動進行時按 ▶ 開始、■ 結束就好。<br><br>💡 手機上加到主畫面：網址後面加 <b>?rec=1</b> 可直接開到這裡。</div>`}
+    </div>
+    <div class="rec-foot">
+      ${running ? `<button class="rec-btn end" style="flex:1 1 100%;" onclick="recEnd(${rec.items.indexOf(running)})">■ 結束「${escHtml(running.name)}」</button>` : ''}
+      <button onclick="recCopy()" title="複製時段設定檔 JSON，到電腦的校園拾光按「📋 貼上時段 JSON」">📋 複製時段 JSON</button>
+      <button onclick="recExport()">📤 下載時段設定檔</button>
+      <button class="pri" onclick="recApply()" title="照片已經在這台裝置匯入時，直接套用到「依時段」分組">✅ 套用到分組</button>
+    </div>`;
+  const runEl = st.querySelector('.rec-item.running'); if (runEl && !st._scrolled) { runEl.scrollIntoView({ block: 'center' }); st._scrolled = true; }
+}
+function recDur(a, b) { const s = recSec(b) - recSec(a); if (!(s > 0)) return ''; return s >= 3600 ? `${Math.floor(s / 3600)} 時 ${Math.floor(s % 3600 / 60)} 分` : s >= 60 ? `${Math.floor(s / 60)} 分 ${s % 60} 秒` : `${s} 秒`; }
+function recSec(t) { const m = String(t || '').match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/); return m ? (+m[1]) * 3600 + (+m[2]) * 60 + (+(m[3] || 0)) : NaN; }
+function recNormTime(v, withSec) { v = String(v || '').trim().replace(/[．。]/g, ':').replace(/^(\d{1,2})(\d{2})$/, '$1:$2'); const m = v.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/); if (!m) return ''; const h = Math.min(23, +m[1]), mi = Math.min(59, +m[2]), sc = Math.min(59, +(m[3] || 0)); const p = n => String(n).padStart(2, '0'); return withSec ? `${p(h)}:${p(mi)}:${p(sc)}` : `${p(h)}:${p(mi)}`; }
+function recMenuToggle() {
+  let m = document.getElementById('recMenu'); if (m) { m.remove(); return; }
+  m = document.createElement('div'); m.id = 'recMenu'; m.className = 'rec-menu';
+  m.innerHTML = `<button onclick="recImportTpl()">📥 匯入行程樣板／時段檔</button><button onclick="recExportTpl()">📤 匯出行程樣板（只有項目，沒有時間）</button><button onclick="recQuickFill()">📝 一次貼上多個項目</button><button onclick="recResetTimes()">↺ 清掉全部時間（項目保留）</button><button onclick="recClearAll()" style="color:var(--red);">🗑 全部清除</button><button onclick="document.getElementById('recMenu').remove()">關閉</button>`;
+  document.getElementById('recStage').appendChild(m);
+}
+function recAdd() {
+  const n = document.getElementById('recNewName'), t = document.getElementById('recNewTime');
+  const name = (n.value || '').trim(); if (!name) { n.focus(); return; }
+  const subs = name.includes('→') ? name.split('→').slice(1).join('→').split(/[、,，]/).map(x => x.trim()).filter(Boolean) : null;
+  rec.items.push({ id: recUid(), name: subs ? name.split('→')[0].trim() : name, expected: recNormTime(t.value, false), start: null, end: null, subs: subs ? subs.map(x => ({ name: x, start: null, end: null })) : undefined, subIdx: 0 });
+  n.value = ''; t.value = ''; recSave(); recRender(); n.focus();
+}
+function recQuickFill() {
+  const txt = prompt('一行一個項目，可在後面加預定時間，例如：\n開幕進場 08:30\n大會舞 09:05\n大隊接力 → 一年級、二年級、三年級 11:15'); if (!txt) return;
+  txt.split(/\n/).map(l => l.trim()).filter(Boolean).forEach(l => { const m = l.match(/\s(\d{1,2}[:：．]\d{2})\s*$/); const tm = m ? recNormTime(m[1].replace('：', ':'), false) : ''; const nm = m ? l.slice(0, m.index).trim() : l; const subs = nm.includes('→') ? nm.split('→').slice(1).join('→').split(/[、,，]/).map(x => x.trim()).filter(Boolean) : null; rec.items.push({ id: recUid(), name: subs ? nm.split('→')[0].trim() : nm, expected: tm, start: null, end: null, subs: subs ? subs.map(x => ({ name: x, start: null, end: null })) : undefined, subIdx: 0 }); });
+  recSave(); recRender(); const m = document.getElementById('recMenu'); if (m) m.remove();
+}
+function recEdit(i) {
+  const it = rec.items[i]; if (!it) return;
+  const cur = it.name + (it.subs && it.subs.length ? ' → ' + it.subs.map(s => s.name).join('、') : '');
+  const v = prompt('項目名稱（分小項用「→」，小項之間用「、」）：', cur); if (v === null) return;
+  const nm = v.trim(); if (!nm) return;
+  const subs = nm.includes('→') ? nm.split('→').slice(1).join('→').split(/[、,，]/).map(x => x.trim()).filter(Boolean) : null;
+  it.name = subs ? nm.split('→')[0].trim() : nm;
+  if (subs) { const old = it.subs || []; it.subs = subs.map((x, j) => ({ name: x, start: old[j]?.start || null, end: old[j]?.end || null })); it.subIdx = Math.min(it.subIdx || 0, it.subs.length - 1); } else { delete it.subs; it.subIdx = 0; }
+  const e = prompt('預定時間（例 09:30，可留空）：', it.expected || ''); if (e !== null) it.expected = recNormTime(e, false);
+  recSave(); recRender();
+}
+function recEditTime(i, which) {
+  const it = rec.items[i]; if (!it) return;
+  const v = prompt(`${which === 'start' ? '開始' : '結束'}時間（例 09:31:05，留空＝清除）：`, it[which] || recNow()); if (v === null) return;
+  it[which] = v.trim() ? recNormTime(v, true) : null; if (it[which] === '') { showToast('⚠️ 時間格式看不懂'); return; }
+  recSave(); recRender();
+}
+function recStart(i) {
+  const it = rec.items[i]; if (!it || it.start) return;
+  const run = recRunning(); if (run && run !== it) { recEnd(rec.items.indexOf(run), true); }
+  it.start = recNow(); it.end = null; it.subIdx = 0;
+  if (it.subs && it.subs.length) { it.subs.forEach(s => { s.start = null; s.end = null; }); it.subs[0].start = it.start; }
+  recSave(); recRender();
+  if (navigator.vibrate) try { navigator.vibrate(30); } catch {}
+}
+function recNextSub(i) {
+  const it = rec.items[i]; if (!it || !it.subs || !it.start || it.end) return;
+  const now = recNow(); const cur = it.subIdx || 0;
+  it.subs[cur].end = now;
+  if (cur + 1 < it.subs.length) { it.subIdx = cur + 1; it.subs[cur + 1].start = now; }
+  recSave(); recRender();
+  if (navigator.vibrate) try { navigator.vibrate(20); } catch {}
+}
+function recEnd(i, quiet) {
+  const it = rec.items[i]; if (!it || !it.start || it.end) return;
+  it.end = recNow();
+  if (it.subs && it.subs.length) { const cur = it.subIdx || 0; if (!it.subs[cur].end) it.subs[cur].end = it.end; }
+  recSave(); recRender();
+  if (!quiet && navigator.vibrate) try { navigator.vibrate([30, 40, 30]); } catch {}
+}
+function recClear(i) { const it = rec.items[i]; if (!it) return; if (!confirm(`清掉「${it.name}」的時間？`)) return; it.start = it.end = null; it.subIdx = 0; (it.subs || []).forEach(s => { s.start = s.end = null; }); recSave(); recRender(); }
+function recDel(i) { const it = rec.items[i]; if (!it) return; if (!confirm(`刪除「${it.name}」？`)) return; rec.items.splice(i, 1); recSave(); recRender(); }
+function recMove(i, d) { const j = i + d; if (j < 0 || j >= rec.items.length) return; const t = rec.items[i]; rec.items[i] = rec.items[j]; rec.items[j] = t; recSave(); recRender(); }
+function recResetTimes() { if (!confirm('清掉全部時間？項目會保留。')) return; rec.items.forEach(it => { it.start = it.end = null; it.subIdx = 0; (it.subs || []).forEach(s => { s.start = s.end = null; }); }); recSave(); recRender(); document.getElementById('recMenu')?.remove(); }
+function recClearAll() { if (!confirm('全部清除（項目和時間都刪掉）？')) return; rec = { name: '', date: recToday(), items: [] }; recSave(); recRender(); document.getElementById('recMenu')?.remove(); }
+// ── 匯出：時段設定檔（與 sportstime 相同的 groups 格式；沒結束的用預定／開始＋30 分） ──
+function recBuildGroups() {
+  const date = rec.date || recToday();
+  const iso = t => t ? `${date}T${recNormTime(t, true)}` : null;
+  const plus30 = startIso => { const d = new Date(startIso); d.setMinutes(d.getMinutes() + 30); const p = n => String(n).padStart(2, '0'); return `${date}T${p(d.getHours())}:${p(d.getMinutes())}:00`; };
+  const out = [];
+  rec.items.forEach((it, idx) => {
+    const baseStart = iso(it.start) || (it.expected ? iso(it.expected + ':00') : null);
+    if (!baseStart) return;                                   // 沒按也沒預定 → 略過
+    if (it.subs && it.subs.length && it.start) {
+      const cur = it.subIdx || 0;
+      it.subs.forEach((sb, j) => {
+        if (j > cur) return;
+        const s0 = iso(sb.start) || baseStart; const e0 = iso(sb.end) || iso(it.end) || plus30(s0);
+        out.push({ name: `${String(j + 1).padStart(2, '0')}_${it.name}_${sb.name}`, start: s0, end: e0, source: sb.start ? 'actual' : 'expected' });
+      });
+      return;
+    }
+    out.push({ name: it.name, start: baseStart, end: iso(it.end) || plus30(baseStart), source: it.start ? 'actual' : 'expected' });
+  });
+  return out.sort((a, b) => a.start.localeCompare(b.start));
+}
+function recPayload() {
+  return { version: 1, source: 'recorder', app: APP_VERSION, exportDate: new Date().toISOString(), eventName: rec.name || '', eventDate: rec.date || recToday(), description: `${rec.name || '活動'} - 時段設定檔`, groups: recBuildGroups() };
+}
+function recExport() {
+  const g = recBuildGroups(); if (!g.length) { showToast('⚠️ 還沒有任何時間（按 ▶ 開始，或先填預定時間）'); return; }
+  const blob = new Blob([JSON.stringify(recPayload(), null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${rec.name || '活動'}_時段設定檔_${rec.date || recToday()}.json`; a.click();
+  showToast(`📤 已下載 ${g.length} 個時段`);
+}
+async function recCopy() {
+  const g = recBuildGroups(); if (!g.length) { showToast('⚠️ 還沒有任何時間'); return; }
+  const txt = JSON.stringify(recPayload());
+  try { await navigator.clipboard.writeText(txt); showToast(`📋 已複製 ${g.length} 個時段，到校園拾光按「貼上時段 JSON」`); } catch { prompt('複製下面的內容：', txt); }
+}
+function recApply() {
+  const g = recBuildGroups(); if (!g.length) { showToast('⚠️ 還沒有任何時間'); return; }
+  const { groups: gg, meta } = parseScheduleJson(JSON.stringify(recPayload()));
+  applyScheduleGroups(gg, meta, '套用');
+  closeRecorder();
+  try { const el = document.getElementById('customGroupPanel'); el?.scrollIntoView({ block: 'center' }); } catch {}
+}
+function recExportTpl() {
+  const blob = new Blob([JSON.stringify({ version: 1, type: 'schedule_template', source: 'recorder', eventName: rec.name || '', events: rec.items.map(it => ({ id: it.id, name: it.name, expectedTime: it.expected || '', actualStartTime: null, actualEndTime: null, currentSubEventIndex: 0, subEvents: (it.subs || []).map(s => ({ id: recUid(), name: s.name, actualStartTime: null, actualEndTime: null, skipped: false })) })) }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${rec.name || '活動'}_行程樣板.json`; a.click(); document.getElementById('recMenu')?.remove();
+}
+function recImportTpl() {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json';
+  inp.onchange = async () => { const f = inp.files[0]; if (!f) return; try { recImportText(await f.text()); } catch (e) { showToast(`❌ 讀不懂這個檔：${e.message}`); } };
+  inp.click(); document.getElementById('recMenu')?.remove();
+}
+function recImportText(text) {
+  const d = JSON.parse(text);
+  const toHms = v => { if (!v) return null; const m = String(v).match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/); return m ? recNormTime(m[0], true) : null; };
+  if (d && Array.isArray(d.events)) {   // sportstime 行程樣板／完整狀態
+    rec.items = d.events.map(ev => ({ id: recUid(), name: ev.name || '項目', expected: recNormTime(ev.expectedTime || '', false), start: toHms(ev.actualStartTime), end: toHms(ev.actualEndTime), subIdx: ev.currentSubEventIndex || 0, subs: (ev.subEvents || []).length ? ev.subEvents.map(sb => ({ name: sb.name, start: toHms(sb.actualStartTime), end: toHms(sb.actualEndTime) })) : undefined }));
+    if (d.eventName) rec.name = d.eventName; if (d.eventDate) rec.date = d.eventDate;
+  } else if (d && Array.isArray(d.groups)) {   // 時段設定檔 → 還原成項目（含時間）
+    rec.items = d.groups.map(g => ({ id: recUid(), name: String(g.name || '').replace(/^\d{2}_/, ''), expected: '', start: toHms(String(g.start || '').split('T')[1]), end: toHms(String(g.end || '').split('T')[1]), subIdx: 0 }));
+    if (d.eventName) rec.name = d.eventName; if (d.eventDate) rec.date = d.eventDate; else if (d.groups[0]?.start) rec.date = String(d.groups[0].start).slice(0, 10);
+  } else throw new Error('不是行程樣板或時段設定檔');
+  recSave(); recRender(); showToast(`📥 已匯入 ${rec.items.length} 個項目`);
+}
+// 網址帶 ?rec=1 直接開記錄器（手機加到主畫面用）
+try { if (/[?&]rec=1/.test(location.search)) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(openRecorder, 50)); else setTimeout(openRecorder, 50); } } catch {}
 
 // 2026v8: 「下一步」提示 — 下方提示列＋要按的東西發光；localStorage coachOff='1' 關掉
 function coachOn() { try { return localStorage.getItem('coachOff') !== '1'; } catch { return true; } }

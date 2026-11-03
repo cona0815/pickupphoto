@@ -3,7 +3,7 @@
    - 公開程式庫與模型（jsDelivr、cdnjs、Google Fonts、YuNet 模型）：第一次下載後存起來，之後離線也能篩照片
    - Gemini、Google 登入／雲端硬碟、OpenStreetMap：一律直接上網，不快取（這些也只有老師按了才會送）
    - 2026v16：手機相簿「分享 → 校園拾光」（manifest share_target）→ 收到的照片暫存在這支手機的 IndexedDB，網頁匯入後立刻刪掉；不經過任何伺服器 */
-const VERSION = '2026v18';
+const VERSION = '2026v19';
 const SHELL = `shell-${VERSION}`, LIBS = 'libs-v1';
 const SHELL_FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon.png'];
 const LIB_HOSTS = ['cdn.jsdelivr.net', 'cdnjs.cloudflare.com', 'fonts.googleapis.com', 'fonts.gstatic.com', 'media.githubusercontent.com', 'raw.githubusercontent.com'];
