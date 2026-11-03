@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v19 (2026-11-03)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v20 (2026-11-03)　（原名：AI 照片篩選器）
+  2026v20 (2026-11-03, build v176): ⏱ 時間記錄器重做成「當天好用」— 底部分頁 ⏱ 現場／📋 賽程／📊 時間軸／✅ 套用；
+        現場只有一顆大按鈕（▶ 開始 → ⏭ 下一項／下一組，自動結束上一項）、↶ 復原、＋ 臨時項目、跳過、晚幾分開始、螢幕保持亮著、空白鍵；
+        📋 貼上賽程表：秩序冊／Excel／LINE 文字自動抓時間（08:30-08:55、下午 1:30、9點05分、表格欄位、縮排分組），先預覽再取代／加在後面；
+        賽程按住 ≡ 拖曳排序、直接改名稱／預定時間／分組；📊 時間軸拖時段邊界（相連邊界一起動）＋每分鐘照片張數、時段外張數；
+        📲 QR／連結傳到手機或傳回電腦（資料在網址 # 後，不經伺服器）；主畫面 ⏱ 記錄器按鈕＋浮動膠囊（進行中計時），當天進行中打開就直接到記錄器；
+        主畫面「貼上」也吃賽程表文字
   2026v19 (2026-11-03, build v175): ⏱ 內建時間記錄器 — 不用另外的 App：活動當天用手機或電腦開同一個網址（?rec=1 直達），
         輸入行程、按 ▶ 開始／■ 結束（可分小項：大隊接力 → 一年級、二年級…），匯出「時段設定檔」或同一台裝置一鍵套用到分組；
         記錄存在瀏覽器（localStorage recState），可匯入／匯出行程樣板，與舊的 sportstime 檔案格式相容；PWA 捷徑「⏱ 時間記錄器」
@@ -186,7 +192,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v19 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v20 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2691,46 +2697,145 @@
   html.reduce-motion #orgStage .org-pile.spin { animation: none; }
   .btn-org-replay { font-size: 11px; padding: 3px 10px; border-radius: 999px; cursor: pointer; background: rgba(255,209,102,0.14); color: var(--text); border: 0.5px solid rgba(255,209,102,0.45); }
 
-  /* ═══ 2026v19 ⏱ 內建時間記錄器 ═══ */
-  #recStage { position: fixed; inset: 0; z-index: 890; background: var(--bg); color: var(--text); display: flex; flex-direction: column; overflow: hidden; }
-  body:has(#recStage) .coach-bar { display: none !important; }
-  #recStage .rec-top { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 0.5px solid var(--glass-edge-soft); background: var(--glass-1); flex-wrap: wrap; }
-  #recStage .rec-top input { font-size: 15px; font-weight: 700; background: transparent; border: 0; border-bottom: 1px dashed var(--glass-edge); color: var(--text); padding: 4px 2px; min-width: 0; }
-  #recStage .rec-top input[type=date] { font-size: 13px; font-weight: 500; color: var(--text-dim); width: 150px; }
-  #recStage .rec-top input#recName { flex: 1 1 160px; }
-  #recStage .rec-clock { font-family: var(--mono); font-size: 15px; color: var(--yellow); font-variant-numeric: tabular-nums; }
-  #recStage .rec-ic { width: 38px; height: 38px; border-radius: 12px; border: 0.5px solid var(--glass-edge); background: var(--glass-1); color: var(--text); font-size: 17px; cursor: pointer; display: grid; place-items: center; }
-  #recStage .rec-list { flex: 1; min-height: 0; overflow-y: auto; padding: 10px 12px 24px; -webkit-overflow-scrolling: touch; }
-  #recStage .rec-item { border: 0.5px solid var(--glass-edge-soft); border-radius: 16px; background: var(--glass-1); padding: 10px 12px; margin-bottom: 10px; }
-  #recStage .rec-item.running { border-color: var(--green); background: rgba(75,232,168,0.08); box-shadow: 0 0 0 2px rgba(75,232,168,0.25); }
-  #recStage .rec-item.done { opacity: .72; }
-  #recStage .rec-row { display: flex; align-items: center; gap: 8px; }
-  #recStage .rec-row .nm { flex: 1; font-size: 16px; font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  #recStage .rec-row .exp { font-size: 12px; color: var(--text-dim); font-family: var(--mono); }
-  #recStage .rec-times { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; font-size: 12.5px; color: var(--text-dim); font-family: var(--mono); }
-  #recStage .rec-times b { color: var(--text); font-weight: 600; cursor: pointer; border-bottom: 1px dashed var(--glass-edge); }
-  #recStage .rec-times b.na { color: var(--text-faint); border-bottom-color: transparent; }
-  #recStage .rec-sub { margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--glass-edge); font-size: 13px; }
-  #recStage .rec-sub .s { display: flex; gap: 8px; align-items: center; padding: 3px 0; color: var(--text-dim); }
-  #recStage .rec-sub .s.cur { color: var(--text); font-weight: 700; } #recStage .rec-sub .s.ok { color: var(--green); }
-  #recStage .rec-sub .s .t { margin-left: auto; font-family: var(--mono); font-size: 11.5px; }
-  #recStage .rec-btns { display: flex; gap: 8px; margin-top: 10px; }
-  #recStage .rec-btn { flex: 1; padding: 13px 10px; border-radius: 14px; border: 0; font-size: 16px; font-weight: 800; cursor: pointer; color: #1a1530; }
-  #recStage .rec-btn.start { background: linear-gradient(135deg, #8df0c6, var(--green)); }
-  #recStage .rec-btn.end { background: linear-gradient(135deg, #ffb3bb, var(--red)); }
-  #recStage .rec-btn.next { background: linear-gradient(135deg, #ffe3a3, var(--yellow)); }
-  #recStage .rec-btn.ghost { background: var(--glass-2); color: var(--text); font-weight: 600; flex: 0 0 auto; padding: 13px 14px; }
-  #recStage .rec-foot { flex: 0 0 auto; padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); background: var(--glass-1); border-top: 0.5px solid var(--glass-edge-soft); display: flex; gap: 8px; flex-wrap: wrap; }
-  #recStage .rec-foot button { flex: 1 1 140px; padding: 12px 10px; border-radius: 14px; border: 0.5px solid var(--glass-edge); background: var(--glass-2); color: var(--text); font-size: 14px; font-weight: 700; cursor: pointer; }
-  #recStage .rec-foot button.pri { background: linear-gradient(135deg, var(--accent), #ff6b35); border: 0; color: #fff; }
-  #recStage .rec-empty { text-align: center; color: var(--text-dim); padding: 50px 20px; line-height: 1.9; font-size: 13.5px; }
-  #recStage .rec-add { display: flex; gap: 6px; margin: 4px 0 12px; }
-  #recStage .rec-add input { flex: 1; font-size: 15px; padding: 11px 12px; border-radius: 12px; border: 0.5px solid var(--glass-edge); background: var(--glass-1); color: var(--text); min-width: 0; }
-  #recStage .rec-add input.tm { flex: 0 0 96px; font-family: var(--mono); }
-  #recStage .rec-add button { padding: 0 16px; border-radius: 12px; border: 0; background: var(--accent); color: #fff; font-size: 20px; font-weight: 800; cursor: pointer; }
-  #recStage .rec-menu { position: absolute; right: 12px; top: 56px; background: var(--glass-3); backdrop-filter: blur(20px); border: 0.5px solid var(--glass-edge); border-radius: 14px; padding: 6px; z-index: 3; display: grid; gap: 2px; min-width: 220px; }
-  #recStage .rec-menu button { text-align: left; padding: 10px 12px; border-radius: 10px; border: 0; background: transparent; color: var(--text); font-size: 13.5px; cursor: pointer; }
+  /* ═══ 2026v20 ⏱ 時間記錄器（現場／賽程／時間軸） ═══ */
+  body:has(#recStage) .coach-bar, body:has(#recStage) #recPill { display: none !important; }
+  #recStage { position: fixed; inset: 0; z-index: 890; background: var(--bg); color: var(--text); display: flex; flex-direction: column; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+  #recStage button { font-family: var(--font); -webkit-user-select: none; user-select: none; }
+  #recStage .rc-wrap { width: 100%; max-width: 820px; margin: 0 auto; }
+  #recStage .rec-top { flex: 0 0 auto; border-bottom: 0.5px solid var(--glass-edge-soft); background: var(--glass-1); }
+  #recStage .rec-top .rc-wrap { display: flex; align-items: center; gap: 8px; padding: 8px 12px; }
+  #recStage .rec-top input { font-size: 15px; font-weight: 700; background: transparent; border: 0; border-bottom: 1px dashed var(--glass-edge); color: var(--text); padding: 4px 2px; min-width: 0; font-family: var(--font); }
+  #recStage .rec-top #recName { flex: 1 1 120px; }
+  #recStage .rec-top #recDate { flex: 0 0 auto; width: 128px; font-size: 12.5px; font-weight: 500; color: var(--text-dim); }
+  @media (max-width: 560px) { #recStage .rec-top #recDate { display: none; } }
+  #recStage .rec-clock { font-family: var(--mono); font-size: 15px; color: var(--yellow); font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+  #recStage .rec-ic { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 12px; border: 0.5px solid var(--glass-edge); background: var(--glass-1); color: var(--text); font-size: 17px; cursor: pointer; display: grid; place-items: center; }
+  #recStage .rec-body { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+  #recStage .rec-body .rc-wrap { padding: 12px 12px 24px; }
+  /* bottom tab bar */
+  #recStage .rec-tabs { flex: 0 0 auto; border-top: 0.5px solid var(--glass-edge-soft); background: var(--glass-1); padding-bottom: env(safe-area-inset-bottom); }
+  #recStage .rec-tabs .rc-wrap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 6px 8px; }
+  #recStage .rec-tab { border: 0; background: transparent; color: var(--text-dim); font-size: 12px; font-weight: 700; padding: 6px 4px; border-radius: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 52px; justify-content: center; }
+  #recStage .rec-tab .i { font-size: 20px; line-height: 1; }
+  #recStage .rec-tab.on { color: var(--text); background: var(--glass-2); }
+  #recStage .rec-tab.apply { color: #fff; background: linear-gradient(135deg, var(--accent), #ff6b35); }
+  #recStage .rec-tab.apply.dim { background: var(--glass-2); color: var(--text-dim); }
+  /* NOW card */
+  #recStage .rc-now { border-radius: 22px; padding: 16px; background: var(--glass-2); border: 0.5px solid var(--glass-edge); margin-bottom: 14px; }
+  #recStage .rc-now.run { background: linear-gradient(160deg, rgba(75,232,168,0.16), rgba(75,232,168,0.04)); border-color: rgba(75,232,168,0.55); }
+  #recStage .rc-now .lbl { font-size: 12px; font-weight: 700; color: var(--text-dim); letter-spacing: .04em; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  #recStage .rc-now .lbl .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(75,232,168,0.25); animation: rcPulse 1.4s ease-in-out infinite; }
+  @keyframes rcPulse { 50% { box-shadow: 0 0 0 8px rgba(75,232,168,0); } }
+  #recStage .rc-now .ttl { font-size: 26px; font-weight: 800; line-height: 1.25; margin: 6px 0 2px; word-break: break-all; }
+  #recStage .rc-now .ttl small { font-size: 17px; color: var(--green); font-weight: 800; margin-left: 6px; }
+  #recStage .rc-now .meta { font-family: var(--mono); font-size: 14px; color: var(--text-dim); display: flex; gap: 12px; flex-wrap: wrap; }
+  #recStage .rc-now .meta b { color: var(--text); font-size: 20px; font-variant-numeric: tabular-nums; }
+  #recStage .rc-badge { font-family: var(--font); font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--glass-2); color: var(--text-dim); }
+  #recStage .rc-badge.late { background: rgba(255,107,122,0.18); color: var(--red); }
+  #recStage .rc-badge.ok { background: rgba(75,232,168,0.16); color: var(--green); }
+  #recStage .rc-big { width: 100%; margin-top: 14px; min-height: 84px; border: 0; border-radius: 20px; font-size: 21px; font-weight: 800; color: #1a1530; cursor: pointer; line-height: 1.3; padding: 10px 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); transition: transform .08s; }
+  #recStage .rc-big:active { transform: scale(0.98); }
+  #recStage .rc-big small { display: block; font-size: 13px; font-weight: 600; opacity: .75; }
+  #recStage .rc-big.go { background: linear-gradient(135deg, #8df0c6, var(--green)); }
+  #recStage .rc-big.next { background: linear-gradient(135deg, #ffe3a3, var(--yellow)); }
+  #recStage .rc-big.stop { background: linear-gradient(135deg, #ffb3bb, var(--red)); }
+  #recStage .rc-big.pri { background: linear-gradient(135deg, var(--accent), #ff6b35); color: #fff; }
+  #recStage .rc-row2 { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  #recStage .rc-sm { flex: 1 1 0; min-width: 96px; min-height: 46px; border-radius: 14px; border: 0.5px solid var(--glass-edge); background: var(--glass-1); color: var(--text); font-size: 14px; font-weight: 700; cursor: pointer; padding: 6px 8px; }
+  #recStage .rc-sm.undo { color: var(--yellow); }
+  #recStage .rc-sm:disabled { opacity: .35; cursor: default; }
+  #recStage .rc-h { font-size: 13px; font-weight: 800; color: var(--text-dim); margin: 6px 2px 8px; display: flex; align-items: center; gap: 8px; }
+  #recStage .rc-h .sp { flex: 1; }
+  /* live list */
+  #recStage .rc-li { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 14px; background: var(--glass-1); border: 0.5px solid var(--glass-edge-soft); margin-bottom: 6px; cursor: pointer; }
+  #recStage .rc-li .st { width: 22px; text-align: center; font-size: 15px; flex: none; }
+  #recStage .rc-li .ex { font-family: var(--mono); font-size: 12.5px; color: var(--text-dim); width: 44px; flex: none; }
+  #recStage .rc-li .nm { flex: 1; min-width: 0; font-weight: 700; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #recStage .rc-li .nm .sb { font-weight: 500; font-size: 12px; color: var(--text-dim); margin-left: 6px; }
+  #recStage .rc-li .ac { font-family: var(--mono); font-size: 12px; color: var(--text-dim); text-align: right; flex: none; }
+  #recStage .rc-li.run { border-color: var(--green); background: rgba(75,232,168,0.09); }
+  #recStage .rc-li.done .nm { color: var(--text-dim); }
+  #recStage .rc-li.skip { opacity: .45; } #recStage .rc-li.skip .nm { text-decoration: line-through; }
+  #recStage .rc-li.nextup { border-color: rgba(255,209,102,0.6); }
+  #recStage .rc-empty { text-align: center; color: var(--text-dim); padding: 30px 16px; line-height: 1.9; font-size: 14px; }
+  /* plan editor */
+  #recStage .rc-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  #recStage .rc-tools .wide { grid-column: 1 / -1; }
+  #recStage .rc-pl { display: grid; grid-template-columns: 34px 1fr auto; gap: 6px 8px; align-items: center; padding: 10px 10px 10px 4px; border-radius: 14px; background: var(--glass-1); border: 0.5px solid var(--glass-edge-soft); margin-bottom: 6px; }
+  #recStage .rc-pl.dragging { opacity: .9; border-color: var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.45); position: relative; z-index: 2; }
+  #recStage .rc-pl .hd { grid-row: 1 / span 3; align-self: stretch; display: grid; place-items: center; cursor: grab; touch-action: none; color: var(--text-dim); font-size: 20px; border-radius: 10px; }
+  #recStage .rc-pl .hd:active { cursor: grabbing; background: var(--glass-2); }
+  #recStage .rc-pl input { min-width: 0; font-size: 15px; padding: 8px 10px; border-radius: 10px; border: 0.5px solid var(--glass-edge-soft); background: rgba(0,0,0,0.15); color: var(--text); font-family: var(--font); }
+  #recStage .rc-pl input.nm { font-weight: 700; }
+  #recStage .rc-pl .tm { grid-column: 2 / span 2; display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--text-dim); flex-wrap: wrap; }
+  #recStage .rc-pl .tm input { font-family: var(--mono); font-size: 15px; width: 96px; padding: 7px 8px; }
+  #recStage .rc-pl .tm input:last-of-type { width: 120px; }
+  #recStage .rc-pl .sbx { grid-column: 2 / span 2; }
+  #recStage .rc-pl .sbx input { width: 100%; font-size: 13px; padding: 6px 10px; }
+  #recStage .rc-pl .del { width: 36px; height: 36px; border-radius: 10px; border: 0; background: transparent; color: var(--text-dim); font-size: 16px; cursor: pointer; }
+  #recStage .rc-pl .rcd { font-family: var(--mono); font-size: 11.5px; color: var(--green); }
+  /* timeline */
+  #recStage .rc-tlbar { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; font-size: 12.5px; color: var(--text-dim); }
+  #recStage .rc-tlbar .sp { flex: 1; }
+  #recStage .rc-tlbar button { min-width: 40px; height: 36px; border-radius: 10px; border: 0.5px solid var(--glass-edge); background: var(--glass-1); color: var(--text); font-size: 15px; font-weight: 700; cursor: pointer; padding: 0 10px; }
+  #recStage .rc-tl { position: relative; margin-left: 50px; margin-right: 34px; border-left: 1px solid var(--glass-edge); }
+  #recStage .rc-tl .hr { position: absolute; left: -50px; right: -34px; height: 0; border-top: 1px dashed rgba(255,255,255,0.07); }
+  #recStage .rc-tl .hr span { position: absolute; left: 0; top: -8px; font-family: var(--mono); font-size: 11px; color: var(--text-faint); width: 44px; text-align: right; }
+  #recStage .rc-tl .hr.h span { color: var(--text-dim); font-weight: 700; }
+  #recStage .rc-sg { position: absolute; left: 6px; right: 6px; border-radius: 10px; background: rgba(255,140,66,0.22); border: 1px solid rgba(255,140,66,0.75); overflow: visible; cursor: pointer; }
+  #recStage .rc-sg.exp { background: rgba(255,255,255,0.05); border-style: dashed; border-color: rgba(255,255,255,0.35); }
+  #recStage .rc-sg.alt { background: rgba(120,160,255,0.2); border-color: rgba(120,160,255,0.75); }
+  #recStage .rc-sg.sel { box-shadow: 0 0 0 2px var(--yellow); z-index: 3; }
+  #recStage .rc-sg .lb { position: absolute; left: 10px; right: 10px; top: 50%; transform: translateY(-50%); font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+  #recStage .rc-sg .lb i { font-style: normal; font-family: var(--mono); font-weight: 500; font-size: 11px; color: var(--text-dim); margin-left: 6px; }
+  #recStage .rc-sg .eh { position: absolute; left: 22%; right: 22%; height: 22px; touch-action: none; cursor: ns-resize; z-index: 2; display: grid; place-items: center; }
+  #recStage .rc-sg .eh::after { content: ''; width: 36px; height: 5px; border-radius: 3px; background: var(--text); opacity: .65; box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+  #recStage .rc-sg .eh.t { top: -11px; } #recStage .rc-sg .eh.b { bottom: -11px; }
+  #recStage .rc-sg.dragging .lb i { color: var(--yellow); font-weight: 800; }
+  #recStage .rc-dens { position: absolute; right: -32px; width: 28px; top: 0; bottom: 0; pointer-events: none; }
+  #recStage .rc-dens div { position: absolute; right: 0; background: var(--yellow); opacity: .75; border-radius: 2px 0 0 2px; }
+  #recStage .rc-tlnow { position: absolute; left: -6px; right: -34px; height: 0; border-top: 2px solid var(--red); z-index: 4; pointer-events: none; }
+  #recStage .rc-tlnow::before { content: ''; position: absolute; left: -4px; top: -5px; width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
+  /* sheets */
+  #recStage .rc-sheetbg { position: absolute; inset: 0; background: rgba(0,0,0,0.5); z-index: 10; display: flex; align-items: flex-end; justify-content: center; }
+  #recStage .rc-sheet { width: 100%; max-width: 640px; max-height: 88%; overflow-y: auto; background: var(--bg); border: 0.5px solid var(--glass-edge); border-bottom: 0; border-radius: 22px 22px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); box-shadow: 0 -10px 40px rgba(0,0,0,0.5); }
+  @media (min-width: 700px) { #recStage .rc-sheetbg { align-items: center; } #recStage .rc-sheet { border-radius: 22px; border-bottom: 0.5px solid var(--glass-edge); } }
+  #recStage .rc-sheet h4 { margin: 0 0 10px; font-size: 17px; }
+  #recStage .rc-sheet .note { font-size: 12.5px; color: var(--text-dim); line-height: 1.7; margin-bottom: 10px; }
+  #recStage .rc-sheet textarea { width: 100%; min-height: 150px; font-size: 14px; line-height: 1.6; padding: 10px 12px; border-radius: 12px; border: 0.5px solid var(--glass-edge); background: rgba(0,0,0,0.2); color: var(--text); font-family: var(--mono); resize: vertical; box-sizing: border-box; }
+  #recStage .rc-sheet input[type=text] { width: 100%; box-sizing: border-box; font-size: 16px; padding: 11px 12px; border-radius: 12px; border: 0.5px solid var(--glass-edge); background: rgba(0,0,0,0.2); color: var(--text); font-family: var(--font); }
+  #recStage .rc-sheet .acts { display: grid; gap: 8px; margin-top: 12px; }
+  #recStage .rc-sheet .acts.two { grid-template-columns: 1fr 1fr; }
+  #recStage .rc-sheet .acts button { min-height: 50px; border-radius: 14px; border: 0.5px solid var(--glass-edge); background: var(--glass-2); color: var(--text); font-size: 15px; font-weight: 700; cursor: pointer; }
+  #recStage .rc-sheet .acts button.pri { background: linear-gradient(135deg, var(--accent), #ff6b35); color: #fff; border: 0; }
+  #recStage .rc-sheet .acts button.go { background: linear-gradient(135deg, #8df0c6, var(--green)); color: #1a1530; border: 0; }
+  #recStage .rc-sheet .acts button.danger { color: var(--red); }
+  #recStage .rc-pv { margin-top: 10px; border-radius: 12px; border: 0.5px solid var(--glass-edge-soft); max-height: 240px; overflow-y: auto; font-size: 13px; }
+  #recStage .rc-pv div { display: flex; gap: 10px; padding: 6px 10px; border-bottom: 0.5px solid var(--glass-edge-soft); }
+  #recStage .rc-pv div:last-child { border-bottom: 0; }
+  #recStage .rc-pv .t { font-family: var(--mono); color: var(--yellow); width: 96px; flex: none; }
+  #recStage .rc-pv .t.na { color: var(--text-faint); }
+  #recStage .rc-pv .s { color: var(--text-dim); font-size: 12px; }
+  #recStage .rc-pvh { font-size: 12.5px; color: var(--green); margin-top: 8px; font-weight: 700; }
+  #recStage .rc-te { display: grid; grid-template-columns: 52px 1fr; gap: 8px 10px; align-items: center; margin: 6px 0; }
+  #recStage .rc-te .k { font-size: 13px; color: var(--text-dim); font-weight: 700; }
+  #recStage .rc-te .v { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  #recStage .rc-te input { font-family: var(--mono); font-size: 17px; padding: 8px 8px; border-radius: 10px; border: 0.5px solid var(--glass-edge); background: rgba(0,0,0,0.2); color: var(--text); width: 118px; }
+  #recStage .rc-te button { min-width: 44px; height: 40px; border-radius: 10px; border: 0.5px solid var(--glass-edge); background: var(--glass-1); color: var(--text); font-size: 13px; font-weight: 700; cursor: pointer; padding: 0 8px; }
+  #recStage .rc-te .sub { grid-column: 1 / -1; font-size: 13px; font-weight: 800; margin-top: 6px; }
+  #recStage .rc-qr { display: grid; place-items: center; padding: 10px; background: #fff; border-radius: 14px; margin: 8px auto; width: fit-content; }
+  #recStage .rc-qr img { display: block; width: 220px; height: 220px; image-rendering: pixelated; }
+  #recStage .rec-menu { position: absolute; right: 12px; top: 58px; background: var(--glass-3); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 0.5px solid var(--glass-edge); border-radius: 14px; padding: 6px; z-index: 9; display: grid; gap: 2px; min-width: 240px; box-shadow: 0 16px 40px rgba(0,0,0,0.45); }
+  #recStage .rec-menu button { text-align: left; padding: 11px 12px; border-radius: 10px; border: 0; background: transparent; color: var(--text); font-size: 14px; cursor: pointer; }
   #recStage .rec-menu button:hover { background: var(--glass-2); }
+  #recStage .rec-menu hr { border: 0; border-top: 0.5px solid var(--glass-edge-soft); margin: 4px 6px; }
+  /* main-page pill */
+  #recPill { position: fixed; left: 14px; bottom: 16px; z-index: 880; display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 99px; border: 1px solid rgba(75,232,168,0.6); background: rgba(20,30,40,0.92); color: var(--text); font: 700 13px var(--font); cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.45); max-width: calc(100vw - 28px); }
+  @media (max-width: 760px) { #recPill { bottom: calc(78px + env(safe-area-inset-bottom)); } }
+  #recPill .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--green); flex: none; animation: rcPulse 1.4s ease-in-out infinite; box-shadow: 0 0 0 4px rgba(75,232,168,0.25); }
+  #recPill.idle { border-color: rgba(255,209,102,0.6); } #recPill.idle .dot { background: var(--yellow); animation: none; box-shadow: none; }
+  #recPill .t { font-family: var(--mono); color: var(--green); }
+  #recPill span.n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   /* manual reduce-motion switch mirrors the media query */
   html.reduce-motion body::before, html.reduce-motion body::after { animation: none !important; }
@@ -2895,10 +3000,11 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v19 · 2026-11-03</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v20 · 2026-11-03</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
+      <button class="btn-help-header" id="btnRecorder" onclick="openRecorder()" title="⏱ 時間記錄器：貼上賽程表、活動當天按開始／下一項，記下每個項目的實際時間">⏱ 記錄器</button>
       <button class="btn-help-header" id="btnLibrary" onclick="openLibraryModal()" title="相簿庫：查詢歷次匯出的照片（依學年度／分類／主題）">📚 相簿庫</button>
       <button class="btn-help-header" id="btnSettings" onclick="openSettings()" title="設定">⚙️ 設定</button>
       <button class="btn-primary btn-analyze-header" id="btnAnalyze" disabled onclick="startAnalysis()" title="一場活動的照片：依你的分組設定切活動，照片不會離開這台電腦。很多天混在一起的照片，請用左邊的「📱 相簿一鍵整理」">▶ 開始分析</button>
@@ -2961,7 +3067,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><td>📲 直接分享（手機）</td><td>你在成果包按「直接分享」時，縮好的照片（最多 9 張）與群組訊息交給你在手機上選的 App（LINE、FB…），由那個 App 送出</td><td>看你選的 App</td></tr>
         <tr><td>瀏覽器 IndexedDB（設定）</td><td>相簿庫、備份資料夾的位置；<b>最近整理記錄</b>（每批照片的檔名、分組、活動名稱、標籤、入選／淘汰，不含照片，最多 20 批，匯出後 7 天自動清）</td><td>設定 → 儲存 →「清除整理記錄」；或清除瀏覽器網站資料</td></tr>
         <tr><td>瀏覽器 Cache Storage（網站版／安裝成 App）</td><td>工具本身、圖示，以及公開程式庫與人臉模型（離線用）。<b>不含照片、不含分析結果</b></td><td>解除安裝 App，或清除瀏覽器網站資料</td></tr>
-        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關、整理動畫的開關、分享浮水印的開關、相簿庫最近 5 次搜尋、⏱ 時間記錄器的行程與按下的時間（都不含照片）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
+        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關、整理動畫的開關、分享浮水印的開關、相簿庫最近 5 次搜尋、⏱ 時間記錄器的賽程與按下的時間（都不含照片；「📲 傳到手機」的連結把賽程放在網址 # 後面，只在兩台裝置之間傳，不經過伺服器）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
         <tr><td>你選的相簿庫資料夾</td><td>匯出的照片、index.json（檔名、日期、活動、分數、人數、拍攝者名字、最愛、自建相簿名稱、照片本身帶的 <b>GPS 經緯度</b>、你設定的學校位置、自己取的地點名稱與查到的地標名稱）、索引歷史（_index_history）與每天的記錄備份（_相簿庫記錄備份，保留 30 天）。設為最愛的照片檔內會寫入「5 顆星」。在相簿庫刪除的照片先放進「_回收桶」資料夾，按「永久刪除」才真的刪掉</td><td>自行管理資料夾</td></tr>
       </table>
       <div class="pv-note">共用電腦用完請清除分析快取；離職或交接時一併刪除相簿庫與 Gemini Key。</div>
@@ -2971,7 +3077,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       網站版的 service worker 只快取工具與公開模型，<b>不會攔截或保存照片</b>；Gemini、Google、OpenStreetMap 的連線一律不經過快取。<br>
       本工具是單一 HTML 檔，可用文字編輯器搜尋 <code>fetch(</code>、<code>https://</code> 自行檢查所有連線。
 
-      <div class="pv-foot">本頁依 2026v19 程式逐項清點（2026-11-03）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v20 程式逐項清點（2026-11-03）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3083,8 +3189,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
             <div class="control-group" style="margin-top:8px;">
               <div class="section-subtitle">📱 手機時間記錄器（四種情境都適用）</div>
               <p style="font-size:10px;color:var(--text-dim);line-height:1.5;margin-bottom:6px;">運動會、學校活動、頒獎、畢業典禮都一樣：活動當天用手機「時間記錄器」按實際開始／結束，匯出<b>時段設定檔</b>後用「📥 匯入時段」載入；同一台裝置可直接貼上。時段只決定分群與資料夾，挑片規則仍由情境決定。</p>
-              <button class="btn-schedule-upload" onclick="openRecorder()" style="width:100%;font-size:11px;margin-bottom:6px;border-color:var(--accent);color:var(--accent);" title="內建的時間記錄器：活動當天用手機或電腦開這個網址（網址後面加 ?rec=1 可直接開），按開始／結束記下每個項目的實際時間">⏱ 開啟時間記錄器（內建）</button>
-              <button class="btn-schedule-upload" onclick="pasteSchedule()" style="width:100%;font-size:11px;">📋 貼上時段 JSON</button>
+              <button class="btn-schedule-upload" onclick="openRecorder()" style="width:100%;font-size:11px;margin-bottom:6px;border-color:var(--accent);color:var(--accent);" title="貼上賽程表、活動當天按開始／下一項；手機掃 QR 就能帶著走">⏱ 開啟時間記錄器（貼賽程表・現場按鈕）</button>
+              <button class="btn-schedule-upload" onclick="pasteSchedule()" style="width:100%;font-size:11px;">📋 貼上賽程表／時段 JSON</button>
               <div id="scheduleSourceInfo" style="display:none;font-size:10px;line-height:1.6;margin-top:6px;padding:6px 8px;border-radius:6px;background:rgba(45,212,160,0.10);border:1px solid var(--green);color:var(--green);"></div>
               <div class="control-row" style="margin-top:8px;">
                 <span class="control-label" title="手機記錄的是手機時間，相機的時鐘常常差幾分鐘。相機比手機快填正數、慢填負數。"><span class="emoji">⏱️</span> 相機時間校正</span>
@@ -3398,7 +3504,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v19（2026-11-03）。</span>
+        <span style="font-size:11px;">本說明對應 2026v20（2026-11-03）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -3998,8 +4104,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v19';
-const APP_BUILD = 'v175';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v20';
+const APP_BUILD = 'v176';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -7965,14 +8071,14 @@ function groupByCustomTime() {
 async function pasteSchedule() {
   let text = '';
   try { if (navigator.clipboard?.readText) text = await navigator.clipboard.readText(); } catch {}
-  if (!text || !/[\[{]/.test(text)) {
-    text = prompt('貼上「時段設定檔」的 JSON 內容：') || '';
-  }
-  if (!text.trim()) return;
+  if (!text || !text.trim()) { openRecorder('plan'); recPasteSheet(); return; }
   try {
     const { groups, meta } = parseScheduleJson(text);
     applyScheduleGroups(groups, meta, '貼上');
-  } catch (err) { showToast(`❌ 貼上失敗：${err.message}`); }
+  } catch (err) {
+    // 2026v20: 不是 JSON → 當成賽程表文字，交給時間記錄器預覽
+    openRecorder('plan'); recPasteSheet(text);
+  }
 }
 function updateOffsetHint() {
   const v = parseFloat(document.getElementById('camOffsetMin').value) || 0;
@@ -14668,164 +14774,668 @@ function playOrganizeAnimation(opts = {}) {
 }
 
 // ══════════════════════════════════════════════════════════════
-// 2026v19 ⏱ 內建時間記錄器 — 取代另外的 sportstime App
-//  活動當天用手機／電腦開同一個網址；按 ▶ 開始／■ 結束記實際時間；可分小項（大隊接力 → 一年級…）
-//  匯出「時段設定檔」(source:'recorder'，與 sportstime 相容) 或同一台裝置直接套用到分組
+// 2026v20 ⏱ 時間記錄器 — 現場／賽程／時間軸 三個分頁
+//  前一天：📋 貼上賽程表（自動抓時間）→ 拖 ≡ 調整 → 📲 QR 傳到手機
+//  當天：打開就是「現場」，只按一顆大按鈕（⏭ 下一項）；按錯 ↶ 復原
+//  結束：📲 傳回電腦或 ✅ 套用；📊 時間軸拖拉邊界、對照每分鐘照片張數微調
+//  localStorage recState；與 sportstime 時段設定檔／行程樣板相容
 // ══════════════════════════════════════════════════════════════
 const REC_KEY = 'recState';
-let rec = null, _recTimer = 0;
-const recNow = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`; };
-const recToday = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
+let rec = null, _recTimer = 0, _recUndo = [], _recTab = 'live', _recWake = null, _recPpm = 4, _recPillTimer = 0, _recSegs = [];
+const rp2 = n => String(n).padStart(2, '0');
+const rE = s => escHtml(String(s == null ? '' : s));
+const recNow = () => { const d = new Date(); return `${rp2(d.getHours())}:${rp2(d.getMinutes())}:${rp2(d.getSeconds())}`; };
+const recToday = () => { const d = new Date(); return `${d.getFullYear()}-${rp2(d.getMonth() + 1)}-${rp2(d.getDate())}`; };
+function recSec(t) { const m = String(t || '').match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/); return m ? (+m[1]) * 3600 + (+m[2]) * 60 + (+(m[3] || 0)) : NaN; }
+function recHms(sec) { sec = Math.max(0, Math.min(86399, Math.round(sec))); return `${rp2(Math.floor(sec / 3600))}:${rp2(Math.floor(sec % 3600 / 60))}:${rp2(sec % 60)}`; }
+function recHm(sec) { return recHms(sec).slice(0, 5); }
+function recNormTime(v, withSec) {
+  v = String(v || '').trim().replace(/[：．。.]/g, ':').replace(/^(\d{1,2})(\d{2})$/, '$1:$2');
+  const m = v.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/); if (!m) return '';
+  const h = Math.min(23, +m[1]), mi = Math.min(59, +m[2]), sc = Math.min(59, +(m[3] || 0));
+  return withSec ? `${rp2(h)}:${rp2(mi)}:${rp2(sc)}` : `${rp2(h)}:${rp2(mi)}`;
+}
+function recDurTxt(sec) { sec = Math.max(0, Math.round(sec)); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60; return h ? `${h}:${rp2(m)}:${rp2(s)}` : `${m}:${rp2(s)}`; }
+function recUid() { return Math.random().toString(36).slice(2, 9); }
+function recMkItem(o) {
+  const it = { id: o.id || recUid(), name: String(o.name || '項目').slice(0, 60), exp: o.exp || '', expEnd: o.expEnd || '', start: o.start || null, end: o.end || null, subIdx: o.subIdx || 0, skip: !!o.skip };
+  if (o.subs && o.subs.length) it.subs = o.subs.map(s => typeof s === 'string' ? { name: s, start: null, end: null } : { name: s.name, start: s.start || null, end: s.end || null });
+  return it;
+}
+function recMigrate(j) {
+  const r = { v: 2, name: j.name || '', date: j.date || recToday(), items: [] };
+  r.items = (j.items || []).map(it => recMkItem({ ...it, exp: it.exp != null ? it.exp : (it.expected || '') }));
+  return r;
+}
 function recLoad() {
-  try { const j = JSON.parse(localStorage.getItem(REC_KEY) || 'null'); if (j && Array.isArray(j.items)) return j; } catch {}
-  return { name: '', date: recToday(), items: [] };
+  try { const j = JSON.parse(localStorage.getItem(REC_KEY) || 'null'); if (j && Array.isArray(j.items)) return recMigrate(j); } catch {}
+  return { v: 2, name: '', date: recToday(), items: [] };
 }
 function recSave() { try { localStorage.setItem(REC_KEY, JSON.stringify(rec)); } catch {} }
-function recUid() { return Math.random().toString(36).slice(2, 9); }
-function recRunning() { return rec.items.find(it => it.start && !it.end); }
-function openRecorder() {
-  rec = recLoad();
-  let st = document.getElementById('recStage'); if (st) st.remove();
-  st = document.createElement('div'); st.id = 'recStage'; document.body.appendChild(st);
-  recRender();
-  clearInterval(_recTimer); _recTimer = setInterval(() => { const c = document.getElementById('recClock'); if (c) c.textContent = recNow(); }, 1000);
-  document.addEventListener('keydown', recKey);
-  try { if (!location.search.includes('rec=1')) history.replaceState(null, '', location.pathname + '?rec=1' + location.hash); } catch {}
+function recPush(label) { _recUndo.push({ label, s: JSON.stringify(rec) }); if (_recUndo.length > 40) _recUndo.shift(); }
+function recUndo() {
+  const u = _recUndo.pop(); if (!u) { showToast('沒有可以復原的動作'); return; }
+  rec = JSON.parse(u.s); recSave(); recRender(); showToast(`↶ 已復原：${u.label}`);
 }
-function closeRecorder() {
-  const st = document.getElementById('recStage'); if (st) st.remove();
-  clearInterval(_recTimer); document.removeEventListener('keydown', recKey);
-  try { history.replaceState(null, '', location.pathname + location.hash); } catch {}
+const recIsRun = it => !!(it && it.start && !it.end);
+function recRunIdx() { return rec.items.findIndex(recIsRun); }
+function recNextIdx(after) {
+  for (let k = after + 1; k < rec.items.length; k++) { const it = rec.items[k]; if (!it.start && !it.skip) return k; }
+  if (after >= 0) for (let k = 0; k < after; k++) { const it = rec.items[k]; if (!it.start && !it.skip) return k; }
+  return -1;
 }
-function recKey(e) { if (e.key === 'Escape') { const m = document.getElementById('recMenu'); if (m) m.remove(); else closeRecorder(); } }
-function recRender() {
-  const st = document.getElementById('recStage'); if (!st) return;
-  const running = recRunning();
-  const items = rec.items.map((it, i) => {
-    const subs = it.subs && it.subs.length ? it.subs : null;
-    const cur = subs ? (it.subIdx || 0) : -1;
-    const state = it.end ? 'done' : (it.start ? 'running' : '');
-    const subHtml = subs ? `<div class="rec-sub">${subs.map((sb, j) => `<div class="s ${j < cur || (it.end && j <= cur) ? 'ok' : j === cur && it.start && !it.end ? 'cur' : ''}"><span>${j < cur || (it.end && j <= cur) ? '✓' : j === cur && it.start && !it.end ? '▶' : '○'}</span><span>${escHtml(sb.name)}</span><span class="t">${sb.start ? sb.start.slice(0, 5) : ''}${sb.end ? '–' + sb.end.slice(0, 5) : ''}</span></div>`).join('')}</div>` : '';
-    let btns = '';
-    if (!it.start) btns = `<button class="rec-btn start" onclick="recStart(${i})">▶ 開始</button><button class="rec-btn ghost" onclick="recEdit(${i})" title="改名／分小項／預定時間">✏️</button>`;
-    else if (!it.end) btns = (subs && cur < subs.length - 1 ? `<button class="rec-btn next" onclick="recNextSub(${i})">⏭ 下一項（${escHtml(subs[cur + 1].name)}）</button>` : '') + `<button class="rec-btn end" onclick="recEnd(${i})">■ 結束</button>`;
-    else btns = `<button class="rec-btn ghost" onclick="recClear(${i})" title="清掉時間，重新記">↺ 重記</button><button class="rec-btn ghost" onclick="recEdit(${i})">✏️</button>`;
-    return `<div class="rec-item ${state}" data-i="${i}">
-      <div class="rec-row"><span class="nm">${i + 1}. ${escHtml(it.name)}</span>${it.expected ? `<span class="exp">預定 ${escHtml(it.expected)}</span>` : ''}<button class="rec-ic" style="width:30px;height:30px;font-size:13px;" onclick="recMove(${i},-1)" title="上移">↑</button><button class="rec-ic" style="width:30px;height:30px;font-size:13px;" onclick="recMove(${i},1)" title="下移">↓</button><button class="rec-ic" style="width:30px;height:30px;font-size:13px;" onclick="recDel(${i})" title="刪除">🗑</button></div>
-      <div class="rec-times"><span>開始 <b class="${it.start ? '' : 'na'}" onclick="recEditTime(${i},'start')">${it.start || '—'}</b></span><span>結束 <b class="${it.end ? '' : 'na'}" onclick="recEditTime(${i},'end')">${it.end || '—'}</b></span>${it.start && it.end ? `<span>⏱ ${recDur(it.start, it.end)}</span>` : ''}</div>
-      ${subHtml}<div class="rec-btns">${btns}</div></div>`;
-  }).join('');
-  st.innerHTML = `
-    <div class="rec-top">
-      <button class="rec-ic" onclick="closeRecorder()" title="回到校園拾光">✕</button>
-      <input id="recName" placeholder="活動名稱（例：115學年度 校慶運動會）" value="${escHtml(rec.name || '')}" oninput="rec.name=this.value;recSave()">
-      <input type="date" id="recDate" value="${escHtml(rec.date || recToday())}" onchange="rec.date=this.value;recSave()">
-      <span class="rec-clock" id="recClock">${recNow()}</span>
-      <button class="rec-ic" onclick="recMenuToggle()" title="更多">⋯</button>
-    </div>
-    <div class="rec-list" id="recList">
-      <div class="rec-add"><input id="recNewName" placeholder="新增項目，例：開幕進場、大隊接力" onkeydown="if(event.key==='Enter')recAdd()"><input id="recNewTime" class="tm" placeholder="預定 09:30" inputmode="numeric"><button onclick="recAdd()" title="新增">＋</button></div>
-      ${items || `<div class="rec-empty">還沒有項目。<br>把今天的行程一項一項加進來（或 ⋯ → 匯入行程樣板），<br>活動進行時按 ▶ 開始、■ 結束就好。<br><br>💡 手機上加到主畫面：網址後面加 <b>?rec=1</b> 可直接開到這裡。</div>`}
-    </div>
-    <div class="rec-foot">
-      ${running ? `<button class="rec-btn end" style="flex:1 1 100%;" onclick="recEnd(${rec.items.indexOf(running)})">■ 結束「${escHtml(running.name)}」</button>` : ''}
-      <button onclick="recCopy()" title="複製時段設定檔 JSON，到電腦的校園拾光按「📋 貼上時段 JSON」">📋 複製時段 JSON</button>
-      <button onclick="recExport()">📤 下載時段設定檔</button>
-      <button class="pri" onclick="recApply()" title="照片已經在這台裝置匯入時，直接套用到「依時段」分組">✅ 套用到分組</button>
-    </div>`;
-  const runEl = st.querySelector('.rec-item.running'); if (runEl && !st._scrolled) { runEl.scrollIntoView({ block: 'center' }); st._scrolled = true; }
-}
-function recDur(a, b) { const s = recSec(b) - recSec(a); if (!(s > 0)) return ''; return s >= 3600 ? `${Math.floor(s / 3600)} 時 ${Math.floor(s % 3600 / 60)} 分` : s >= 60 ? `${Math.floor(s / 60)} 分 ${s % 60} 秒` : `${s} 秒`; }
-function recSec(t) { const m = String(t || '').match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/); return m ? (+m[1]) * 3600 + (+m[2]) * 60 + (+(m[3] || 0)) : NaN; }
-function recNormTime(v, withSec) { v = String(v || '').trim().replace(/[．。]/g, ':').replace(/^(\d{1,2})(\d{2})$/, '$1:$2'); const m = v.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/); if (!m) return ''; const h = Math.min(23, +m[1]), mi = Math.min(59, +m[2]), sc = Math.min(59, +(m[3] || 0)); const p = n => String(n).padStart(2, '0'); return withSec ? `${p(h)}:${p(mi)}:${p(sc)}` : `${p(h)}:${p(mi)}`; }
-function recMenuToggle() {
-  let m = document.getElementById('recMenu'); if (m) { m.remove(); return; }
-  m = document.createElement('div'); m.id = 'recMenu'; m.className = 'rec-menu';
-  m.innerHTML = `<button onclick="recImportTpl()">📥 匯入行程樣板／時段檔</button><button onclick="recExportTpl()">📤 匯出行程樣板（只有項目，沒有時間）</button><button onclick="recQuickFill()">📝 一次貼上多個項目</button><button onclick="recResetTimes()">↺ 清掉全部時間（項目保留）</button><button onclick="recClearAll()" style="color:var(--red);">🗑 全部清除</button><button onclick="document.getElementById('recMenu').remove()">關閉</button>`;
-  document.getElementById('recStage').appendChild(m);
-}
-function recAdd() {
-  const n = document.getElementById('recNewName'), t = document.getElementById('recNewTime');
-  const name = (n.value || '').trim(); if (!name) { n.focus(); return; }
-  const subs = name.includes('→') ? name.split('→').slice(1).join('→').split(/[、,，]/).map(x => x.trim()).filter(Boolean) : null;
-  rec.items.push({ id: recUid(), name: subs ? name.split('→')[0].trim() : name, expected: recNormTime(t.value, false), start: null, end: null, subs: subs ? subs.map(x => ({ name: x, start: null, end: null })) : undefined, subIdx: 0 });
-  n.value = ''; t.value = ''; recSave(); recRender(); n.focus();
-}
-function recQuickFill() {
-  const txt = prompt('一行一個項目，可在後面加預定時間，例如：\n開幕進場 08:30\n大會舞 09:05\n大隊接力 → 一年級、二年級、三年級 11:15'); if (!txt) return;
-  txt.split(/\n/).map(l => l.trim()).filter(Boolean).forEach(l => { const m = l.match(/\s(\d{1,2}[:：．]\d{2})\s*$/); const tm = m ? recNormTime(m[1].replace('：', ':'), false) : ''; const nm = m ? l.slice(0, m.index).trim() : l; const subs = nm.includes('→') ? nm.split('→').slice(1).join('→').split(/[、,，]/).map(x => x.trim()).filter(Boolean) : null; rec.items.push({ id: recUid(), name: subs ? nm.split('→')[0].trim() : nm, expected: tm, start: null, end: null, subs: subs ? subs.map(x => ({ name: x, start: null, end: null })) : undefined, subIdx: 0 }); });
-  recSave(); recRender(); const m = document.getElementById('recMenu'); if (m) m.remove();
-}
-function recEdit(i) {
+function recBuzz(p) { if (navigator.vibrate) try { navigator.vibrate(p); } catch {} }
+
+// ── 動作 ──
+function recGo(i, label) {
   const it = rec.items[i]; if (!it) return;
-  const cur = it.name + (it.subs && it.subs.length ? ' → ' + it.subs.map(s => s.name).join('、') : '');
-  const v = prompt('項目名稱（分小項用「→」，小項之間用「、」）：', cur); if (v === null) return;
-  const nm = v.trim(); if (!nm) return;
-  const subs = nm.includes('→') ? nm.split('→').slice(1).join('→').split(/[、,，]/).map(x => x.trim()).filter(Boolean) : null;
-  it.name = subs ? nm.split('→')[0].trim() : nm;
-  if (subs) { const old = it.subs || []; it.subs = subs.map((x, j) => ({ name: x, start: old[j]?.start || null, end: old[j]?.end || null })); it.subIdx = Math.min(it.subIdx || 0, it.subs.length - 1); } else { delete it.subs; it.subIdx = 0; }
-  const e = prompt('預定時間（例 09:30，可留空）：', it.expected || ''); if (e !== null) it.expected = recNormTime(e, false);
-  recSave(); recRender();
+  recPush(label || `開始「${it.name}」`);
+  const now = recNow(), ri = recRunIdx();
+  if (ri >= 0 && ri !== i) recEndAt(rec.items[ri], now);
+  it.start = now; it.end = null; it.skip = false; it.subIdx = 0;
+  if (it.subs && it.subs.length) { it.subs.forEach(s => { s.start = s.end = null; }); it.subs[0].start = now; }
+  recSave(); recRender(); recBuzz(35);
 }
-function recEditTime(i, which) {
-  const it = rec.items[i]; if (!it) return;
-  const v = prompt(`${which === 'start' ? '開始' : '結束'}時間（例 09:31:05，留空＝清除）：`, it[which] || recNow()); if (v === null) return;
-  it[which] = v.trim() ? recNormTime(v, true) : null; if (it[which] === '') { showToast('⚠️ 時間格式看不懂'); return; }
-  recSave(); recRender();
+function recEndAt(it, t) {
+  if (!it || !it.start || it.end) return;
+  it.end = t;
+  if (it.subs && it.subs.length) { const c = it.subIdx || 0; if (it.subs[c] && it.subs[c].start && !it.subs[c].end) it.subs[c].end = t; }
 }
-function recStart(i) {
-  const it = rec.items[i]; if (!it || it.start) return;
-  const run = recRunning(); if (run && run !== it) { recEnd(rec.items.indexOf(run), true); }
-  it.start = recNow(); it.end = null; it.subIdx = 0;
-  if (it.subs && it.subs.length) { it.subs.forEach(s => { s.start = null; s.end = null; }); it.subs[0].start = it.start; }
-  recSave(); recRender();
-  if (navigator.vibrate) try { navigator.vibrate(30); } catch {}
+function recStop() {
+  const ri = recRunIdx(); if (ri < 0) return;
+  recPush(`結束「${rec.items[ri].name}」`); recEndAt(rec.items[ri], recNow());
+  recSave(); recRender(); recBuzz([30, 40, 30]);
 }
 function recNextSub(i) {
-  const it = rec.items[i]; if (!it || !it.subs || !it.start || it.end) return;
-  const now = recNow(); const cur = it.subIdx || 0;
-  it.subs[cur].end = now;
-  if (cur + 1 < it.subs.length) { it.subIdx = cur + 1; it.subs[cur + 1].start = now; }
-  recSave(); recRender();
-  if (navigator.vibrate) try { navigator.vibrate(20); } catch {}
+  const it = rec.items[i]; if (!it || !it.subs || !recIsRun(it)) return;
+  const c = it.subIdx || 0; if (c >= it.subs.length - 1) return;
+  recPush(`下一組「${it.subs[c + 1].name}」`);
+  const now = recNow(); it.subs[c].end = now; it.subIdx = c + 1; it.subs[c + 1].start = now;
+  recSave(); recRender(); recBuzz(25);
 }
-function recEnd(i, quiet) {
-  const it = rec.items[i]; if (!it || !it.start || it.end) return;
-  it.end = recNow();
-  if (it.subs && it.subs.length) { const cur = it.subIdx || 0; if (!it.subs[cur].end) it.subs[cur].end = it.end; }
-  recSave(); recRender();
-  if (!quiet && navigator.vibrate) try { navigator.vibrate([30, 40, 30]); } catch {}
+function recAdvance() {
+  const ri = recRunIdx();
+  if (ri < 0) { const n = recNextIdx(-1); if (n >= 0) recGo(n); return; }
+  const it = rec.items[ri];
+  if (it.subs && it.subs.length && (it.subIdx || 0) < it.subs.length - 1) { recNextSub(ri); return; }
+  const n = recNextIdx(ri);
+  if (n >= 0) recGo(n, `下一項「${rec.items[n].name}」`); else recStop();
 }
-function recClear(i) { const it = rec.items[i]; if (!it) return; if (!confirm(`清掉「${it.name}」的時間？`)) return; it.start = it.end = null; it.subIdx = 0; (it.subs || []).forEach(s => { s.start = s.end = null; }); recSave(); recRender(); }
-function recDel(i) { const it = rec.items[i]; if (!it) return; if (!confirm(`刪除「${it.name}」？`)) return; rec.items.splice(i, 1); recSave(); recRender(); }
-function recMove(i, d) { const j = i + d; if (j < 0 || j >= rec.items.length) return; const t = rec.items[i]; rec.items[i] = rec.items[j]; rec.items[j] = t; recSave(); recRender(); }
-function recResetTimes() { if (!confirm('清掉全部時間？項目會保留。')) return; rec.items.forEach(it => { it.start = it.end = null; it.subIdx = 0; (it.subs || []).forEach(s => { s.start = s.end = null; }); }); recSave(); recRender(); document.getElementById('recMenu')?.remove(); }
-function recClearAll() { if (!confirm('全部清除（項目和時間都刪掉）？')) return; rec = { name: '', date: recToday(), items: [] }; recSave(); recRender(); document.getElementById('recMenu')?.remove(); }
-// ── 匯出：時段設定檔（與 sportstime 相同的 groups 格式；沒結束的用預定／開始＋30 分） ──
-function recBuildGroups() {
-  const date = rec.date || recToday();
-  const iso = t => t ? `${date}T${recNormTime(t, true)}` : null;
-  const plus30 = startIso => { const d = new Date(startIso); d.setMinutes(d.getMinutes() + 30); const p = n => String(n).padStart(2, '0'); return `${date}T${p(d.getHours())}:${p(d.getMinutes())}:00`; };
-  const out = [];
-  rec.items.forEach((it, idx) => {
-    const baseStart = iso(it.start) || (it.expected ? iso(it.expected + ':00') : null);
-    if (!baseStart) return;                                   // 沒按也沒預定 → 略過
-    if (it.subs && it.subs.length && it.start) {
-      const cur = it.subIdx || 0;
+function recSkip(i) {
+  const it = rec.items[i]; if (!it) return;
+  recPush(it.skip ? `取消跳過「${it.name}」` : `跳過「${it.name}」`);
+  it.skip = !it.skip; if (it.skip && recIsRun(it)) recEndAt(it, recNow());
+  recSave(); recRender();
+}
+function recClearTimes(i) {
+  const it = rec.items[i]; if (!it) return; recPush(`清除「${it.name}」的時間`);
+  it.start = it.end = null; it.subIdx = 0; (it.subs || []).forEach(s => { s.start = s.end = null; });
+  recSave(); recRender();
+}
+function recDel(i) { const it = rec.items[i]; if (!it) return; recPush(`刪除「${it.name}」`); rec.items.splice(i, 1); recSave(); recRender(); }
+
+// ── 賽程表文字解析（秩序冊／Excel／LINE） ──
+function recParsePlan(text) {
+  const out = []; let pm = false, lastH = -1, nameCol = -1, pendT = null, title = '';
+  const TIME = /(上午|下午|早上|中午|晚上|午後)?\s*(?<![\d:：.])(\d{1,2})\s*(?:[:：]\s*(\d{2})(?:[:：]\d{2})?|\.(\d{2})|[點点時时]\s*(?:(半)|(\d{1,2})\s*分?)?)(?!\d)/g;
+  const clean = s => {
+    s = String(s || '');
+    for (let k = 0; k < 3; k++) s = s.replace(/^\s*(?:[（(][一二三四五六七八九十百\d]{1,3}[)）]|[一二三四五六七八九十]{1,3}[、.．]|\d{1,3}[、.．](?!\d)|[①-⑳]|[-•・▪◦·*●○◎■□])\s*/, '');
+    return s.replace(/^[\s:：,，、|｜~\-–—～〜]+|[\s:：,，、|｜~\-–—～〜]+$/g, '').replace(/\s{2,}/g, ' ').trim();
+  };
+  const lines = String(text || '').replace(/\r/g, '').split('\n');
+  for (const raw of lines) {
+    if (!raw.trim()) continue;
+    const indent = /^(?: {2,}|\t|　)/.test(raw) || /^\s*[-•・▪◦·]\s*/.test(raw);
+    let line = raw.replace(/^(\s*(?:[一二三四五六七八九十]{1,3}[、.．]\s*)?)([01]\d|2[0-3])([0-5]\d)(?=\s|\t|$)/, '$1$2:$3').replace(/(\t|[|｜│]\s*)([01]\d|2[0-3])([0-5]\d)(?=\s|\t|[|｜│]|$)/g, '$1$2:$3').replace(/(?<!\d)([01]\d|2[0-3])([0-5]\d)\s*([-~～〜–—至到])\s*([01]\d|2[0-3])([0-5]\d)(?!\d)/g, '$1:$2$3$4:$5');
+    const bare = line.replace(/[\s【】\[\]()（）:：〔〕]/g, '');
+    if (/^(下午|午後|下半場|下午場)$/.test(bare)) { pm = true; continue; }
+    if (/^(上午|早上|上半場|上午場)$/.test(bare)) { pm = false; continue; }
+    if (/^\s*(※|註|備註|附註|\*)/.test(line)) continue;
+    const matches = [...line.matchAll(TIME)].filter(m => {
+      const h = +m[2], mi = m[3] != null ? +m[3] : m[4] != null ? +m[4] : m[6] != null ? +m[6] : 0;
+      return h <= 24 && mi < 60 && !(m[4] != null && h > 23);
+    });
+    const tabbed = /\t|[|｜│]/.test(line);
+    const cells = tabbed ? line.split(/\t|[|｜│]/).map(c => c.trim()) : [line];
+    if (!matches.length && /時間/.test(line) && /(項目|活動|內容|名稱|賽程|流程)/.test(line)) {
+      nameCol = cells.findIndex(c => /(項目|活動|內容|名稱|賽程|流程)/.test(c)); continue;
+    }
+    const toMin = m => {
+      let h = +m[2]; const mi = m[3] != null ? +m[3] : m[4] != null ? +m[4] : m[5] ? 30 : m[6] != null ? +m[6] : 0;
+      const pre = m[1] || '';
+      if (/下午|晚上|午後/.test(pre) && h < 12) h += 12;
+      else if (/中午/.test(pre) && h < 6) h += 12;
+      else if (!/上午|早上/.test(pre) && (pm && h < 12 || !pm && lastH >= 11 && h <= 6)) h += 12;
+      return h * 60 + mi;
+    };
+    let times = [];
+    if (matches.length) {
+      const a = matches[0]; times.push(toMin(a));
+      const b = matches[1];
+      if (b) { const between = line.slice(a.index + a[0].length, b.index); if (/^\s*[-~～〜–—至到]\s*$/.test(between)) times.push(toMin(b)); }
+    }
+    let name = '';
+    const stripTimes = s => s.replace(TIME, ' ').replace(/(^|\s)[-~～〜–—至到](\s|$)/g, ' ');
+    if (tabbed) {
+      const pick = (nameCol >= 0 && cells[nameCol] && !new RegExp(TIME.source).test(cells[nameCol])) ? cells[nameCol] : null;
+      const cand = pick != null ? [pick] : cells;
+      for (const c of cand) { const n = clean(stripTimes(c)); if (n && /[㐀-鿿A-Za-z]/.test(n) && !/^(上午|下午|中午|時間)$/.test(n) && !/^第?\s*\d+\s*[場項棒組節]?$/.test(n)) { name = n; break; } }
+    } else name = clean(stripTimes(line));
+    if (!name && times.length) { pendT = times; continue; }
+    if (!name) continue;
+    if (!times.length && pendT && !indent) { times = pendT; }
+    pendT = null;
+    if (!times.length && indent && out.length) { const p = out[out.length - 1]; (p.subs = p.subs || []).push(name.slice(0, 30)); continue; }
+    if (!times.length && !out.some(o => o.exp) && !title && name.length >= 4 && /(運動會|校慶|典禮|活動|秩序|賽程|流程|日程)/.test(name)) { title = name.slice(0, 40); continue; }
+    let subs = null;
+    if (name.includes('→')) { subs = name.split('→').slice(1).join('→').split(/[、,，]/).map(x => x.trim()).filter(Boolean); name = name.split('→')[0].trim(); }
+    if (times.length) lastH = Math.floor(times[0] / 60);
+    out.push({ name: name.slice(0, 40), exp: times.length ? recHm(times[0] * 60) : '', expEnd: times[1] != null && times[1] > times[0] ? recHm(times[1] * 60) : '', subs });
+  }
+  // 第一個有時間的項目之前、沒時間的列多半是標題或說明 → 丟掉
+  const firstT = out.findIndex(o => o.exp);
+  const items = firstT > 0 ? out.filter((o, k) => k >= firstT || o.exp) : out;
+  return { items, title };
+}
+
+// ── 時段（時間軸與匯出共用） ──
+function recSegments() {
+  const items = rec.items, segs = [], nowS = recSec(recNow());
+  const startOf = it => it.start ? recSec(it.start) : (it.exp ? recSec(it.exp) : NaN);
+  items.forEach((it, i) => {
+    if (it.skip) return;
+    if (it.start && it.subs && it.subs.some(s => s.start)) {
       it.subs.forEach((sb, j) => {
-        if (j > cur) return;
-        const s0 = iso(sb.start) || baseStart; const e0 = iso(sb.end) || iso(it.end) || plus30(s0);
-        out.push({ name: `${String(j + 1).padStart(2, '0')}_${it.name}_${sb.name}`, start: s0, end: e0, source: sb.start ? 'actual' : 'expected' });
+        if (!sb.start) return; const s = recSec(sb.start); const open = !sb.end; const e = open ? Math.max(s + 60, nowS) : recSec(sb.end);
+        segs.push({ i, j, s, e, actual: true, open, label: `${it.name}・${sb.name}`, gname: `${rp2(j + 1)}_${it.name}_${sb.name}` });
       });
       return;
     }
-    out.push({ name: it.name, start: baseStart, end: iso(it.end) || plus30(baseStart), source: it.start ? 'actual' : 'expected' });
+    if (it.start) { const s = recSec(it.start), open = !it.end, e = open ? Math.max(s + 60, nowS) : recSec(it.end); segs.push({ i, j: -1, s, e, actual: true, open, label: it.name, gname: it.name }); return; }
+    if (it.exp) {
+      const s = recSec(it.exp); let e = it.expEnd ? recSec(it.expEnd) : NaN;
+      if (!(e > s)) for (let k = i + 1; k < items.length; k++) { const o = items[k]; if (o.skip) continue; const os = startOf(o); if (os > s) { e = os; break; } }
+      if (!(e > s)) e = s + 1800;
+      segs.push({ i, j: -1, s, e, actual: false, open: false, label: it.name, gname: it.name });
+    }
   });
-  return out.sort((a, b) => a.start.localeCompare(b.start));
+  return segs.sort((a, b) => a.s - b.s);
+}
+function recBuildGroups() {
+  const date = rec.date || recToday();
+  return recSegments().map(g => ({ name: g.gname, start: `${date}T${recHms(g.s)}`, end: `${date}T${recHms(g.e)}`, source: g.actual ? 'actual' : 'expected' }));
 }
 function recPayload() {
   return { version: 1, source: 'recorder', app: APP_VERSION, exportDate: new Date().toISOString(), eventName: rec.name || '', eventDate: rec.date || recToday(), description: `${rec.name || '活動'} - 時段設定檔`, groups: recBuildGroups() };
 }
+function recSegSet(seg, s, e) {
+  const it = rec.items[seg.i]; if (!it) return;
+  if (!seg.actual) { it.exp = recHm(s); it.expEnd = recHm(e); return; }
+  if (seg.j >= 0) {
+    const sb = it.subs[seg.j]; sb.start = recHms(s); if (!seg.open) sb.end = recHms(e);
+    if (seg.j === 0) it.start = sb.start;
+    const last = it.subs.reduce((a, x, k) => x.start ? k : a, -1);
+    if (seg.j === last && it.end && !seg.open) it.end = sb.end;
+  } else { it.start = recHms(s); if (!seg.open) it.end = recHms(e); }
+}
+
+// ── 開關 ──
+function openRecorder(tab) {
+  rec = recLoad();
+  _recTab = tab || (rec.items.length ? 'live' : 'plan');
+  let st = document.getElementById('recStage'); if (st) st.remove();
+  st = document.createElement('div'); st.id = 'recStage'; document.body.appendChild(st);
+  st.innerHTML = `
+    <div class="rec-top"><div class="rc-wrap">
+      <button class="rec-ic" onclick="closeRecorder()" title="回到校園拾光（Esc）">✕</button>
+      <input id="recName" placeholder="活動名稱（例：校慶運動會）" oninput="rec.name=this.value;recSave()">
+      <input type="date" id="recDate" onchange="rec.date=this.value;recSave();recRender()">
+      <span class="rec-clock" id="recClock">${recNow()}</span>
+      <button class="rec-ic" onclick="recMenuToggle()" title="更多：傳到手機、匯出、清除">⋯</button>
+    </div></div>
+    <div class="rec-body" id="recBody"><div class="rc-wrap" id="recBodyIn"></div></div>
+    <div class="rec-tabs"><div class="rc-wrap">
+      <button class="rec-tab" data-t="live" onclick="recSetTab('live')"><span class="i">⏱</span>現場</button>
+      <button class="rec-tab" data-t="plan" onclick="recSetTab('plan')"><span class="i">📋</span>賽程</button>
+      <button class="rec-tab" data-t="tl" onclick="recSetTab('tl')"><span class="i">📊</span>時間軸</button>
+      <button class="rec-tab apply" id="recApplyTab" onclick="recApply()"><span class="i">✅</span>套用到照片</button>
+    </div></div>`;
+  recRender(true);
+  clearInterval(_recTimer); _recTimer = setInterval(recTick, 1000);
+  document.addEventListener('keydown', recKey);
+  recWakeOn();
+  try { if (!/[?&]rec=1/.test(location.search)) history.replaceState(null, '', location.pathname + '?rec=1'); } catch {}
+  recPillUpdate();
+}
+function closeRecorder() {
+  const st = document.getElementById('recStage'); if (st) st.remove();
+  clearInterval(_recTimer); document.removeEventListener('keydown', recKey);
+  try { _recWake && _recWake.release(); } catch {} _recWake = null;
+  try { history.replaceState(null, '', location.pathname); } catch {}
+  recPillUpdate();
+}
+async function recWakeOn() { try { if (navigator.wakeLock && document.getElementById('recStage') && document.visibilityState === 'visible') _recWake = await navigator.wakeLock.request('screen'); } catch {} }
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && document.getElementById('recStage')) recWakeOn(); });
+function recKey(e) {
+  const tag = (e.target && e.target.tagName) || '';
+  if (e.key === 'Escape') { const sh = document.querySelector('#recStage .rc-sheetbg'); const m = document.getElementById('recMenu'); if (sh) sh.remove(); else if (m) m.remove(); else closeRecorder(); return; }
+  const inField = /INPUT|TEXTAREA|SELECT/.test(tag), sheet = document.querySelector('#recStage .rc-sheetbg');
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !inField) { e.preventDefault(); recUndo(); return; }
+  if (!inField && tag !== 'BUTTON' && !sheet && _recTab === 'live' && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); recAdvance(); }
+}
+function recSetTab(t) { _recTab = t; document.getElementById('recMenu')?.remove(); recRender(true); }
+function recTick() {
+  const c = document.getElementById('recClock'); if (c) c.textContent = recNow();
+  const now = recSec(recNow());
+  document.querySelectorAll('#recStage [data-since]').forEach(el => { el.textContent = recDurTxt(now - recSec(el.dataset.since)); });
+  document.querySelectorAll('#recStage [data-until]').forEach(el => { const d = recSec(el.dataset.until) - now; el.textContent = d >= 0 ? `還有 ${Math.ceil(d / 60)} 分` : `已過預定 ${Math.floor(-d / 60)} 分`; el.className = 'rc-badge' + (d < -120 ? ' late' : ''); });
+}
+
+// ── 畫面 ──
+function recRender(scrollTop) {
+  const st = document.getElementById('recStage'); if (!st) return;
+  const nm = document.getElementById('recName'), dt = document.getElementById('recDate');
+  if (nm && document.activeElement !== nm) nm.value = rec.name || '';
+  if (dt && document.activeElement !== dt) dt.value = rec.date || recToday();
+  st.querySelectorAll('.rec-tab[data-t]').forEach(b => b.classList.toggle('on', b.dataset.t === _recTab));
+  const segs = recSegments(); const ap = document.getElementById('recApplyTab'); if (ap) ap.classList.toggle('dim', !segs.length);
+  const body = document.getElementById('recBody'), inner = document.getElementById('recBodyIn');
+  const keep = body.scrollTop;
+  inner.innerHTML = _recTab === 'plan' ? recPlanHtml() : _recTab === 'tl' ? recTlHtml() : recLiveHtml();
+  if (scrollTop) {
+    body.scrollTop = 0;
+    if (_recTab === 'tl') { const f = inner.querySelector('.rc-sg.run, .rc-tlnow, .rc-sg'); if (f) body.scrollTop = Math.max(0, f.offsetTop - 120); }
+  } else body.scrollTop = keep;
+  if (_recTab === 'tl') recTlBind();
+  if (_recTab === 'plan') recPlanBind();
+  recTick();
+}
+function recLiveHtml() {
+  const items = rec.items, n = items.length;
+  if (!n) return `<div class="rc-now"><div class="lbl">還沒有賽程</div><div class="ttl">先把賽程排進來</div>
+      <div class="meta" style="font-family:var(--font);font-size:13px;line-height:1.7;">從秩序冊、Excel 或 LINE 複製整份賽程貼上，會自動抓時間。<br>前一天在電腦排好，再用 📲 傳到手機。</div>
+      <button class="rc-big pri" onclick="recPasteSheet()">📋 貼上賽程表</button>
+      <div class="rc-row2"><button class="rc-sm" onclick="recSetTab('plan');recAddBlank()">＋ 一項一項加</button><button class="rc-sm" onclick="recImportTpl()">📥 匯入檔案</button><button class="rc-sm" onclick="recHelpSheet()">❓ 怎麼用</button></div></div>`;
+  const ri = recRunIdx(); let card = '';
+  const undoBtn = `<button class="rc-sm undo" onclick="recUndo()" ${_recUndo.length ? '' : 'disabled'} title="${_recUndo.length ? rE('復原：' + _recUndo[_recUndo.length - 1].label) : ''}">↶ 復原</button>`;
+  const insBtn = `<button class="rc-sm" onclick="recInsertSheet()">＋ 臨時項目</button>`;
+  if (ri >= 0) {
+    const R = items[ri], subs = R.subs && R.subs.length ? R.subs : null, cur = R.subIdx || 0;
+    const since = subs ? (subs[cur].start || R.start) : R.start;
+    let badge = '';
+    if (R.exp && Math.abs(recSec(R.start) - recSec(R.exp + ':00')) < 3 * 3600) { const d = recSec(R.start) - recSec(R.exp + ':00'); badge = Math.abs(d) < 90 ? '<span class="rc-badge ok">準時開始</span>' : d > 0 ? `<span class="rc-badge late">晚 ${Math.round(d / 60)} 分開始</span>` : `<span class="rc-badge">早 ${Math.round(-d / 60)} 分開始</span>`; }
+    const nx = recNextIdx(ri);
+    let big;
+    if (subs && cur < subs.length - 1) big = `<button class="rc-big next" onclick="recAdvance()">⏭ 下一組：${rE(subs[cur + 1].name)}<small>結束「${rE(subs[cur].name)}」（第 ${cur + 1}/${subs.length} 組）</small></button>`;
+    else if (nx >= 0) big = `<button class="rc-big next" onclick="recAdvance()">⏭ 下一項：${rE(items[nx].name)}<small>結束「${rE(R.name)}」，同時開始下一項</small></button>`;
+    else big = `<button class="rc-big stop" onclick="recAdvance()">■ 結束：${rE(R.name)}<small>這是最後一項</small></button>`;
+    card = `<div class="rc-now run"><div class="lbl"><span class="dot"></span>進行中 · 第 ${ri + 1}/${n} 項 ${badge}</div>
+      <div class="ttl">${rE(R.name)}${subs ? `<small>${rE(subs[cur].name)}</small>` : ''}</div>
+      <div class="meta"><span>已進行 <b data-since="${rE(since)}">0:00</b></span><span>${R.start.slice(0, 5)} 開始</span></div>
+      ${big}<div class="rc-row2">${(subs && cur < subs.length - 1) || nx >= 0 ? `<button class="rc-sm" onclick="recStop()" title="中場休息、或下一項還沒開始">■ 只結束</button>` : ''}${undoBtn}${insBtn}</div></div>`;
+  } else {
+    const nx = recNextIdx(-1);
+    if (nx >= 0) {
+      const N = items[nx];
+      card = `<div class="rc-now"><div class="lbl">下一項 · 第 ${nx + 1}/${n} 項 ${N.exp ? `<span class="rc-badge">預定 ${rE(N.exp)}</span><span class="rc-badge" data-until="${rE(N.exp)}:00"></span>` : ''}</div>
+        <div class="ttl">${rE(N.name)}${N.subs && N.subs.length ? `<small style="color:var(--text-dim)">${N.subs.length} 組</small>` : ''}</div>
+        <button class="rc-big go" onclick="recGo(${nx})">▶ 開始：${rE(N.name)}<small>開始的那一刻按下去</small></button>
+        <div class="rc-row2"><button class="rc-sm" onclick="recSkip(${nx})">⏭ 跳過這項</button>${undoBtn}${insBtn}</div></div>`;
+    } else {
+      const segs = recSegments();
+      card = `<div class="rc-now"><div class="lbl">🎉 全部記完了</div><div class="ttl">共 ${segs.length} 個時段</div>
+        <div class="meta">${segs.length ? `${recHm(segs[0].s)} – ${recHm(segs[segs.length - 1].e)}` : ''}</div>
+        <button class="rc-big pri" onclick="recApply()">✅ 套用到照片分組<small>照片在這台裝置上時用</small></button>
+        <div class="rc-row2"><button class="rc-sm" onclick="recShareSheet()">📲 傳給電腦</button><button class="rc-sm" onclick="recSetTab('tl')">📊 看時間軸</button>${undoBtn}</div></div>`;
+    }
+  }
+  const nxGlobal = ri >= 0 ? recNextIdx(ri) : recNextIdx(-1);
+  const done = items.filter(it => it.end).length;
+  const rows = items.map((it, i) => {
+    const run = recIsRun(it), cls = run ? 'run' : it.skip ? 'skip' : it.end ? 'done' : i === nxGlobal ? 'nextup' : '';
+    const ic = run ? '<span style="color:var(--green)">▶</span>' : it.skip ? '⏭' : it.end ? '<span style="color:var(--green)">✓</span>' : '○';
+    const sb = it.subs && it.subs.length ? `<span class="sb">${it.start ? `${Math.min(it.subs.length, (it.subIdx || 0) + 1)}/` : ''}${it.subs.length} 組</span>` : '';
+    const ac = it.start ? `${it.start.slice(0, 5)}–${it.end ? it.end.slice(0, 5) : '…'}` : '';
+    return `<div class="rc-li ${cls}" onclick="recItemSheet(${i})"><span class="st">${ic}</span><span class="ex">${rE(it.exp || '—')}</span><span class="nm">${rE(it.name)}${sb}</span><span class="ac">${ac}</span></div>`;
+  }).join('');
+  return card + `<div class="rc-h">今日賽程 ${n} 項 · 已記 ${done}<span class="sp"></span><button class="rc-sm" style="flex:0 0 auto;min-height:34px;font-size:12.5px;" onclick="recSetTab('plan')">✏️ 編輯賽程</button></div>${rows}
+    <div style="font-size:12px;color:var(--text-faint);text-align:center;margin-top:10px;line-height:1.7;">點任一項可以改時間、從這項開始、跳過<br>電腦上可以按空白鍵＝大按鈕、Ctrl+Z＝復原 · 螢幕會保持亮著</div>`;
+}
+function recPlanHtml() {
+  const rows = rec.items.map((it, i) => `
+    <div class="rc-pl" data-id="${rE(it.id)}">
+      <div class="hd" onpointerdown="recDragStart(event)" title="按住拖曳調整順序">≡</div>
+      <input class="nm" value="${rE(it.name)}" placeholder="項目名稱" onchange="recSetF(${i},'name',this.value)">
+      <button class="del" onclick="recDel(${i})" title="刪除">🗑</button>
+      <div class="tm">預定 <input inputmode="numeric" placeholder="08:30" value="${rE(it.exp)}" onchange="recSetF(${i},'exp',this.value)"> – <input inputmode="numeric" placeholder="結束（可空白）" value="${rE(it.expEnd)}" onchange="recSetF(${i},'expEnd',this.value)" title="結束時間可以空白，會用下一項的開始時間">${it.start ? `<span class="rcd">實際 ${it.start.slice(0, 5)}–${it.end ? it.end.slice(0, 5) : '進行中'}</span>` : ''}${it.skip ? '<span class="rcd" style="color:var(--text-dim)">已跳過</span>' : ''}</div>
+      <div class="sbx"><input value="${rE((it.subs || []).map(s => s.name).join('、'))}" placeholder="分組（可空白，用、分隔，例：一年級、二年級、三年級）" onchange="recSetSubs(${i},this.value)"></div>
+    </div>`).join('');
+  return `<div class="rc-h" style="margin-top:0;">活動日期 <input type="date" value="${rE(rec.date || recToday())}" onchange="rec.date=this.value;recSave();recRender()" style="font:600 14px var(--mono);padding:6px 8px;border-radius:10px;border:0.5px solid var(--glass-edge);background:rgba(0,0,0,0.15);color:var(--text);"><span class="sp"></span></div>
+    <div class="rc-tools">
+      <button class="rc-big pri wide" style="min-height:62px;margin:0;font-size:18px;" onclick="recPasteSheet()">📋 貼上賽程表<small>從秩序冊／Excel／LINE 複製整份貼上，自動抓時間</small></button>
+      <button class="rc-sm" onclick="recAddBlank()">＋ 新增一項</button>
+      <button class="rc-sm" onclick="recSortByTime()">⇅ 依預定時間排序</button>
+      <button class="rc-sm" onclick="recImportTpl()">📥 匯入檔案</button>
+      <button class="rc-sm" onclick="recShareSheet()">📲 傳到手機</button>
+    </div>
+    ${rec.items.length ? `<div class="rc-h">共 ${rec.items.length} 項 · 按住 ≡ 拖曳調整順序</div>` : '<div class="rc-empty">還沒有項目。按上面「📋 貼上賽程表」最快。</div>'}
+    <div id="rcPlList">${rows}</div>
+    ${rec.items.length ? `<button class="rc-sm" style="width:100%;margin-top:6px;min-height:50px;" onclick="recAddBlank()">＋ 新增一項</button>` : ''}`;
+}
+function recPlanBind() {}
+function recSetF(i, f, v) {
+  const it = rec.items[i]; if (!it) return; recPush('修改賽程');
+  if (f === 'name') it.name = (v || '').trim() || it.name;
+  else it[f] = recNormTime(v, false);
+  recSave(); if (f !== 'name') recRender();
+}
+function recSetSubs(i, v) {
+  const it = rec.items[i]; if (!it) return; recPush('修改分組');
+  const names = String(v || '').split(/[、,，;；\/]/).map(x => x.trim()).filter(Boolean);
+  if (!names.length) { delete it.subs; it.subIdx = 0; }
+  else { const old = it.subs || []; it.subs = names.map((x, j) => ({ name: x, start: old[j] && old[j].start || null, end: old[j] && old[j].end || null })); it.subIdx = Math.min(it.subIdx || 0, it.subs.length - 1); }
+  recSave(); recRender();
+}
+function recAddBlank() {
+  recPush('新增項目'); rec.items.push(recMkItem({ name: '新項目' })); recSave();
+  _recTab = 'plan'; recRender();
+  const rows = document.querySelectorAll('#rcPlList .rc-pl'); const last = rows[rows.length - 1];
+  if (last) { last.scrollIntoView({ block: 'center' }); const inp = last.querySelector('input.nm'); inp.focus(); inp.select(); }
+}
+function recSortByTime() {
+  recPush('依時間排序');
+  const key = it => recSec(it.start || '') || recSec(it.exp || '') || 1e9;
+  rec.items = rec.items.map((it, k) => [it, k]).sort((a, b) => key(a[0]) - key(b[0]) || a[1] - b[1]).map(x => x[0]);
+  recSave(); recRender(); showToast('⇅ 已依時間排序（沒時間的放最後）');
+}
+// 拖曳排序（滑鼠、手指都可以）
+function recDragStart(e) {
+  e.preventDefault();
+  const hd = e.currentTarget, row = hd.closest('.rc-pl'), list = document.getElementById('rcPlList'), body = document.getElementById('recBody');
+  row.classList.add('dragging'); let lastY = e.clientY, raf = 0;
+  const place = () => {
+    const others = [...list.querySelectorAll('.rc-pl')].filter(o => o !== row);
+    let idx = 0; for (const o of others) { const b = o.getBoundingClientRect(); if (lastY > b.top + b.height / 2) idx++; }
+    const ref = others[idx] || null;
+    if (ref ? row.nextElementSibling !== ref : list.lastElementChild !== row) list.insertBefore(row, ref);
+  };
+  const scroll = () => { const r = body.getBoundingClientRect(); if (lastY < r.top + 70) body.scrollTop -= 14; else if (lastY > r.bottom - 70) body.scrollTop += 14; place(); raf = requestAnimationFrame(scroll); };
+  raf = requestAnimationFrame(scroll);
+  const move = ev => { lastY = ev.clientY; };
+  const up = () => {
+    cancelAnimationFrame(raf); window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
+    row.classList.remove('dragging');
+    const order = [...list.querySelectorAll('.rc-pl')].map(r => r.dataset.id);
+    const changed = order.join() !== rec.items.map(it => it.id).join();
+    if (changed) { recPush('調整順序'); const byId = new Map(rec.items.map(it => [it.id, it])); rec.items = order.map(id => byId.get(id)).filter(Boolean); recSave(); }
+    recRender();
+  };
+  window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+}
+// ── 時間軸 ──
+function recPhotoMinutes() {
+  try {
+    if (typeof photos === 'undefined' || !photos.length) return null;
+    const date = rec.date || recToday(), m = new Map(); let onDay = 0, other = '';
+    for (const p of photos) {
+      const t = p.time; if (!(t instanceof Date) || isNaN(t)) continue;
+      const ds = `${t.getFullYear()}-${rp2(t.getMonth() + 1)}-${rp2(t.getDate())}`;
+      if (ds !== date) { other = other || ds; continue; }
+      onDay++; const k = t.getHours() * 60 + t.getMinutes(); m.set(k, (m.get(k) || 0) + 1);
+    }
+    return { m, onDay, other, total: photos.length };
+  } catch { return null; }
+}
+function recTlHtml() {
+  const segs = _recSegs = recSegments();
+  if (!segs.length) return '<div class="rc-empty">排好賽程（有預定時間）或開始記錄後，這裡會出現時間軸。<br>可以拖時段的上下邊調整時間，並對照每分鐘拍了幾張照片。</div>';
+  const ppm = _recPpm, ph = recPhotoMinutes();
+  let minM = Math.floor(Math.min(...segs.map(s => s.s)) / 60), maxM = Math.ceil(Math.max(...segs.map(s => s.e)) / 60);
+  if (ph && ph.m.size) { const ks = [...ph.m.keys()]; minM = Math.min(minM, Math.min(...ks)); maxM = Math.max(maxM, Math.max(...ks) + 1); }
+  minM = Math.floor((minM - 10) / 30) * 30; maxM = Math.ceil((maxM + 10) / 30) * 30;
+  const H = (maxM - minM) * ppm, y = sec => (sec / 60 - minM) * ppm;
+  let marks = ''; for (let m = minM; m <= maxM; m += (ppm >= 8 ? 10 : 30)) marks += `<div class="hr ${m % 60 === 0 ? 'h' : ''}" style="top:${(m - minM) * ppm}px"><span>${rp2(Math.floor(m / 60))}:${rp2(m % 60)}</span></div>`;
+  // 重疊的放兩欄
+  const laneEnd = [-1, -1];
+  const blocks = segs.map((g, k) => {
+    let lane = 0; if (g.s < laneEnd[0] - 1) lane = 1; laneEnd[lane] = Math.max(laneEnd[lane], g.e);
+    const st = lane ? 'left:50%;right:6px;' : (segs.some((o, q) => q !== k && o.s < g.e - 1 && o.e > g.s + 1) ? 'right:50%;' : '');
+    const top = y(g.s), h = Math.max(14, y(g.e) - top);
+    return `<div class="rc-sg ${g.actual ? (g.i % 2 ? 'alt' : '') : 'exp'} ${g.open ? 'run' : ''}" data-k="${k}" style="top:${top}px;height:${h}px;${st}" onclick="if(!this._dragged)recItemSheet(${g.i});this._dragged=false">
+      <div class="eh t" data-k="${k}" data-w="s"></div>
+      <div class="lb">${rE(g.label)}<i>${recHm(g.s)}–${g.open ? '進行中' : recHm(g.e)}</i></div>
+      ${g.open ? '' : `<div class="eh b" data-k="${k}" data-w="e"></div>`}</div>`;
+  }).join('');
+  let dens = '', info = '';
+  if (ph) {
+    if (ph.m.size) {
+      const mx = Math.max(...ph.m.values());
+      ph.m.forEach((c, k) => { dens += `<div style="top:${(k - minM) * ppm}px;height:${Math.max(2, ppm - 1)}px;width:${4 + Math.round(24 * c / mx)}px" title="${rp2(Math.floor(k / 60))}:${rp2(k % 60)} ${c} 張"></div>`; });
+      let out = 0; ph.m.forEach((c, k) => { const s = k * 60 + 30; if (!segs.some(g => s >= g.s && s < g.e)) out += c; });
+      info = `📸 這天 ${ph.onDay} 張照片（黃色長條＝每分鐘張數）${out ? ` · <b style="color:var(--yellow)">${out} 張不在任何時段內</b>` : ' · 全部都在時段內 ✓'}`;
+    } else info = ph.other ? `📸 匯入的照片日期是 ${ph.other}，跟記錄日期不同（上面改日期）` : '';
+  } else info = '匯入照片後，右邊會顯示每分鐘拍了幾張，方便對齊';
+  const today = (rec.date || recToday()) === recToday(); const nowM = recSec(recNow()) / 60;
+  const nowLine = today && nowM >= minM && nowM <= maxM ? `<div class="rc-tlnow" style="top:${(nowM - minM) * ppm}px"></div>` : '';
+  return `<div class="rc-tlbar"><span>拖時段上下邊的把手調整；相連的邊界會一起動。點時段可以精確改到秒。</span><span class="sp"></span>
+      <button onclick="_recPpm=Math.max(2,_recPpm/2);recRender()" title="縮小">－</button><button onclick="_recPpm=Math.min(16,_recPpm*2);recRender()" title="放大">＋</button><button onclick="recUndo()" title="復原">↶</button></div>
+    <div class="rc-tlbar" style="margin-bottom:14px;">${info}</div>
+    <div class="rc-tl" style="height:${H}px">${marks}${nowLine}${blocks}<div class="rc-dens">${dens}</div></div>
+    <div class="rc-tlbar" style="margin-top:12px;"><span>實線＝實際記錄　虛線＝只有預定時間</span></div>`;
+}
+function recTlBind() {
+  document.querySelectorAll('#recStage .rc-sg .eh').forEach(h => h.addEventListener('pointerdown', recTlDrag));
+}
+function recTlDrag(e) {
+  e.preventDefault(); e.stopPropagation();
+  const h = e.currentTarget, k = +h.dataset.k, w = h.dataset.w, seg = _recSegs[k]; if (!seg) return;
+  const el = h.closest('.rc-sg'); el.classList.add('dragging'); el._dragged = true;
+  try { h.setPointerCapture(e.pointerId); } catch {}
+  const ppm = _recPpm, y0 = e.clientY, o = { s: seg.s, e: seg.e };
+  const lk = _recSegs.findIndex((x, q) => q !== k && (w === 'e' ? Math.abs(x.s - seg.e) <= 1 : Math.abs(x.e - seg.s) <= 1) && !(w === 's' && x.open));
+  const L = lk >= 0 ? _recSegs[lk] : null, lo = L ? { s: L.s, e: L.e } : null, lel = L ? document.querySelector(`#recStage .rc-sg[data-k="${lk}"]`) : null;
+  const minTop = parseFloat(el.style.top) - (seg.s / 60) * ppm; // = -minM*ppm
+  const paint = (g, node) => { if (!node) return; const top = minTop + g.s / 60 * ppm; node.style.top = top + 'px'; node.style.height = Math.max(14, (g.e - g.s) / 60 * ppm) + 'px'; const i = node.querySelector('.lb i'); if (i) i.textContent = `${recHm(g.s)}–${g.open ? '進行中' : recHm(g.e)}`; };
+  let ns = o.s, ne = o.e;
+  const move = ev => {
+    const d = Math.round((ev.clientY - y0) / ppm) * 60;
+    if (w === 's') { ns = Math.min(o.s + d, o.e - 60); if (L) ns = Math.max(ns, lo.s + 60); }
+    else { ne = Math.max(o.e + d, o.s + 60); if (L && !L.open) ne = Math.min(ne, lo.e - 60); }
+    paint({ s: ns, e: ne, open: seg.open }, el);
+    if (L) paint(w === 's' ? { s: lo.s, e: ns, open: L.open } : { s: ne, e: lo.e, open: L.open }, lel);
+  };
+  const up = () => {
+    h.removeEventListener('pointermove', move); h.removeEventListener('pointerup', up); h.removeEventListener('pointercancel', up);
+    el.classList.remove('dragging');
+    if (ns !== o.s || ne !== o.e) {
+      recPush('時間軸調整');
+      recSegSet(seg, ns, ne);
+      if (L) recSegSet(L, w === 's' ? lo.s : ne, w === 's' ? ns : lo.e);
+      recSave(); showToast(`⏱ ${seg.label} ${recHm(ns)}–${seg.open ? '進行中' : recHm(ne)}`);
+    }
+    recRender(); setTimeout(() => { el._dragged = false; }, 0);
+  };
+  h.addEventListener('pointermove', move); h.addEventListener('pointerup', up); h.addEventListener('pointercancel', up);
+}
+
+// ── 底部小視窗 ──
+function recSheet(html) {
+  document.querySelector('#recStage .rc-sheetbg')?.remove();
+  const bg = document.createElement('div'); bg.className = 'rc-sheetbg';
+  bg.innerHTML = `<div class="rc-sheet">${html}</div>`;
+  bg.addEventListener('click', ev => { if (ev.target === bg) bg.remove(); });
+  document.getElementById('recStage').appendChild(bg); return bg;
+}
+function recSheetClose() { document.querySelector('#recStage .rc-sheetbg')?.remove(); }
+function recItemSheet(i) {
+  const it = rec.items[i]; if (!it) return;
+  const run = recIsRun(it);
+  const tRow = (k, f, v, step) => `<div class="k">${k}</div><div class="v"><input inputmode="numeric" step="${step}" data-f="${f}" placeholder="${step === 1 ? '09:05:30' : '09:05'}" value="${rE(v || '')}"><button onclick="recNudge(this,-60)">−1分</button><button onclick="recNudge(this,60)">+1分</button><button onclick="recNudge(this,0)">現在</button></div>`;
+  let te = '';
+  if (it.start) {
+    te = tRow('開始', 'start', it.start, 1) + tRow('結束', 'end', it.end, 1);
+    (it.subs || []).forEach((sb, j) => { if (!sb.start && !sb.end) return; te += `<div class="sub">${rE(sb.name)}</div>` + tRow('開始', `s${j}start`, sb.start, 1) + tRow('結束', `s${j}end`, sb.end, 1); });
+  } else te = tRow('預定', 'exp', it.exp, 60) + tRow('到', 'expEnd', it.expEnd, 60);
+  recSheet(`<h4>${rE(it.name)}${it.skip ? '（已跳過）' : ''}</h4>
+    <div class="rc-te">${te}</div>
+    <div class="acts two"><button class="pri" onclick="recItemSave(${i})">💾 儲存時間</button><button onclick="recSheetClose()">取消</button></div>
+    <div class="acts two">
+      ${run ? `<button onclick="recSheetClose();recStop()">■ 結束這項</button>` : `<button class="go" onclick="recSheetClose();recGo(${i})">▶ 現在開始這項</button>`}
+      <button onclick="recSheetClose();recSkip(${i})">${it.skip ? '↩ 取消跳過' : '⏭ 跳過這項'}</button>
+      ${it.start ? `<button onclick="recSheetClose();recClearTimes(${i})">↺ 清除時間重記</button>` : `<button onclick="recSheetClose();recSetTab('plan')">✏️ 改名稱／分組</button>`}
+      <button class="danger" onclick="recSheetClose();recDel(${i})">🗑 刪除這項</button>
+    </div>`);
+}
+function recNudge(btn, d) {
+  const inp = btn.parentElement.querySelector('input'); const step = +inp.getAttribute('step') || 60;
+  if (!d) { inp.value = step === 1 ? recNow() : recNow().slice(0, 5); return; }
+  const s = recSec(inp.value || (step === 1 ? recNow() : recNow().slice(0, 5))); if (isNaN(s)) return;
+  inp.value = step === 1 ? recHms(s + d) : recHm(s + d);
+}
+function recItemSave(i) {
+  const it = rec.items[i]; if (!it) return;
+  const v = f => { const el = document.querySelector(`#recStage .rc-sheet input[data-f="${f}"]`); return el ? el.value : undefined; };
+  recPush(`修改「${it.name}」的時間`);
+  if (it.start) {
+    const s = recNormTime(v('start'), true), e = recNormTime(v('end'), true);
+    if (!s) { showToast('⚠️ 開始時間不能空白（要清除請按「清除時間重記」）'); _recUndo.pop(); return; }
+    if (e && recSec(e) <= recSec(s)) { showToast('⚠️ 結束要比開始晚'); _recUndo.pop(); return; }
+    if (!e && it.end) { const r2 = recRunIdx(); if (r2 >= 0 && rec.items[r2] !== it) { showToast('⚠️ 已經有別的項目在進行中'); _recUndo.pop(); return; } }
+    it.start = s; it.end = e || null;
+    (it.subs || []).forEach((sb, j) => { const a = v(`s${j}start`), b = v(`s${j}end`); if (a !== undefined) sb.start = recNormTime(a, true) || null; if (b !== undefined) sb.end = recNormTime(b, true) || null; });
+    if (it.subs && it.subs[0] && it.subs[0].start) it.subs[0].start = it.start;
+  } else { it.exp = recNormTime(v('exp'), false); it.expEnd = recNormTime(v('expEnd'), false); }
+  recSave(); recSheetClose(); recRender(); showToast('💾 已儲存');
+}
+function recInsertSheet() {
+  const ri = recRunIdx();
+  recSheet(`<h4>＋ 臨時項目</h4><div class="note">賽程表上沒有、臨時加的（例：頒獎、廣播尋人、雨備）。會插在${ri >= 0 ? '進行中的項目後面' : '下一項前面'}。</div>
+    <input type="text" id="rcInsName" placeholder="項目名稱" onkeydown="if(event.key==='Enter')recInsert(true)">
+    <div class="acts two"><button class="go" onclick="recInsert(true)">▶ 加入並馬上開始</button><button onclick="recInsert(false)">只加入</button></div>`);
+  setTimeout(() => document.getElementById('rcInsName')?.focus(), 50);
+}
+function recInsert(startNow) {
+  const name = (document.getElementById('rcInsName')?.value || '').trim(); if (!name) { document.getElementById('rcInsName')?.focus(); return; }
+  const ri = recRunIdx(); const at = ri >= 0 ? ri + 1 : Math.max(0, recNextIdx(-1) >= 0 ? recNextIdx(-1) : rec.items.length);
+  recPush(`臨時加入「${name}」`); rec.items.splice(at, 0, recMkItem({ name })); recSave(); recSheetClose();
+  if (startNow) { _recUndo.pop(); recGo(at, `臨時加入並開始「${name}」`); } else recRender();
+}
+function recPasteSheet(prefill) {
+  recSheet(`<h4>📋 貼上賽程表</h4>
+    <div class="note">從秩序冊（Word）、Excel、LINE 訊息或網頁複製整份賽程貼進來，會自動抓時間。<br>
+    「08:30-08:55 開幕進場」「下午 1:30 頒獎」「9點05分 大會舞」表格欄位都可以；分組可以用縮排的下一行，或寫「大隊接力 → 一年級、二年級」。</div>
+    <button class="rc-sm" style="width:100%;margin-bottom:8px;" onclick="recPasteClip()">📋 從剪貼簿貼上</button>
+    <textarea id="rcPaste" placeholder="08:30-08:55 開幕進場&#10;09:05 大會舞&#10;09:45 趣味競賽&#10;11:15 大隊接力&#10;  一年級&#10;  二年級&#10;下午&#10;1:30 頒獎典禮" oninput="recPastePreview()"></textarea>
+    <div id="rcPvBox"></div>
+    <div class="acts two"><button class="pri" id="rcPasteRep" onclick="recPasteApply('replace')" disabled>取代目前賽程</button><button id="rcPasteAdd" onclick="recPasteApply('append')" disabled>加在後面</button></div>
+    <div class="acts"><button onclick="recSheetClose()">取消</button></div>`);
+  const ta = document.getElementById('rcPaste');
+  if (prefill) { ta.value = prefill; recPastePreview(); } else setTimeout(() => ta.focus(), 50);
+}
+async function recPasteClip() {
+  try { const t = await navigator.clipboard.readText(); if (t) { document.getElementById('rcPaste').value = t; recPastePreview(); return; } } catch {}
+  showToast('瀏覽器不讓讀剪貼簿，請在框框裡長按／Ctrl+V 貼上');
+}
+function recPasteParse(text) {
+  const t = String(text || '').trim();
+  if (/^[\[{]/.test(t)) { try { const d = JSON.parse(t); return { json: d, items: recItemsFromJson(d).items, title: d.eventName || '' }; } catch {} }
+  return recParsePlan(t);
+}
+function recPastePreview() {
+  const box = document.getElementById('rcPvBox'); const txt = document.getElementById('rcPaste').value;
+  const r = recPasteParse(txt); const n = r.items.length, nt = r.items.filter(x => x.exp || x.start).length;
+  document.getElementById('rcPasteRep').disabled = document.getElementById('rcPasteAdd').disabled = !n;
+  if (!txt.trim()) { box.innerHTML = ''; return; }
+  box.innerHTML = `<div class="rc-pvh">${n ? `✓ 抓到 ${n} 項（${nt} 項有時間）${r.json ? '・JSON 檔' : ''}${r.title && !rec.name ? `・活動名稱：${rE(r.title)}` : ''}` : '<span style="color:var(--yellow)">還沒抓到項目，一行放一項試試</span>'}</div>
+    ${n ? `<div class="rc-pv">${r.items.map(x => `<div><span class="t ${x.exp || x.start ? '' : 'na'}">${x.start ? rE(String(x.start).slice(0, 5)) + ' ✓' : x.exp ? rE(x.exp) + (x.expEnd ? '–' + rE(x.expEnd) : '') : '沒有時間'}</span><span>${rE(x.name)}${x.subs && x.subs.length ? ` <span class="s">→ ${rE(x.subs.map(s => typeof s === 'string' ? s : s.name).join('、'))}</span>` : ''}</span></div>`).join('')}</div>` : ''}`;
+}
+function recPasteApply(how) {
+  const r = recPasteParse(document.getElementById('rcPaste').value); if (!r.items.length) return;
+  if (how === 'replace' && rec.items.some(it => it.start) && !confirm('目前的賽程已經有記錄的時間，確定要取代嗎？（可以按 ↶ 復原）')) return;
+  recPush(how === 'replace' ? '貼上賽程（取代）' : '貼上賽程（加在後面）');
+  const items = r.items.map(recMkItem);
+  rec.items = how === 'replace' ? items : rec.items.concat(items);
+  if (r.title && !rec.name) rec.name = r.title;
+  if (r.json && r.json.eventDate) rec.date = r.json.eventDate;
+  recSave(); recSheetClose(); _recTab = 'plan'; recRender(true);
+  showToast(`✅ 已排入 ${items.length} 項，按住 ≡ 可以拖曳調整順序`);
+}
+function recHelpSheet() {
+  recSheet(`<h4>❓ 時間記錄器怎麼用</h4><div class="note" style="font-size:14px;line-height:1.9;">
+    <b>① 前一天（電腦）</b>　📋 賽程 → 貼上賽程表，自動抓時間；按住 ≡ 拖曳調整順序。再按 📲 傳到手機，用手機掃 QR。<br>
+    <b>② 當天（手機或電腦都可以）</b>　打開就是「⏱ 現場」，只要按那顆大按鈕：▶ 開始 → ⏭ 下一項…。按錯按 ↶ 復原；臨時多一項按 ＋ 臨時項目。螢幕會保持亮著。<br>
+    <b>③ 結束後</b>　照片在同一台：按 ✅ 套用到照片。照片在電腦：手機按 ⋯ → 📲 傳到電腦，電腦打開那個連結再套用。<br>
+    <b>④ 對時間</b>　📊 時間軸可以拖時段邊界，右邊黃色長條是每分鐘拍的照片張數，對著空檔調最準。<br>
+    沒記到也沒關係：只有預定時間的項目也會用預定時間分組。</div>
+    <div class="acts"><button onclick="recSheetClose()">知道了</button></div>`);
+}
+
+// ── 傳到手機／電腦（連結＋QR，資料放在網址 # 後面，不經過伺服器） ──
+function recCompact(r) {
+  r = r || rec;
+  return { n: r.name || '', d: r.date || recToday(), i: r.items.map(it => [it.name, it.exp || '', it.expEnd || '', it.start || '', it.end || '', (it.subs || []).map(s => [s.name, s.start || '', s.end || '']), it.skip ? 1 : 0, it.subIdx || 0]) };
+}
+function recFromCompact(c) {
+  return { v: 2, name: c.n || '', date: c.d || recToday(), items: (c.i || []).map(a => recMkItem({ name: a[0], exp: a[1], expEnd: a[2], start: a[3] || null, end: a[4] || null, subs: (a[5] || []).map(s => ({ name: s[0], start: s[1] || null, end: s[2] || null })), skip: !!a[6], subIdx: a[7] || 0 })) };
+}
+const recB64 = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const recUnB64 = s => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
+function recShareLink() {
+  if (!/^https?:$/.test(location.protocol)) return null;
+  return `${location.origin}${location.pathname}?rec=1#rp=${recB64(JSON.stringify(recCompact()))}`;
+}
+function recShareSheet() {
+  document.getElementById('recMenu')?.remove();
+  if (!rec.items.length) { showToast('⚠️ 還沒有賽程'); return; }
+  const link = recShareLink(), hasT = rec.items.some(it => it.start);
+  let qr = '';
+  if (link && typeof qrcode === 'function' && link.length < 2300) { try { const q = qrcode(0, 'L'); q.addData(link); q.make(); qr = `<div class="rc-qr"><img alt="QR" src="${q.createDataURL(4, 8)}"></div>`; } catch {} }
+  recSheet(`<h4>📲 ${hasT ? '傳到另一台（手機 ↔ 電腦）' : '把賽程傳到手機'}</h4>
+    ${link ? `<div class="note">${qr ? '用另一台的相機掃 QR，' : ''}或把連結用 LINE 傳給自己。打開就是這份賽程${hasT ? '和已記錄的時間' : ''}（${rec.items.length} 項）。<br>資料直接放在連結裡，不經過任何伺服器、沒有照片。</div>${qr}
+      <div class="acts two"><button class="pri" onclick="recShareGo()">📤 分享連結</button><button onclick="recShareCopy()">📋 複製連結</button></div>`
+    : `<div class="note">這個檔案是直接在電腦上打開的，另一台連不到。<br>請在另一台打開校園拾光網站 → ⏱ 記錄器 → 📋 貼上賽程表，貼上按下面按鈕複製的內容（用 LINE 傳給自己最快）。</div>
+      <div class="acts"><button class="pri" onclick="recShareCopy(true)">📋 複製賽程內容</button></div>`}
+    <div class="acts"><button onclick="recSheetClose()">關閉</button></div>`);
+}
+async function recShareGo() {
+  const link = recShareLink(); if (!link) return;
+  try { if (navigator.share) { await navigator.share({ title: `${rec.name || '活動'} 賽程`, text: `${rec.name || '活動'} 時間記錄器`, url: link }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  recShareCopy();
+}
+async function recShareCopy(asJson) {
+  const txt = asJson || !recShareLink() ? JSON.stringify({ ...recPayloadFull() }) : recShareLink();
+  try { await navigator.clipboard.writeText(txt); showToast('📋 已複製，用 LINE 傳給自己'); } catch { prompt('複製下面的內容：', txt); }
+}
+function recPayloadFull() { return { version: 1, type: 'recorder_state', source: 'recorder', eventName: rec.name || '', eventDate: rec.date || recToday(), items: recCompact().i }; }
+function recCheckHash() {
+  const m = location.hash.match(/[#&]rp=([A-Za-z0-9_-]+)/); if (!m) return false;
+  try {
+    const inc = recFromCompact(JSON.parse(recUnB64(m[1])));
+    const cur = recLoad();
+    const same = JSON.stringify(recCompact(cur)) === JSON.stringify(recCompact(inc));
+    if (!same && (!cur.items.length || confirm(`收到「${inc.name || '活動'}」的賽程（${inc.items.length} 項${inc.items.some(it => it.start) ? '，含記錄的時間' : ''}）。\n要取代這台裝置目前的賽程嗎？${cur.items.length ? `\n（目前有 ${cur.items.length} 項）` : ''}`))) {
+      rec = inc; recSave(); setTimeout(() => showToast(`📲 已收到 ${inc.items.length} 項賽程`), 300);
+    }
+  } catch { setTimeout(() => showToast('⚠️ 這個連結的賽程讀不懂'), 300); }
+  try { history.replaceState(null, '', location.pathname + '?rec=1'); } catch {}
+  return true;
+}
+
+// ── 選單、匯出入 ──
+function recMenuToggle() {
+  let m = document.getElementById('recMenu'); if (m) { m.remove(); return; }
+  m = document.createElement('div'); m.id = 'recMenu'; m.className = 'rec-menu';
+  m.innerHTML = `<button onclick="recShareSheet()">📲 傳到手機／電腦（QR、連結）</button>
+    <button onclick="recCopy()">📋 複製時段 JSON</button><button onclick="recExport()">📤 下載時段設定檔</button>
+    <button onclick="recExportTpl()">📤 匯出行程樣板（只有項目）</button><button onclick="recImportTpl()">📥 匯入檔案（樣板／時段檔）</button><hr>
+    <button onclick="recResetTimes()">↺ 清掉全部時間（賽程保留）</button><button onclick="recClearAll()" style="color:var(--red);">🗑 全部清除</button><hr>
+    <button onclick="document.getElementById('recMenu').remove();recHelpSheet()">❓ 怎麼用</button>`;
+  m.addEventListener('click', ev => { if (ev.target.tagName === 'BUTTON') setTimeout(() => m.remove(), 0); });
+  document.getElementById('recStage').appendChild(m);
+}
+function recResetTimes() { if (!confirm('清掉全部時間？賽程會保留。（可以按 ↶ 復原）')) return; recPush('清掉全部時間'); rec.items.forEach(it => { it.start = it.end = null; it.subIdx = 0; it.skip = false; (it.subs || []).forEach(s => { s.start = s.end = null; }); }); recSave(); recRender(); }
+function recClearAll() { if (!confirm('全部清除（賽程和時間都刪掉）？（可以按 ↶ 復原）')) return; recPush('全部清除'); rec = { v: 2, name: '', date: recToday(), items: [] }; recSave(); recRender(); }
 function recExport() {
   const g = recBuildGroups(); if (!g.length) { showToast('⚠️ 還沒有任何時間（按 ▶ 開始，或先填預定時間）'); return; }
   const blob = new Blob([JSON.stringify(recPayload(), null, 2)], { type: 'application/json' });
@@ -14835,38 +15445,77 @@ function recExport() {
 async function recCopy() {
   const g = recBuildGroups(); if (!g.length) { showToast('⚠️ 還沒有任何時間'); return; }
   const txt = JSON.stringify(recPayload());
-  try { await navigator.clipboard.writeText(txt); showToast(`📋 已複製 ${g.length} 個時段，到校園拾光按「貼上時段 JSON」`); } catch { prompt('複製下面的內容：', txt); }
+  try { await navigator.clipboard.writeText(txt); showToast(`📋 已複製 ${g.length} 個時段，到校園拾光按「貼上賽程表／時段 JSON」`); } catch { prompt('複製下面的內容：', txt); }
 }
 function recApply() {
-  const g = recBuildGroups(); if (!g.length) { showToast('⚠️ 還沒有任何時間'); return; }
+  const g = recBuildGroups(); if (!g.length) { showToast('⚠️ 還沒有任何時間：先排賽程（有預定時間）或開始記錄'); return; }
   const { groups: gg, meta } = parseScheduleJson(JSON.stringify(recPayload()));
   applyScheduleGroups(gg, meta, '套用');
+  let extra = '';
+  const ph = recPhotoMinutes();
+  if (ph && ph.onDay) { const segs = recSegments(); let inn = 0; ph.m.forEach((c, k) => { const s = k * 60 + 30; if (segs.some(x => s >= x.s && s < x.e)) inn += c; }); extra = `，${ph.onDay} 張照片中 ${inn} 張落在時段內`; }
   closeRecorder();
-  try { const el = document.getElementById('customGroupPanel'); el?.scrollIntoView({ block: 'center' }); } catch {}
+  showToast(`✅ 已套用 ${gg.length} 個時段${extra}，按「▶ 開始分析」分組`);
+  try { document.getElementById('customGroupPanel')?.scrollIntoView({ block: 'center' }); } catch {}
 }
 function recExportTpl() {
-  const blob = new Blob([JSON.stringify({ version: 1, type: 'schedule_template', source: 'recorder', eventName: rec.name || '', events: rec.items.map(it => ({ id: it.id, name: it.name, expectedTime: it.expected || '', actualStartTime: null, actualEndTime: null, currentSubEventIndex: 0, subEvents: (it.subs || []).map(s => ({ id: recUid(), name: s.name, actualStartTime: null, actualEndTime: null, skipped: false })) })) }, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${rec.name || '活動'}_行程樣板.json`; a.click(); document.getElementById('recMenu')?.remove();
+  const blob = new Blob([JSON.stringify({ version: 1, type: 'schedule_template', source: 'recorder', eventName: rec.name || '', events: rec.items.map(it => ({ id: it.id, name: it.name, expectedTime: it.exp || '', expectedEndTime: it.expEnd || '', actualStartTime: null, actualEndTime: null, currentSubEventIndex: 0, subEvents: (it.subs || []).map(s => ({ id: recUid(), name: s.name, actualStartTime: null, actualEndTime: null, skipped: false })) })) }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${rec.name || '活動'}_行程樣板.json`; a.click();
 }
 function recImportTpl() {
-  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json';
-  inp.onchange = async () => { const f = inp.files[0]; if (!f) return; try { recImportText(await f.text()); } catch (e) { showToast(`❌ 讀不懂這個檔：${e.message}`); } };
-  inp.click(); document.getElementById('recMenu')?.remove();
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,.txt,.csv,application/json,text/plain';
+  inp.onchange = async () => { const f = inp.files[0]; if (!f) return; const t = await f.text(); recPasteSheet(t); };
+  inp.click();
+}
+function recItemsFromJson(d) {
+  const toHms = v => { if (!v) return null; const m = String(v).match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/); return m ? recNormTime(m[0], true) : null; };
+  if (d && d.type === 'recorder_state' && Array.isArray(d.items)) { const r = recFromCompact({ n: d.eventName, d: d.eventDate, i: d.items }); return { items: r.items }; }
+  if (d && Array.isArray(d.events)) return { items: d.events.map(ev => recMkItem({ name: ev.name || '項目', exp: recNormTime(ev.expectedTime || '', false), expEnd: recNormTime(ev.expectedEndTime || '', false), start: toHms(ev.actualStartTime), end: toHms(ev.actualEndTime), subIdx: ev.currentSubEventIndex || 0, subs: (ev.subEvents || []).map(sb => ({ name: sb.name, start: toHms(sb.actualStartTime), end: toHms(sb.actualEndTime) })) })) };
+  const gs = d && Array.isArray(d.groups) ? d.groups : Array.isArray(d) ? d : null;
+  if (gs) return { items: gs.map(g => recMkItem({ name: String(g.name || '').replace(/^\d{2}_/, ''), start: toHms(String(g.start || '').split('T')[1]), end: toHms(String(g.end || '').split('T')[1]) })) };
+  throw new Error('不是行程樣板或時段設定檔');
 }
 function recImportText(text) {
-  const d = JSON.parse(text);
-  const toHms = v => { if (!v) return null; const m = String(v).match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/); return m ? recNormTime(m[0], true) : null; };
-  if (d && Array.isArray(d.events)) {   // sportstime 行程樣板／完整狀態
-    rec.items = d.events.map(ev => ({ id: recUid(), name: ev.name || '項目', expected: recNormTime(ev.expectedTime || '', false), start: toHms(ev.actualStartTime), end: toHms(ev.actualEndTime), subIdx: ev.currentSubEventIndex || 0, subs: (ev.subEvents || []).length ? ev.subEvents.map(sb => ({ name: sb.name, start: toHms(sb.actualStartTime), end: toHms(sb.actualEndTime) })) : undefined }));
-    if (d.eventName) rec.name = d.eventName; if (d.eventDate) rec.date = d.eventDate;
-  } else if (d && Array.isArray(d.groups)) {   // 時段設定檔 → 還原成項目（含時間）
-    rec.items = d.groups.map(g => ({ id: recUid(), name: String(g.name || '').replace(/^\d{2}_/, ''), expected: '', start: toHms(String(g.start || '').split('T')[1]), end: toHms(String(g.end || '').split('T')[1]), subIdx: 0 }));
-    if (d.eventName) rec.name = d.eventName; if (d.eventDate) rec.date = d.eventDate; else if (d.groups[0]?.start) rec.date = String(d.groups[0].start).slice(0, 10);
-  } else throw new Error('不是行程樣板或時段設定檔');
-  recSave(); recRender(); showToast(`📥 已匯入 ${rec.items.length} 個項目`);
+  const d = JSON.parse(text); const r = recItemsFromJson(d);
+  recPush('匯入檔案'); rec.items = r.items;
+  if (d.eventName) rec.name = d.eventName;
+  if (d.eventDate) rec.date = d.eventDate; else if (d.groups && d.groups[0] && d.groups[0].start) rec.date = String(d.groups[0].start).slice(0, 10);
+  recSave(); recRender(true); showToast(`📥 已匯入 ${rec.items.length} 個項目`);
 }
-// 網址帶 ?rec=1 直接開記錄器（手機加到主畫面用）
-try { if (/[?&]rec=1/.test(location.search)) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(openRecorder, 50)); else setTimeout(openRecorder, 50); } } catch {}
+
+// ── 主畫面：浮動小膠囊（當天有賽程時一鍵回到記錄器） ──
+function recPillUpdate() {
+  clearInterval(_recPillTimer);
+  let p = document.getElementById('recPill');
+  const r = document.getElementById('recStage') ? null : recLoad();
+  const show = r && r.date === recToday() && r.items.length;
+  if (!show) { p && p.remove(); return; }
+  if (!p) { p = document.createElement('button'); p.id = 'recPill'; p.onclick = () => openRecorder('live'); document.body.appendChild(p); }
+  const run = r.items.find(recIsRun), nxt = r.items.find(it => !it.start && !it.skip);
+  if (run) {
+    p.className = '';
+    const draw = () => { p.innerHTML = `<span class="dot"></span><span class="n">進行中：${rE(run.name)}</span><span class="t">${recDurTxt(recSec(recNow()) - recSec(run.start))}</span>`; };
+    draw(); _recPillTimer = setInterval(draw, 1000);
+  } else if (nxt) { p.className = 'idle'; p.innerHTML = `<span class="dot"></span><span class="n">⏱ 下一項：${rE(nxt.name)}${nxt.exp ? ' ' + rE(nxt.exp) : ''}</span>`; }
+  else { p.className = 'idle'; p.innerHTML = `<span class="dot"></span><span class="n">⏱ 今天的時間記完了 · 點我套用</span>`; }
+  p.title = '回到時間記錄器';
+}
+function recBoot() {
+  try {
+    const hash = recCheckHash();
+    const r = recLoad();
+    if (hash || /[?&]rec=1/.test(location.search)) { setTimeout(() => openRecorder(), 50); return; }
+    if (r.date === recToday() && r.items.some(recIsRun)) { setTimeout(() => { openRecorder('live'); showToast('⏱ 記錄中，接著按就好'); }, 50); return; }
+    recPillUpdate();
+  } catch {}
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', recBoot); else setTimeout(recBoot, 0);
+
+
+// QR Code Generator for JavaScript — Copyright (c) 2009 Kazuhiko Arase — MIT license (qrcode-generator 1.4.4)
+// Copyright (c) 2009 Kazuhiko Arase
+// Licensed under the MIT license:
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,(function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1}))},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(n*r,o*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(t,r){var e=n("友");if(2!=e.length||38726!=(e[0]<<8|e[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}((function(){return qrcode}));
 
 // 2026v8: 「下一步」提示 — 下方提示列＋要按的東西發光；localStorage coachOff='1' 關掉
 function coachOn() { try { return localStorage.getItem('coachOff') !== '1'; } catch { return true; } }
