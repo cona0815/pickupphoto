@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v20 (2026-11-03)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v21 (2026-11-05)　（原名：AI 照片篩選器）
+  2026v21 (2026-11-05, build v177): 📚 相簿書櫃 — 相簿庫每個活動是一本書（一個學年度一層），點一本抽出來、打開封面、第一頁是活動大綱，
+        之後一頁一張照片可以翻；新存進相簿庫的活動自動上架（7 天內有 NEW）
   2026v20 (2026-11-03, build v176): ⏱ 時間記錄器重做成「當天好用」— 底部分頁 ⏱ 現場／📋 賽程／📊 時間軸／✅ 套用；
         現場只有一顆大按鈕（▶ 開始 → ⏭ 下一項／下一組，自動結束上一項）、↶ 復原、＋ 臨時項目、跳過、晚幾分開始、螢幕保持亮著、空白鍵；
         📋 貼上賽程表：秩序冊／Excel／LINE 文字自動抓時間（08:30-08:55、下午 1:30、9點05分、表格欄位、縮排分組），先預覽再取代／加在後面；
@@ -192,7 +194,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v20 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v21 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2489,6 +2491,81 @@
   @media (max-width: 720px) { .coach-bar { bottom: calc(74px + env(safe-area-inset-bottom)); flex-wrap: wrap; font-size: 12.5px; } .coach-bar .coach-off { display: none; } }
   @media (prefers-reduced-motion: reduce) { .coach-pulse { animation: none; } }
   body.coach-shown .toast { bottom: 84px !important; }
+  /* ═══ 2026v21 📚 相簿書櫃 ═══ */
+  #bkStage { position: fixed; inset: 0; z-index: 960; opacity: 0; transition: opacity .3s; background: radial-gradient(1200px 700px at 50% -10%, #6b4a2f 0%, #3b2717 45%, #1d130b 100%); color: #f5ead8; overflow: hidden; font-family: var(--font); }
+  #bkStage.show { opacity: 1; }
+  .bk-room { position: absolute; inset: 0; display: flex; flex-direction: column; }
+  .bk-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 20px 28px 8px; }
+  .bk-title { font-size: 28px; font-weight: 900; letter-spacing: 2px; font-family: "Noto Serif TC", "Songti TC", serif; text-shadow: 0 2px 0 rgba(0,0,0,.4); }
+  .bk-sub { font-size: 12.5px; color: rgba(245,234,216,.7); margin-top: 4px; }
+  .bk-x { width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(245,234,216,.3); background: rgba(0,0,0,.25); color: #f5ead8; font-size: 16px; cursor: pointer; flex: none; }
+  .bk-shelves { flex: 1; overflow-y: auto; padding: 4px 28px 40px; }
+  .bk-shelf { margin: 18px auto 34px; max-width: 1200px; }
+  .bk-plaque { display: inline-flex; gap: 8px; align-items: baseline; margin: 0 0 10px 6px; padding: 4px 14px; border-radius: 6px; background: linear-gradient(#c9a66b, #9c7a45); color: #2a1a08; font-weight: 800; font-size: 13.5px; box-shadow: 0 2px 6px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.4); }
+  .bk-plaque small { font-weight: 600; font-size: 11px; opacity: .75; }
+  .bk-row { display: flex; align-items: flex-end; gap: 3px; flex-wrap: wrap; padding: 0 14px; min-height: 250px; background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.15)); border-radius: 6px 6px 0 0; box-shadow: inset 0 12px 24px rgba(0,0,0,.45); row-gap: 18px; }
+  .bk-board { height: 18px; margin-top: -2px; border-radius: 2px 2px 6px 6px; background: linear-gradient(180deg, #b0844f 0%, #8a6136 40%, #5e3f20 100%); box-shadow: 0 10px 18px rgba(0,0,0,.55); }
+  .bk-book { position: relative; width: var(--w); height: var(--h); padding: 0; border: 0; cursor: pointer; border-radius: 3px 3px 2px 2px; color: #fdf5e6; font-family: inherit;
+    background: linear-gradient(90deg, rgba(0,0,0,.35) 0, rgba(255,255,255,.12) 18%, rgba(255,255,255,0) 35%, rgba(0,0,0,.18) 100%), linear-gradient(180deg, var(--c2), var(--c1));
+    box-shadow: inset -2px 0 0 rgba(0,0,0,.35), 2px 0 3px rgba(0,0,0,.35); transform-origin: 50% 100%; transition: transform .28s cubic-bezier(.34,1.4,.64,1), box-shadow .28s; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+  .bk-book:hover, .bk-book:focus-visible { transform: translateY(-12px); box-shadow: inset -2px 0 0 rgba(0,0,0,.35), 4px 10px 14px rgba(0,0,0,.45); outline: none; }
+  .bk-book.pulled { transform: translateY(-40px) scale(1.12); z-index: 3; box-shadow: 0 30px 40px rgba(0,0,0,.6); transition-duration: .4s; }
+  .bk-book.out { opacity: .15; transform: translateY(-6px); }
+  .bk-band { width: 100%; height: 14px; margin-top: 16px; background: linear-gradient(180deg, rgba(255,215,140,.85), rgba(200,150,70,.85)); box-shadow: 0 1px 0 rgba(0,0,0,.3); flex: none; }
+  .bk-spine { writing-mode: vertical-rl; text-orientation: mixed; font-family: "Noto Serif TC", "Songti TC", serif; font-weight: 800; font-size: 13.5px; letter-spacing: 1px; line-height: 1.1; padding: 10px 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-height: calc(var(--h) - 90px); text-shadow: 0 1px 1px rgba(0,0,0,.5); }
+  .bk-foot { font-size: 9.5px; line-height: 1.25; opacity: .85; padding-bottom: 8px; text-align: center; font-family: var(--mono); flex: none; }
+  .bk-new { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 8.5px; font-weight: 800; background: #ffd166; color: #3a2a00; padding: 1px 4px; border-radius: 0 0 4px 4px; letter-spacing: .5px; }
+  .bk-open { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; background: rgba(15,9,4,.55); backdrop-filter: blur(6px); opacity: 0; transition: opacity .28s; }
+  .bk-open.show { opacity: 1; }
+  .bk-open[hidden] { display: none; }
+  .bk-open-in { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .bk-book3d { --pw: min(44vw, 520px); --ph: min(76vh, calc(var(--pw) * 1.36)); position: relative; width: calc(var(--pw) * 2); height: var(--ph); perspective: 2200px; display: flex; filter: drop-shadow(0 30px 40px rgba(0,0,0,.6)); animation: bkIn .45s cubic-bezier(.2,.9,.3,1.1); }
+  .bk-book3d.single { --pw: min(92vw, 520px); --ph: min(74vh, calc(var(--pw) * 1.4)); width: var(--pw); }
+  .bk-book3d.closed { width: var(--pw); cursor: pointer; }
+  @keyframes bkIn { from { transform: translateY(60px) scale(.6) rotateX(18deg); opacity: 0; } to { transform: none; opacity: 1; } }
+  .bk-side { position: relative; width: var(--pw); height: 100%; cursor: pointer; }
+  .bk-book3d.single .bk-side { width: 100%; }
+  .bk-tapL { position: absolute; left: 0; top: 0; bottom: 0; width: 28%; cursor: w-resize; }
+  .bk-gutter { position: absolute; left: 50%; top: 0; bottom: 0; width: 40px; transform: translateX(-50%); pointer-events: none; background: linear-gradient(90deg, rgba(0,0,0,0), rgba(0,0,0,.22) 45%, rgba(0,0,0,.28) 50%, rgba(0,0,0,.22) 55%, rgba(0,0,0,0)); z-index: 2; }
+  .bk-page { position: absolute; inset: 0; background: linear-gradient(90deg, #f3ead8, #fbf6ea 12%, #fbf6ea 88%, #efe4cf); color: #2d2214; padding: 6% 7% 9%; display: flex; flex-direction: column; overflow: hidden; }
+  .bk-side.l .bk-page { border-radius: 8px 0 0 8px; box-shadow: inset -10px 0 18px -10px rgba(0,0,0,.25); }
+  .bk-side.r .bk-page { border-radius: 0 8px 8px 0; box-shadow: inset 10px 0 18px -10px rgba(0,0,0,.25); }
+  .bk-book3d.single .bk-page { border-radius: 8px; }
+  .bk-blank { background: #f6efdf; }
+  .bk-no { position: absolute; bottom: 3.5%; left: 0; right: 0; text-align: center; font-size: 11px; color: #9a8466; font-family: var(--mono); }
+  .bk-toc { font-family: "Noto Serif TC", "Songti TC", serif; }
+  .bk-toc-k { font-size: 12px; letter-spacing: 6px; color: #9a6b2f; font-weight: 700; }
+  .bk-toc h2 { font-size: clamp(20px, 2.6vw, 32px); margin: 10px 0 18px; line-height: 1.3; border-bottom: 2px solid #c9a66b; padding-bottom: 12px; }
+  .bk-toc dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; font-size: clamp(12.5px, 1.3vw, 15px); margin: 0; }
+  .bk-toc dt { color: #9a8466; } .bk-toc dd { margin: 0; font-weight: 600; }
+  .bk-tags { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px; } .bk-tags span { font-size: 12px; background: #ecdcbc; color: #6b4a1f; padding: 2px 8px; border-radius: 999px; }
+  .bk-hint { margin-top: auto; font-size: 11.5px; color: #9a8466; font-family: var(--font); }
+  .bk-frame { flex: 1; min-height: 0; display: grid; place-items: center; background: #e9dfca; border-radius: 4px; padding: 6px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }
+  .bk-frame img { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 0 6px 14px rgba(0,0,0,.25); background: #fff; min-width: 40%; min-height: 30%; }
+  .bk-cap { margin-top: 10px; font-size: 13px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; } .bk-cap span { color: #7a6548; font-size: 12px; }
+  .bk-rec { font-size: 10.5px; color: #8a6d3b; border: 1px solid #c9a66b; border-radius: 4px; padding: 0 4px; }
+  .bk-cover { position: absolute; inset: 0; border-radius: 4px 10px 10px 4px; background: linear-gradient(90deg, rgba(0,0,0,.35), rgba(255,255,255,.08) 4%, rgba(0,0,0,0) 10%), linear-gradient(160deg, var(--c2), var(--c1)); padding: 9% 9% 8%; display: flex; flex-direction: column; align-items: center; color: #fdf5e6; transform-origin: 0 50%; transition: transform .65s cubic-bezier(.4,.1,.2,1); backface-visibility: hidden; box-shadow: inset 0 0 0 6px rgba(255,215,140,.25); }
+  .bk-book3d.opening .bk-cover { transform: rotateY(-160deg); }
+  .bk-cv-img { width: 100%; aspect-ratio: 4/3; border-radius: 6px; overflow: hidden; border: 5px solid rgba(253,245,230,.9); box-shadow: 0 10px 20px rgba(0,0,0,.4); background: rgba(0,0,0,.2); }
+  .bk-cv-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .bk-cv-t { margin-top: 8%; font-size: clamp(22px, 3vw, 34px); font-weight: 900; text-align: center; line-height: 1.3; font-family: "Noto Serif TC", "Songti TC", serif; text-shadow: 0 2px 4px rgba(0,0,0,.4); }
+  .bk-cv-s { margin-top: 10px; font-size: 13px; opacity: .85; }
+  .bk-cv-hint { margin-top: auto; font-size: 12px; opacity: .7; animation: bkBlink 1.6s ease-in-out infinite; }
+  @keyframes bkBlink { 50% { opacity: .3; } }
+  .bk-leaf { position: absolute; top: 0; height: 100%; width: var(--pw); transform-style: preserve-3d; transition: transform .7s cubic-bezier(.45,.05,.25,1); z-index: 4; pointer-events: none; }
+  .bk-leaf.fwd { left: 50%; transform-origin: 0 50%; } .bk-leaf.fwd.turn { transform: rotateY(-180deg); }
+  .bk-leaf.back { left: 0; transform-origin: 100% 50%; } .bk-leaf.back.turn { transform: rotateY(180deg); }
+  .bk-leaf.single { left: 0; width: 100%; transform-origin: 0 50%; } .bk-leaf.single.turn { transform: rotateY(-100deg); opacity: 0; transition: transform .7s cubic-bezier(.45,.05,.25,1), opacity .7s ease-in; }
+  .bk-leaf.single.back { transform: rotateY(-100deg); opacity: 0; } .bk-leaf.single.back.turn { transform: none; opacity: 1; }
+  .bk-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+  .bk-face.backf { transform: rotateY(180deg); }
+  .bk-leaf .bk-face::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(0,0,0,.18), rgba(0,0,0,0) 30%); }
+  .bk-bar { display: flex; gap: 10px; align-items: center; font-size: 13px; color: #f5ead8; }
+  .bk-bar button { font-family: inherit; font-size: 14px; padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(245,234,216,.35); background: rgba(0,0,0,.35); color: #f5ead8; cursor: pointer; }
+  .bk-bar button:disabled { opacity: .35; cursor: default; }
+  .bk-bar span { min-width: 90px; text-align: center; font-family: var(--mono); }
+  @media (max-width: 760px) { .bk-head { padding: 14px 14px 4px; } .bk-title { font-size: 22px; } .bk-shelves { padding: 4px 10px 30px; } .bk-row { padding: 0 6px; min-height: 0; } }
+  html.reduce-motion .bk-book, html.reduce-motion .bk-leaf, html.reduce-motion .bk-cover { transition: none; } html.reduce-motion .bk-book3d { animation: none; }
   /* 2026v18: 實測修正 */
   body:has(.modal-overlay.show) #exportSuccessMsg, body:has(.modal-overlay.show) .grp-pick-bar { display: none !important; }
   #exportSuccessMsg { cursor: pointer; }
@@ -3000,7 +3077,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v20 · 2026-11-03</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v21 · 2026-11-05</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3077,7 +3154,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       網站版的 service worker 只快取工具與公開模型，<b>不會攔截或保存照片</b>；Gemini、Google、OpenStreetMap 的連線一律不經過快取。<br>
       本工具是單一 HTML 檔，可用文字編輯器搜尋 <code>fetch(</code>、<code>https://</code> 自行檢查所有連線。
 
-      <div class="pv-foot">本頁依 2026v20 程式逐項清點（2026-11-03）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v21 程式逐項清點（2026-11-05）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3504,7 +3581,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v20（2026-11-03）。</span>
+        <span style="font-size:11px;">本說明對應 2026v21（2026-11-05）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4104,8 +4181,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v20';
-const APP_BUILD = 'v176';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v21';
+const APP_BUILD = 'v177';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -11848,6 +11925,190 @@ async function yrPrint() {
   finally { _yr.busy = ''; yrRender(); }
 }
 
+// ══════════════════════════════════════════════════════════════
+// 2026v21 📚 相簿書櫃 — 每個活動是一本書；點一本抽出來、打開、一頁頁翻
+// ══════════════════════════════════════════════════════════════
+const BK_COLORS = { '運動會／體育': ['#8e2b2b', '#b8433b'], '宣導活動': ['#1f4e79', '#2f6fa8'], '教師研習': ['#3d5a3a', '#557a4f'], '學校活動': ['#7a4a1d', '#a5672c'], '典禮／頒獎': ['#5b2a6e', '#7d3f94'], '畢業紀念': ['#2b2b2b', '#4a4a4a'], '教學活動': ['#22625e', '#2f8780'] };
+const BK_SPARE = [['#6b3e26', '#91573a'], ['#2e4a62', '#43698a'], ['#4f5d2f', '#6d7f43'], ['#6e2f4b', '#944066'], ['#3c3c64', '#545489'], ['#7a5c1e', '#a37b2a']];
+let _bk = null;
+const _bkUrl = new Map();
+function bkHash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619); return h >>> 0; }
+function bkBooks() {
+  const rows = libFiltered(), acts = new Map();
+  for (const e of rows) {
+    const k = `${e.sy}|${e.category}|${String(e.path || '').replace(/\/紀錄$/, '')}`;
+    if (!acts.has(k)) acts.set(k, { k, sy: e.sy, cat: e.category || '', name: libActLabel(e) || e.activity || '活動', items: [] });
+    acts.get(k).items.push(e);
+  }
+  const now = Date.now();
+  return [...acts.values()].map(b => {
+    const ord = (x, y) => (x.fav ? 0 : 1) - (y.fav ? 0 : 1) || (x.tier === 'pick' ? 0 : 1) - (y.tier === 'pick' ? 0 : 1) || String(x.taken || '').localeCompare(String(y.taken || ''));
+    b.items.sort((x, y) => String(x.taken || x.date || '').localeCompare(String(y.taken || y.date || '')));
+    const ds = b.items.map(e => e.date).filter(Boolean).sort();
+    b.from = ds[0] || ''; b.to = ds[ds.length - 1] || '';
+    b.cover = [...b.items].sort(ord)[0];
+    b.isNew = b.items.some(e => e.exportedAt && now - Date.parse(String(e.exportedAt).replace(' ', 'T')) < 7 * 86400000);
+    const pal = BK_COLORS[b.cat] || BK_SPARE[bkHash(b.cat || b.name) % BK_SPARE.length];
+    b.c1 = pal[0]; b.c2 = pal[1];
+    b.h = 200 + bkHash(b.k) % 46;
+    b.w = Math.round(Math.min(68, 30 + Math.sqrt(b.items.length) * 4.2));
+    return b;
+  }).sort((x, y) => (x.from || '9').localeCompare(y.from || '9'));
+}
+function openBookshelf() {
+  if (!(_libIndex?.entries || []).length) { showToast('📚 相簿庫還是空的，先存一些活動進來'); return; }
+  let st = document.getElementById('bkStage'); if (st) st.remove();
+  st = document.createElement('div'); st.id = 'bkStage'; st.setAttribute('role', 'dialog'); st.setAttribute('aria-label', '相簿書櫃');
+  document.body.appendChild(st);
+  _bk = { books: bkBooks(), open: null };
+  bkRenderShelf();
+  document.addEventListener('keydown', bkKey);
+  requestAnimationFrame(() => st.classList.add('show'));
+}
+function closeBookshelf() {
+  const st = document.getElementById('bkStage'); if (!st) return;
+  document.removeEventListener('keydown', bkKey);
+  st.classList.remove('show'); setTimeout(() => st.remove(), 300);
+  _bk = null;
+}
+function bkKey(e) {
+  if (!_bk) return;
+  if (e.key === 'Escape') { e.preventDefault(); if (_bk.open) bkClose(); else closeBookshelf(); }
+  else if (_bk.open && (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ')) { e.preventDefault(); bkFlip(1); }
+  else if (_bk.open && (e.key === 'ArrowLeft' || e.key === 'PageUp')) { e.preventDefault(); bkFlip(-1); }
+}
+function bkRenderShelf() {
+  const st = document.getElementById('bkStage'); if (!st || !_bk) return;
+  const bySy = new Map(); _bk.books.forEach((b, i) => { const k = b.sy || '—'; if (!bySy.has(k)) bySy.set(k, []); bySy.get(k).push(i); });
+  const sys = [...bySy.keys()].sort((a, b) => String(b).localeCompare(String(a)));
+  const total = _bk.books.reduce((s, b) => s + b.items.length, 0);
+  st.innerHTML = `<div class="bk-room">
+    <div class="bk-head"><div><div class="bk-title">我們的相簿書櫃</div><div class="bk-sub">${_bk.books.length} 本・${total} 張照片${_libFilter.q || _libFilter.sy || _libFilter.cat ? '（依相簿庫目前的篩選）' : ''}・點一本書抽出來看</div></div>
+      <button class="bk-x" onclick="closeBookshelf()" title="關閉（Esc）">✕</button></div>
+    <div class="bk-shelves">${sys.map(sy => `<section class="bk-shelf"><div class="bk-plaque">${sy === '—' ? '未分學年' : sy + ' 學年度'}<small>${bySy.get(sy).length} 本</small></div>
+      <div class="bk-row">${bySy.get(sy).map(i => { const b = _bk.books[i]; const md = b.from ? `${+b.from.slice(5, 7)}/${+b.from.slice(8, 10)}` : '';
+        return `<button class="bk-book" data-i="${i}" style="--w:${b.w}px;--h:${b.h}px;--c1:${b.c1};--c2:${b.c2};" onclick="bkPull(${i})" title="${escHtml(b.name)}・${b.items.length} 張">
+          ${b.isNew ? '<span class="bk-new">NEW</span>' : ''}<span class="bk-band"></span><span class="bk-spine">${escHtml(b.name)}</span><span class="bk-foot">${md}<br>${b.items.length}張</span></button>`; }).join('')}</div>
+      <div class="bk-board"></div></section>`).join('')}</div></div>
+    <div class="bk-open" id="bkOpen" hidden></div>`;
+}
+// 抽出來：書背往前、往上浮，再換成打開的書
+function bkPull(i) {
+  if (!_bk || _bk.open) return;
+  const b = _bk.books[i], el = document.querySelector(`.bk-book[data-i="${i}"]`); if (!b || !el) return;
+  el.classList.add('pulled');
+  const single = innerWidth < 760;
+  const photos = b.items;
+  _bk.open = { i, b, single, pages: [{ kind: 'toc' }, ...photos.map(e => ({ kind: 'photo', e }))], pos: -1, busy: false };
+  setTimeout(() => { bkRenderBook(); el.classList.remove('pulled'); el.classList.add('out'); }, reduceMotionOn() ? 0 : 420);
+}
+function bkClose() {
+  if (!_bk || !_bk.open) return;
+  const i = _bk.open.i; _bk.open = null;
+  const o = document.getElementById('bkOpen'); if (o) { o.classList.remove('show'); setTimeout(() => { o.hidden = true; o.innerHTML = ''; }, 280); }
+  const el = document.querySelector(`.bk-book[data-i="${i}"]`); if (el) el.classList.remove('out');
+}
+function reduceMotionOn() { try { return document.documentElement.classList.contains('reduce-motion') || matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } }
+async function bkPhotoUrl(e, max) {
+  const key = e.key + '|' + max; if (_bkUrl.has(key)) return _bkUrl.get(key);
+  const pr = (async () => {
+    try { const f = await libPackFile(e); const bm = await createImageBitmap(f, { resizeWidth: max, resizeQuality: 'high' }).catch(() => null);
+      if (!bm) return URL.createObjectURL(f);
+      const c = document.createElement('canvas'); c.width = bm.width; c.height = bm.height; c.getContext('2d').drawImage(bm, 0, 0); bm.close?.();
+      const u = URL.createObjectURL(await new Promise(r => c.toBlob(r, 'image/jpeg', 0.86))); c.width = c.height = 1; return u; }
+    catch { return null; }
+  })();
+  _bkUrl.set(key, pr); return pr;
+}
+function bkDate(d) { if (!d) return ''; const t = new Date(d + 'T00:00:00'); return isNaN(t) ? d : `${t.getFullYear()}/${t.getMonth() + 1}/${t.getDate()}（${'日一二三四五六'[t.getDay()]}）`; }
+function bkPageHtml(pg, no) {
+  if (!pg) return `<div class="bk-page bk-blank"></div>`;
+  const ob = _bk.open, b = ob.b;
+  if (pg.kind === 'toc') {
+    const picks = b.items.filter(e => e.tier === 'pick').length, favs = b.items.filter(e => e.fav).length;
+    const tags = [...new Set(b.items.flatMap(e => libTags(e)))].slice(0, 10);
+    const places = [...new Set(b.items.map(e => libPlaceLabel(e)).filter(Boolean))].slice(0, 3);
+    const days = [...new Set(b.items.map(e => e.date).filter(Boolean))].sort();
+    const times = b.items.map(e => String(e.taken || '').slice(11, 16)).filter(Boolean).sort();
+    return `<div class="bk-page bk-toc"><div class="bk-toc-k">活動大綱</div><h2>${escHtml(b.name)}</h2>
+      <dl><dt>日期</dt><dd>${days.length > 1 ? `${bkDate(days[0])} ～ ${bkDate(days[days.length - 1])}` : bkDate(days[0] || '') || '—'}</dd>
+      ${times.length ? `<dt>時間</dt><dd>${times[0]} ～ ${times[times.length - 1]}</dd>` : ''}
+      <dt>學年度</dt><dd>${escHtml(String(b.sy || '—'))}</dd><dt>分類</dt><dd>${escHtml(b.cat || '—')}</dd>
+      ${places.length ? `<dt>地點</dt><dd>${places.map(escHtml).join('、')}</dd>` : ''}
+      <dt>照片</dt><dd>${b.items.length} 張（精選 ${picks}${favs ? `・⭐ ${favs}` : ''}）</dd>
+      ${b.items[0]?.topic ? `<dt>宣導主題</dt><dd>${escHtml(b.items[0].topic)}</dd>` : ''}</dl>
+      ${tags.length ? `<div class="bk-tags">${tags.map(t => `<span>#${escHtml(t)}</span>`).join('')}</div>` : ''}
+      <div class="bk-hint">${ob.single ? '往左滑或點右邊翻頁' : '點右頁或按 → 翻頁'}・Esc 放回書櫃</div><div class="bk-no">${no}</div></div>`;
+  }
+  const e = pg.e, t = String(e.taken || '').slice(11, 16);
+  return `<div class="bk-page bk-photo"><div class="bk-frame"><img data-key="${escHtml(e.key)}" alt=""></div>
+    <div class="bk-cap"><b>${t || bkDate(e.date)}</b>${e.fav ? ' ⭐' : ''}${e.tier === 'record' ? ' <span class="bk-rec">紀錄</span>' : ''}<span>${escHtml([libPlaceLabel(e), ...libTags(e).slice(0, 3)].filter(Boolean).join('・'))}</span></div><div class="bk-no">${no}</div></div>`;
+}
+function bkFill(root) {
+  root.querySelectorAll('img[data-key]').forEach(img => { if (img.src) return; const e = _bk.open?.b.items.find(x => x.key === img.dataset.key); if (e) bkPhotoUrl(e, _bk.open.single ? 900 : 1100).then(u => { if (u) img.src = u; }); });
+}
+function bkPrefetch() {
+  const ob = _bk?.open; if (!ob) return; const span = ob.single ? 1 : 2;
+  for (let k = ob.pos; k < ob.pos + span * 3; k++) { const pg = ob.pages[k]; if (pg && pg.kind === 'photo') bkPhotoUrl(pg.e, ob.single ? 900 : 1100); }
+}
+// 版面：pos = 目前左頁（單頁模式＝目前那頁）的索引；pos = -1 表示還闔著（只看到封面）
+function bkRenderBook() {
+  const ob = _bk.open, o = document.getElementById('bkOpen'); if (!ob || !o) return;
+  const b = ob.b;
+  o.hidden = false;
+  const coverHtml = `<div class="bk-cover" style="--c1:${b.c1};--c2:${b.c2};"><div class="bk-cv-img"><img data-key="${escHtml(b.cover.key)}" alt=""></div>
+    <div class="bk-cv-t">${escHtml(b.name)}</div><div class="bk-cv-s">${bkDate(b.from)}・${b.items.length} 張</div><div class="bk-cv-hint">點一下打開</div></div>`;
+  const span = ob.single ? 1 : 2, n = ob.pages.length;
+  const pageNo = k => (k + 1) + ' / ' + n;
+  const body = ob.pos < 0 ? `<div class="bk-book3d closed${ob.single ? ' single' : ''}" onclick="bkFlip(1)">${coverHtml}</div>`
+    : ob.single ? `<div class="bk-book3d single" id="bkBook"><div class="bk-side r" onclick="bkFlip(1)">${bkPageHtml(ob.pages[ob.pos], pageNo(ob.pos))}</div><div class="bk-tapL" onclick="bkFlip(-1)"></div></div>`
+    : `<div class="bk-book3d" id="bkBook"><div class="bk-side l" onclick="bkFlip(-1)">${bkPageHtml(ob.pages[ob.pos], pageNo(ob.pos))}</div><div class="bk-side r" onclick="bkFlip(1)">${bkPageHtml(ob.pages[ob.pos + 1], ob.pages[ob.pos + 1] ? pageNo(ob.pos + 1) : '')}</div><div class="bk-gutter"></div></div>`;
+  o.innerHTML = `<div class="bk-open-in">${body}
+    <div class="bk-bar"><button onclick="bkClose()" title="放回書櫃（Esc）">↩ 放回書櫃</button><span>${ob.pos < 0 ? '封面' : ob.single ? pageNo(ob.pos) : `${ob.pos + 1}–${Math.min(n, ob.pos + span)} / ${n}`}</span>
+      <button onclick="bkFlip(-1)" ${ob.pos < 0 ? 'disabled' : ''} aria-label="上一頁">‹</button><button onclick="bkFlip(1)" ${ob.pos + span >= n ? 'disabled' : ''} aria-label="下一頁">›</button></div></div>`;
+  requestAnimationFrame(() => o.classList.add('show'));
+  bkFill(o); bkPrefetch();
+  const bk = document.getElementById('bkBook') || o.querySelector('.bk-book3d');
+  if (bk) { let x0 = null; bk.addEventListener('touchstart', ev => { x0 = ev.touches[0].clientX; }, { passive: true });
+    bk.addEventListener('touchend', ev => { if (x0 == null) return; const dx = ev.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 40) bkFlip(dx < 0 ? 1 : -1); }); }
+}
+// 翻頁：一張「紙」沿書脊轉 180 度（正面＝目前這頁，背面＝下一頁），轉完再換版面
+function bkFlip(dir) {
+  const ob = _bk?.open; if (!ob || ob.busy) return;
+  const span = ob.single ? 1 : 2, n = ob.pages.length;
+  const next = ob.pos < 0 ? 0 : ob.pos + dir * span;
+  if (dir > 0 && ob.pos >= 0 && ob.pos + span >= n) return;
+  if (dir < 0 && ob.pos < 0) return;
+  const target = next < 0 ? -1 : next;
+  const book = document.querySelector('#bkOpen .bk-book3d');
+  if (reduceMotionOn() || !book) { ob.pos = target; bkRenderBook(); return; }
+  ob.busy = true;
+  if (ob.pos < 0) {   // 打開封面
+    book.classList.add('opening');
+    setTimeout(() => { ob.pos = 0; ob.busy = false; bkRenderBook(); }, 650);
+    return;
+  }
+  const pageNo = k => (k + 1) + ' / ' + n;
+  const leaf = document.createElement('div');
+  if (ob.single) {
+    leaf.className = 'bk-leaf single ' + (dir > 0 ? 'fwd' : 'back');
+    leaf.innerHTML = `<div class="bk-face front">${bkPageHtml(ob.pages[dir > 0 ? ob.pos : target], pageNo(dir > 0 ? ob.pos : target))}</div><div class="bk-face backf"></div>`;
+    if (dir > 0) { const r = book.querySelector('.bk-side.r'); if (r) r.innerHTML = target < n ? bkPageHtml(ob.pages[target], pageNo(target)) : ''; }
+  } else if (dir > 0) {
+    leaf.className = 'bk-leaf fwd';
+    leaf.innerHTML = `<div class="bk-face front">${bkPageHtml(ob.pages[ob.pos + 1], pageNo(ob.pos + 1))}</div><div class="bk-face backf">${bkPageHtml(ob.pages[target], pageNo(target))}</div>`;
+    const r = book.querySelector('.bk-side.r'); if (r) r.innerHTML = ob.pages[target + 1] ? bkPageHtml(ob.pages[target + 1], pageNo(target + 1)) : bkPageHtml(null);
+  } else {
+    if (target < 0) { ob.pos = -1; ob.busy = false; bkRenderBook(); return; }
+    leaf.className = 'bk-leaf back';
+    leaf.innerHTML = `<div class="bk-face front">${bkPageHtml(ob.pages[ob.pos], pageNo(ob.pos))}</div><div class="bk-face backf">${bkPageHtml(ob.pages[target + 1], pageNo(target + 1))}</div>`;
+    const l = book.querySelector('.bk-side.l'); if (l) l.innerHTML = bkPageHtml(ob.pages[target], pageNo(target));
+  }
+  book.appendChild(leaf); bkFill(book);
+  requestAnimationFrame(() => requestAnimationFrame(() => leaf.classList.add('turn')));
+  setTimeout(() => { ob.pos = target; ob.busy = false; bkRenderBook(); }, 720);
+}
+
 // ── Main export ──
 async function exportResultPack(mode) {
   const N = parseInt(document.getElementById('rpCount').value) || 6;
@@ -13342,6 +13603,7 @@ function renderLibraryModal() {
       <input type="date" value="${_libFilter.from}" onchange="_libFilter.from=this.value;renderLibraryModal()" title="起"> ～ <input type="date" value="${_libFilter.to}" onchange="_libFilter.to=this.value;renderLibraryModal()" title="迄">
       <button class="tip-link" onclick="_libFilter={sy:'',cat:'',q:'',from:'',to:''};renderLibraryModal()">清除</button>
       <span style="flex:1"></span>
+      <button class="tip-link" onclick="openBookshelf()" title="每個活動是一本書，點一本抽出來翻">📚 書櫃</button>
       <button class="tip-link" onclick="openYearReview()" title="一個學年度辦過的活動，排成一頁（圖片、Word、列印）">📖 學年回顧</button>
       <button class="tip-link" onclick="libraryExportCsv()" title="目前篩選結果匯出成 CSV（Excel 可開）">📄 匯出 CSV</button>
       <button class="tip-link" onclick="openLibraryModal()" title="重新讀取 index.json">↻ 重新整理</button>
