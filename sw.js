@@ -2,9 +2,10 @@
    - 網頁本身（index.html、圖示）：先上網拿最新版，沒網路才用快取 → 老師永遠拿到最新版本
    - 公開程式庫與模型（jsDelivr、cdnjs、Google Fonts、YuNet 模型）：第一次下載後存起來，之後離線也能篩照片
    - Gemini、Google 登入／雲端硬碟、OpenStreetMap：一律直接上網，不快取（這些也只有老師按了才會送）
+   - 2026v26：分享入口不收別的網站（referrer 是別的網域）送來的照片；網頁匯入前先讓老師確認
    - 2026v25：外部程式庫改用 SRI（crossorigin）載入 → 程式庫快取換成 libs-v2；舊快取裡沒有 CORS 的版本刪掉，不然 SRI 會拒絕
    - 2026v16：手機相簿「分享 → 校園拾光」（manifest share_target）→ 收到的照片暫存在這支手機的 IndexedDB，網頁匯入後立刻刪掉；不經過任何伺服器 */
-const VERSION = '2026v25';
+const VERSION = '2026v26';
 const SHELL = `shell-${VERSION}`, LIBS = 'libs-v2';
 const SHELL_FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon.png'];
 const LIB_HOSTS = ['cdn.jsdelivr.net', 'cdnjs.cloudflare.com', 'fonts.googleapis.com', 'fonts.gstatic.com', 'media.githubusercontent.com', 'raw.githubusercontent.com'];
@@ -34,6 +35,10 @@ self.addEventListener('fetch', e => {
   if (req.method === 'POST' && url.origin === self.location.origin && url.pathname.endsWith('/share-target')) {
     e.respondWith((async () => {
       let n = 0;
+      // 2026v26 資安：別的網站用表單送來的（referrer 是別的網域）一律不收；手機系統分享表沒有 referrer。
+      // （拿掉 referrer 的硬塞還擋不掉 → 網頁那邊會先秀縮圖、老師按「匯入」才匯入）
+      let ref = ''; try { ref = req.referrer ? new URL(req.referrer).origin : ''; } catch {}
+      if (ref && ref !== self.location.origin) return Response.redirect(new URL('./', self.registration.scope).href, 303);
       try { const fd = await req.formData(); const files = fd.getAll('photos').filter(f => f && typeof f === 'object' && f.size); n = files.length; await inboxPut(files); }
       catch (err) { console.warn('share-target', err); }
       return Response.redirect(new URL(`./?share=${n}`, self.registration.scope).href, 303);

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v25 (2026-11-06)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v26 (2026-11-06)　（原名：AI 照片篩選器）
+  2026v26 (2026-11-06, build v182): 🔒 資安第二輪 — 相簿庫 index.json、整理記錄讀進來先檢查格式（學年度、日期、時間範圍不能藏程式碼；亂掉的檔案不會讓相簿庫打不開）；
+        CSV 防 Excel 公式注入；分享入口不收別的網站硬塞的照片、分享進來先秀縮圖再匯入
   2026v25 (2026-11-06, build v181): 🔒 資安檢查與修正 — 檔名／相簿庫／整理記錄／記錄器連結裡的文字不會再被當成程式執行（XSS）；
         Gemini Key 改放標頭不放網址；外部程式庫加 SRI 雜湊；加 CSP 限制只能連到清單上的網站；資安與隱私頁加「⑥ 資安檢查」
   2026v24 (2026-11-05, build v180): 📸 相簿封面活動名稱下面加日期（2026/10/7（二），跨天顯示範圍）、下方張數與精選數；直式封面照不再把標題擠出封面
@@ -205,7 +207,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v25 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v26 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3166,7 +3168,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v25 · 2026-11-06</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v26 · 2026-11-06</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3242,7 +3244,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       網站版的 service worker 只快取工具與公開模型，<b>不會攔截或保存照片</b>；Gemini、Google、OpenStreetMap 的連線一律不經過快取。<br>
       本工具是單一 HTML 檔，可用文字編輯器搜尋 <code>fetch(</code>、<code>https://</code> 自行檢查所有連線。
 
-      <div class="pv-h" id="pvSec">⑥ 資安檢查（2026-11-06，2026v25）</div>
+      <div class="pv-h" id="pvSec">⑥ 資安檢查（2026-11-06，2026v25；第二輪 2026v26）</div>
       <div class="pv-note" style="margin-bottom:8px;">近期資安事件多，這一版逐項檢查了「別人有沒有辦法透過這個工具偷資料、執行惡意程式」。結果與處理如下：</div>
       <table class="pv-table">
         <tr><th>檢查項目</th><th>結果</th><th>處理</th></tr>
@@ -3251,13 +3253,15 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="ok"><td>外部程式庫被竄改（供應鏈攻擊）</td><td>舊版直接執行 CDN 上的檔案</td><td>已加 SRI 雜湊：JSZip、face-api.js、onnxruntime-web、heic2any 都比對 SHA-384，被改過一個位元就拒絕執行；人臉模型原本就比對 SHA-256。版本全部鎖定</td></tr>
         <tr class="ok"><td>偷偷把資料傳到別的網站</td><td>程式只連第②表列的網站</td><td>已加 CSP：瀏覽器只准連 jsDelivr、GitHub（模型）、Google 字型、Gemini、Google 登入／雲端硬碟、OpenStreetMap；其他網址一律擋下。就算有漏網的惡意字串，也送不出去</td></tr>
         <tr class="ok"><td>網頁被嵌進別的網站騙點擊（點擊劫持）</td><td>—</td><td>網站版加上禁止被嵌入（frame-ancestors 'none'）、不猜檔案類型（nosniff）、只送出網域不送網址細節（Referrer）、不准用相機／麥克風／定位</td></tr>
-        <tr class="ok"><td>手機分享進來的照片</td><td>只收同一個網站送來的照片，暫存在手機、匯入後立刻刪</td><td>沒有問題</td></tr>
+        <tr class="ok"><td>第二輪：連「應該是數字／日期」的欄位（學年度、日期、分數、座標）、Gemini 與 OpenStreetMap 回傳的文字、匯入的各月份活動 CSV 也換成攻擊字串</td><td>2026v25 還有 3 處會執行（相簿庫的學年度、日期；整理記錄的時間範圍）；格式亂掉的 index.json 會讓相簿庫打不開</td><td>已修正：相簿庫與整理記錄讀進來先檢查格式（學年度只收數字、日期只收 年-月-日…），畫面上一律跳脫；再測 0 個被執行</td></tr>
+        <tr class="ok"><td>CSV 公式注入（用 Excel 打開匯出的 CSV）</td><td>活動名稱開頭是 = + - @ 會被 Excel 當成公式</td><td>已修正：匯出時前面加 '，匯入時自動拿掉</td></tr>
+        <tr class="ok"><td>手機分享進來的照片</td><td>2026v25 時別的網站可以用表單把照片硬塞進分享入口</td><td>已修正：別的網站送來的不收；分享進來的照片先秀縮圖，老師按「匯入」才匯入；暫存匯入後立刻刪</td></tr>
         <tr class="ok"><td>追蹤碼、Cookie、廣告、遙測</td><td>都沒有</td><td>—</td></tr>
         <tr class="warn"><td>動態執行程式碼（eval）</td><td>本工具自己的程式沒有；HEIC 轉檔函式庫（heic2any）內部會用</td><td>CSP 因此開放 eval，但連線仍只准清單上的網站；heic2any 有 SRI 鎖定，只在按「轉 JPEG」時才載入</td></tr>
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v25 程式逐項清點（2026-11-06）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v26 程式逐項清點（2026-11-06）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3657,7 +3661,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       4. 再用「解壓縮全部」正常解壓<br>
 
       <div style="color:var(--accent);font-weight:700;margin:12px 0 6px;">方法二：使用 7-Zip 解壓</div>
-      下載免費的 <b>7-Zip</b>（<a href="https://www.7-zip.org" target="_blank" style="color:var(--accent);">7-zip.org</a>）<br>
+      下載免費的 <b>7-Zip</b>（<a href="https://www.7-zip.org" target="_blank" rel="noopener" style="color:var(--accent);">7-zip.org</a>）<br>
       安裝後對 ZIP 檔按右鍵 → <b>7-Zip → 解壓縮至此</b><br>
       7-Zip 不受 Windows 安全性封鎖影響<br>
 
@@ -3684,7 +3688,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v25（2026-11-06）。</span>
+        <span style="font-size:11px;">本說明對應 2026v26（2026-11-06）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4284,8 +4288,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v25';
-const APP_BUILD = 'v181';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v26';
+const APP_BUILD = 'v182';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -5653,8 +5657,24 @@ async function shareInboxCheck() {
   await idbKvDel('inbox');   // 匯入後立刻刪掉暫存
   const files = (box && Array.isArray(box.files) ? box.files : []).filter(f => f && f.size);
   if (!files.length) { showToast('📲 沒有收到照片（可能是影片或不支援的格式）'); return; }
+  if (!(await shareInboxAsk(files))) { showToast('🗑 已丟掉分享進來的照片'); return; }   // 2026v26 資安
   showToast(`📲 收到 ${files.length} 張照片`);
   await handleFiles(files);
+}
+// 2026v26 資安：分享入口理論上別的網站也能用表單送照片進來 → 先秀縮圖讓老師確認是自己剛剛分享的
+function shareInboxAsk(files) {
+  return new Promise(res => {
+    const urls = files.slice(0, 12).map(f => { try { return URL.createObjectURL(f); } catch { return ''; } });
+    const m = document.createElement('div'); m.className = 'modal-overlay show'; m.id = 'shareAsk';
+    m.innerHTML = `<div class="modal" style="width:440px;max-width:94vw;"><h3>📲 收到 ${files.length} 張分享進來的照片</h3>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0;">${urls.map(u => u ? `<img src="${u}" alt="" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;">` : '').join('')}</div>
+      ${files.length > 12 ? `<div style="font-size:12px;color:var(--text-dim);">…還有 ${files.length - 12} 張</div>` : ''}
+      <p style="font-size:12px;color:var(--text-dim);line-height:1.7;">確認是你剛剛從手機相簿分享的照片，再按「匯入」。不認得的照片請按「不要」。</p>
+      <div class="modal-actions"><button class="modal-btn" id="shareNo">不要</button><button class="modal-btn confirm" id="shareYes">匯入</button></div></div>`;
+    const done = v => { m.remove(); setTimeout(() => urls.forEach(u => u && URL.revokeObjectURL(u)), 1000); res(v); };
+    document.body.appendChild(m);
+    m.querySelector('#shareYes').onclick = () => done(true); m.querySelector('#shareNo').onclick = () => done(false);
+  });
 }
 function sessCanLibrary() { return typeof window.showDirectoryPicker === 'function'; }
 function sessExport() {
@@ -5671,7 +5691,20 @@ async function sessImportFile(file) {
   let j; try { j = JSON.parse(await file.text()); } catch { showToast('❌ 這不是整理記錄檔'); return; }
   if (!j || j.type !== '校園拾光整理記錄' || !Array.isArray(j.keys) || !Array.isArray(j.groups) || typeof j.st !== 'string') { showToast('❌ 這不是校園拾光的整理記錄檔'); return; }
   const id = 's' + sessHash(j.keys.slice().sort().join('\n'));
-  const rec = { keys: j.keys, st: j.st, man: Array.isArray(j.man) ? j.man : [], groups: j.groups, scenario: String(j.scenario || ''), album: !!j.album, acMode: j.acMode === 'album' ? 'album' : 'one',
+  // 2026v26 資安：別台電腦／別人給的檔案 → 每一組只收文字、數字、是非、日期 {$d}、文字陣列；丟掉 __proto__ 這類鍵
+  const okv = v => v == null || ['string', 'number', 'boolean'].includes(typeof v);
+  const cleanG = o => { const g = {}; if (!o || typeof o !== 'object' || Array.isArray(o)) return null;
+    for (const [k, v] of Object.entries(o)) {
+      if (LIB_BAD_KEYS.has(k)) continue;
+      if (k === 'idx') { g.idx = Array.isArray(v) ? v.filter(i => Number.isInteger(i) && i >= 0) : []; continue; }
+      if (okv(v)) g[k] = v;
+      else if (Array.isArray(v) && v.every(okv)) g[k] = v;
+      else if (v && typeof v === 'object' && typeof v.$d === 'string' && !isNaN(new Date(v.$d))) g[k] = { $d: v.$d };
+    }
+    return g; };
+  j.groups = j.groups.map(cleanG).filter(Boolean);
+  j.keys = j.keys.map(k => String(k)); j.st = String(j.st).replace(/[^prd]/g, 'p');
+  const rec = { keys: j.keys, st: j.st, man: Array.isArray(j.man) ? j.man.filter(i => Number.isInteger(i)) : [], groups: j.groups, scenario: String(j.scenario || ''), album: !!j.album, acMode: j.acMode === 'album' ? 'album' : 'one',
     photographer: String(j.photographer || ''), step: +j.step || 4, named: +j.named || 0, total: +j.total || j.groups.length,
     id, savedAt: new Date().toISOString(), appBuild: APP_BUILD, n: j.keys.length, done: false, doneAt: '', imported: true };
   await idbKvSet('sess:' + id, rec);
@@ -8859,7 +8892,7 @@ function renderAiMode() {
       <div class="group-header open" onclick="toggleGroup(this)">
         <div class="group-title">
           ${grpPickBox(g)}📂 <span class="group-name-display" onclick="event.stopPropagation();openRenameModal(${g.id})" title="點擊修改名稱">${escHtml(g.name)}</span>${g.ocrName && g.ocrName !== g.name ? `<span style="font-size:10px;color:var(--purple);margin-left:6px;cursor:pointer;" onclick="event.stopPropagation();applyOcrName(${g.id})" title="點擊採用辨識結果">🔤 建議：${escHtml(g.ocrName)}</span>` : ''}${ntChipHtml(g)}${ocrGroupChipsHtml(g)}
-          ${g.category ? `<span class="cat-chip">${escHtml(g.category)}</span>` : ''}<span class="group-time-range">${g.timeRange}</span>
+          ${g.category ? `<span class="cat-chip">${escHtml(g.category)}</span>` : ''}<span class="group-time-range">${escHtml(g.timeRange)}</span>
           <span class="group-badge">${gs.length} / ${g.photos.length} 張入選</span>
         </div>
         <div class="group-meta">
@@ -8908,7 +8941,7 @@ function renderReviewMode() {
       <div class="group-header open" onclick="toggleGroup(this)">
         <div class="group-title">
           ${grpPickBox(g)}📂 <span class="group-name-display" onclick="event.stopPropagation();openRenameModal(${g.id})">${escHtml(g.name)}</span>${ntChipHtml(g)}${ocrGroupChipsHtml(g)}
-          ${g.category ? `<span class="cat-chip">${escHtml(g.category)}</span>` : ''}<span class="group-time-range">${g.timeRange}</span>
+          ${g.category ? `<span class="cat-chip">${escHtml(g.category)}</span>` : ''}<span class="group-time-range">${escHtml(g.timeRange)}</span>
         </div>
         <div class="group-meta"><button class="rename-btn grp-drop-btn" onclick="event.stopPropagation();dropGroups([${g.id}])" title="這整組相簿不要了（不匯出，可復原）">🗑 不要這組</button><span class="group-arrow">▼</span></div>
       </div>
@@ -9792,7 +9825,7 @@ function showAutoCompleteModal(stats) {
       <div style="font-size:12px;color:var(--text-dim);line-height:1.8;text-align:left;padding:10px;background:var(--surface2);border-radius:var(--radius);margin-bottom:16px;">
         📸 連拍組：${stats.burstCount} 組<br>
         🛡️ 搶救照片：${stats.rescueCount} 張<br>
-        📂 已匯出到：<span style="color:var(--green);font-weight:600;">${stats.rootName}/</span><br>
+        📂 已匯出到：<span style="color:var(--green);font-weight:600;">${escHtml(stats.rootName)}/</span><br>
         ${stats.errorCount > 0 ? `⚠️ ${stats.errorCount} 張分析失敗，已跳過<br>` : ''}
         ${stats.clockSync ? clockSyncHtml(stats.clockSync) : ''}
       </div>
@@ -12506,7 +12539,9 @@ function schoolEventsShort() { const c = schoolEventsCustom(); return c ? (c.nam
 function ntSchoolEvents() { const c = schoolEventsCustom(); return c ? c.list : SCHOOL_EVENTS; }
 function schoolEventsLabel() { const c = schoolEventsCustom(); return c ? `${c.name || '自訂清單'}（${c.list.length} 項）` : `大橋國小（${SCHOOL_EVENTS.length} 項）`; }
 const EV_SY_ORDER = [8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7];
-function csvCell(s) { s = String(s ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }
+// 2026v26 資安：= + - @ 開頭的文字，Excel 會當成公式（可能被用來開網址、執行指令）→ 前面加 '（匯入時再拿掉）
+function csvSafe(v) { return typeof v === 'string' && /^[=+\-@\t\r]/.test(v) ? "'" + v : v; }
+function csvCell(s) { s = String(csvSafe(s) ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }
 function schoolEventsCsv(list) {
   const rows = [['活動名稱', '月份（用、分隔）', '關鍵字（用、分隔，可空白）', '分類（可空白）', '星期六辦（可空白）']];
   for (const e of list) rows.push([e.n, (e.m || []).join('、'), (e.k || []).join('、'), e.c || ntEventCat(e.n), e.sat ? 'Y' : '']);
@@ -12531,7 +12566,7 @@ function parseCsv(text) {
     else cell += ch;
   }
   if (cell !== '' || row.length) { row.push(cell); out.push(row); }
-  return out.filter(r => r.some(x => String(x).trim()));
+  return out.filter(r => r.some(x => String(x).trim())).map(r => r.map(x => /^'[=+\-@]/.test(x) ? x.slice(1) : x));   // 2026v26: 匯出時加的 ' 拿掉
 }
 function schoolEventsFromCsv(text) {
   const rows = parseCsv(text); if (!rows.length) return [];
@@ -12948,7 +12983,7 @@ function ntCsvAdd(store, folder, fileName, g) {
   (store[folder] = store[folder] || []).push([fileName, groupSchoolYear(g).sy, ntTerm(g), g.eventName || '', g.nameExtra || '', (g.tags || []).join('；')]);
 }
 function ntCsvText(rows) {
-  const esc = v => { const s = String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const esc = v => { const s = String(csvSafe(v) ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };   // 2026v26: 防公式
   return '﻿' + ['檔名', '學年度', '學期', '活動名稱', '補充', '標籤'].join(',') + '\n' + rows.map(r => r.map(esc).join(',')).join('\n') + '\n';
 }
 
@@ -13283,11 +13318,48 @@ function libraryEntry(g, p, folder, fileName, photographer) {
     ...(p.gps ? { lat: p.gps.lat, lon: p.gps.lon } : {}),
   };
 }
+// 2026v26 資安：index.json 可能是別人給的或被改過 → 讀進來先整理格式（文字照留、畫面上一律跳脫；數字／日期欄位只收正確格式）
+const LIB_BAD_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+function libIndexSanitize(j) {
+  if (!j || typeof j !== 'object' || !Array.isArray(j.entries)) return { version: 1, entries: [] };
+  const str = v => (v == null || typeof v === 'object') ? '' : String(v);
+  const num = v => (v === '' || v == null) ? '' : (Number.isFinite(+v) && typeof v !== 'boolean' ? +v : '');
+  const DT = /^\d{4}-\d{2}-\d{2}$/, TK = /^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}(:\d{2}(\.\d+)?)?)?$/;
+  const ent = e => {
+    if (!e || typeof e !== 'object' || Array.isArray(e)) return null;
+    const o = {};
+    for (const [k, v] of Object.entries(e)) { if (!LIB_BAD_KEYS.has(k)) o[k] = v; }
+    o.key = str(o.key); if (!o.key) return null;
+    for (const k of ['path', 'file', 'category', 'activity', 'topic', 'event', 'term', 'tags', 'detector', 'photographer', 'exportedAt', 'place', 'placeName', 'trashFile'])
+      if (k in o && typeof o[k] !== 'string') o[k] = str(o[k]);
+    if ('date' in o && !DT.test(str(o.date))) o.date = '';
+    if ('taken' in o && !TK.test(str(o.taken))) o.taken = '';
+    if ('sy' in o) { const s = str(o.sy).trim(); o.sy = /^\d{2,4}$/.test(s) ? +s : ''; }
+    for (const k of ['score', 'faces', 'scanned']) if (k in o) o[k] = num(o[k]);
+    for (const k of ['lat', 'lon']) if (k in o) { const n = num(o[k]); if (n === '') delete o[k]; else o[k] = n; }
+    if ('tier' in o && !/^[a-z]{1,12}$/.test(str(o.tier))) o.tier = 'pick';
+    if ('kind' in o && !/^[a-z]{1,12}$/.test(str(o.kind))) o.kind = 'camera';
+    if ('fav' in o) o.fav = o.fav === true || o.fav === 1;
+    if ('albums' in o) o.albums = Array.isArray(o.albums) ? o.albums.filter(x => x != null && typeof x !== 'object').map(String) : [];
+    return o;
+  };
+  const out = {};
+  for (const [k, v] of Object.entries(j)) { if (!LIB_BAD_KEYS.has(k)) out[k] = v; }
+  out.entries = j.entries.map(ent).filter(Boolean);
+  if ('albums' in out) out.albums = Array.isArray(out.albums) ? out.albums.filter(a => a && typeof a === 'object' && a.id != null).map(a => ({ id: str(a.id), name: str(a.name), created: str(a.created) })) : [];
+  for (const k of ['places', 'placesAuto']) if (k in out) {
+    const m = {}; if (out[k] && typeof out[k] === 'object' && !Array.isArray(out[k])) for (const [c, nm] of Object.entries(out[k])) if (!LIB_BAD_KEYS.has(c) && typeof nm === 'string') m[c] = nm;
+    out[k] = m;
+  }
+  if ('school' in out) { const s = out.school; if (s && Number.isFinite(+s.lat) && Number.isFinite(+s.lon) && typeof s.lat !== 'boolean') out.school = { lat: +s.lat, lon: +s.lon, r: Number.isFinite(+s.r) && +s.r > 0 ? +s.r : 300 }; else delete out.school; }
+  if ('trash' in out) out.trash = Array.isArray(out.trash) ? out.trash.filter(b => b && typeof b === 'object' && Array.isArray(b.entries)).map(b => ({ stamp: str(b.stamp), label: str(b.label), at: str(b.at), entries: b.entries.map(ent).filter(Boolean) })) : [];
+  return out;
+}
 async function libraryIndexRead(root) {
-  try { const f = await (await root.getFileHandle(LIBRARY_INDEX)).getFile(); const j = JSON.parse(await f.text()); if (Array.isArray(j.entries)) return j; }
+  try { const f = await (await root.getFileHandle(LIBRARY_INDEX)).getFile(); const j = JSON.parse(await f.text()); if (Array.isArray(j.entries)) return libIndexSanitize(j); }
   catch {}
   // v149: index.json 不見或壞掉 → 用同資料夾裡最新的備份還原
-  try { const r = await libraryIndexRecover(root); if (r) return r; } catch (e) { console.warn('index recover', e); }
+  try { const r = await libraryIndexRecover(root); if (r) return libIndexSanitize(r); } catch (e) { console.warn('index recover', e); }
   return { version: 1, entries: [] };
 }
 // ── v149: 相簿庫記錄（index.json）備份到同一個資料夾 ──
@@ -14926,7 +14998,7 @@ async function libLoadThumbs(i, from, n) {
 function libraryExportCsv() {
   const rows = libFiltered(); if (!rows.length) { showToast('⚠️ 沒有資料可匯出'); return; }
   const cols = [['學年度', 'sy'], ['分類', 'category'], ['活動', 'activity'], ['宣導主題', 'topic'], ['活動名稱', 'event'], ['標籤', 'tags'], ['拍攝時間', 'taken'], ['層級', 'tier'], ['分數', 'score'], ['人數', 'faces'], ['最愛', '_fav'], ['相簿', '_albums'], ['地點', '_place'], ['類型', '_kind'], ['檔名', 'file'], ['資料夾', 'path'], ['拍攝者', 'photographer'], ['匯出時間', 'exportedAt']];
-  const esc = v => { const s = String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const esc = v => { const s = String(csvSafe(v) ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };   // 2026v26: 防公式
   const KIND = { camera: '相機', screenshot: '截圖', document: '文件翻拍', line: '轉傳' };
   const val = (e, k) => k === 'tier' ? (e.tier === 'record' ? '紀錄' : '精選') : k === '_fav' ? (e.fav ? '★' : '') : k === '_albums' ? libAlbumNames(e)
     : k === '_place' ? libPlaceLabel(e) : k === '_kind' ? (KIND[e.kind] || '') : e[k];
