@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v24 (2026-11-05)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v25 (2026-11-06)　（原名：AI 照片篩選器）
+  2026v25 (2026-11-06, build v181): 🔒 資安檢查與修正 — 檔名／相簿庫／整理記錄／記錄器連結裡的文字不會再被當成程式執行（XSS）；
+        Gemini Key 改放標頭不放網址；外部程式庫加 SRI 雜湊；加 CSP 限制只能連到清單上的網站；資安與隱私頁加「⑥ 資安檢查」
   2026v24 (2026-11-05, build v180): 📸 相簿封面活動名稱下面加日期（2026/10/7（二），跨天顯示範圍）、下方張數與精選數；直式封面照不再把標題擠出封面
   2026v23 (2026-11-05, build v179): 📸 相簿展示第一層改成「類別大相簿」的側面（書背寫類別名稱、本數、張數、學年度），點一本往前抽出、轉正，
         裡面的活動相簿從它的位置散開到架上；「← 所有類別」或 Esc 收回
@@ -193,13 +195,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- 2026v25 資安：CSP — 這個網頁只准連到下面這些網站（其他網址一律被瀏覽器擋下）；不准 <object>、<base>、表單送出。
+     'unsafe-inline'：單一 HTML 檔，程式寫在頁面裡；'unsafe-eval'：HEIC 轉檔函式庫 heic2any（libheif）在背景執行緒用到，拿掉 HEIC 就轉不了 -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://cdn.jsdelivr.net https://media.githubusercontent.com https://raw.githubusercontent.com https://generativelanguage.googleapis.com https://www.googleapis.com https://oauth2.googleapis.com https://accounts.google.com https://nominatim.openstreetmap.org; worker-src 'self' blob:; frame-src 'self' blob: https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- 2026v4: PWA（放在網站上時可以安裝成 App） -->
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ff8c42">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v24 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v25 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3160,7 +3166,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v24 · 2026-11-05</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v25 · 2026-11-06</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3203,8 +3209,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><th>連線</th><th>何時</th><th>下載什麼</th></tr>
         <tr><td>本工具的網站（例如 Netlify 上的網址）</td><td>用網站版開啟時</td><td>工具本身（約 0.3 MB）與圖示；網站主機會有一般的存取紀錄（IP、時間），不含照片。用 file:// 直接開檔案時沒有這一項</td></tr>
         <tr><td>fonts.googleapis.com</td><td>每次開啟網頁</td><td>中文字型（Google 會看到你的 IP，不含照片）</td></tr>
-        <tr><td>cdnjs.cloudflare.com</td><td>每次開啟網頁</td><td>JSZip（壓縮 ZIP 用，MIT）</td></tr>
-        <tr><td>cdn.jsdelivr.net</td><td>開啟 AI 人臉／勾 128 維特徵／HEIC 轉檔時</td><td>onnxruntime-web（MIT）、face-api.js（MIT）、heic2any</td></tr>
+        <tr><td>cdn.jsdelivr.net</td><td>每次開啟網頁；開啟 AI 人臉／勾 128 維特徵／HEIC 轉檔時</td><td>JSZip（壓縮 ZIP 用，MIT）；onnxruntime-web（MIT）、face-api.js（MIT）、heic2any。<b>都比對 SRI 雜湊</b>，被改過就不執行</td></tr>
         <tr><td>media.githubusercontent.com</td><td>開啟 AI 人臉時</td><td>YuNet 人臉模型（MIT，比對 SHA-256 才使用）</td></tr>
         <tr><td>accounts.google.com、googleapis.com</td><td>按「同步到 Google Drive」時</td><td>Google 登入；權限只有 drive.file（只看得到本工具建立的檔案）</td></tr>
       </table>
@@ -3237,7 +3242,22 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       網站版的 service worker 只快取工具與公開模型，<b>不會攔截或保存照片</b>；Gemini、Google、OpenStreetMap 的連線一律不經過快取。<br>
       本工具是單一 HTML 檔，可用文字編輯器搜尋 <code>fetch(</code>、<code>https://</code> 自行檢查所有連線。
 
-      <div class="pv-foot">本頁依 2026v24 程式逐項清點（2026-11-05）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-h" id="pvSec">⑥ 資安檢查（2026-11-06，2026v25）</div>
+      <div class="pv-note" style="margin-bottom:8px;">近期資安事件多，這一版逐項檢查了「別人有沒有辦法透過這個工具偷資料、執行惡意程式」。結果與處理如下：</div>
+      <table class="pv-table">
+        <tr><th>檢查項目</th><th>結果</th><th>處理</th></tr>
+        <tr class="ok"><td>跨站腳本（XSS）：照片檔名、別人的相簿庫 index.json、匯入的整理記錄、⏱ 記錄器的分享連結、AI 回傳的文字，會不會被當成程式執行</td><td>舊版有幾處<b>會</b>（例如檔名或相簿 id 故意寫成程式碼）</td><td>已修正：外來文字一律當純文字顯示；用自動測試把每個來源都換成攻擊字串、走過每個畫面，0 個被執行</td></tr>
+        <tr class="ok"><td>Gemini API Key 外洩</td><td>舊版把 Key 放在網址（?key=…），可能留在瀏覽紀錄或公司代理伺服器記錄</td><td>已改放在連線標頭（x-goog-api-key）；Key 只存在這台電腦的瀏覽器，程式裡沒有寫死任何 Key</td></tr>
+        <tr class="ok"><td>外部程式庫被竄改（供應鏈攻擊）</td><td>舊版直接執行 CDN 上的檔案</td><td>已加 SRI 雜湊：JSZip、face-api.js、onnxruntime-web、heic2any 都比對 SHA-384，被改過一個位元就拒絕執行；人臉模型原本就比對 SHA-256。版本全部鎖定</td></tr>
+        <tr class="ok"><td>偷偷把資料傳到別的網站</td><td>程式只連第②表列的網站</td><td>已加 CSP：瀏覽器只准連 jsDelivr、GitHub（模型）、Google 字型、Gemini、Google 登入／雲端硬碟、OpenStreetMap；其他網址一律擋下。就算有漏網的惡意字串，也送不出去</td></tr>
+        <tr class="ok"><td>網頁被嵌進別的網站騙點擊（點擊劫持）</td><td>—</td><td>網站版加上禁止被嵌入（frame-ancestors 'none'）、不猜檔案類型（nosniff）、只送出網域不送網址細節（Referrer）、不准用相機／麥克風／定位</td></tr>
+        <tr class="ok"><td>手機分享進來的照片</td><td>只收同一個網站送來的照片，暫存在手機、匯入後立刻刪</td><td>沒有問題</td></tr>
+        <tr class="ok"><td>追蹤碼、Cookie、廣告、遙測</td><td>都沒有</td><td>—</td></tr>
+        <tr class="warn"><td>動態執行程式碼（eval）</td><td>本工具自己的程式沒有；HEIC 轉檔函式庫（heic2any）內部會用</td><td>CSP 因此開放 eval，但連線仍只准清單上的網站；heic2any 有 SRI 鎖定，只在按「轉 JPEG」時才載入</td></tr>
+        <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
+        <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
+      </table>
+      <div class="pv-foot">本頁依 2026v25 程式逐項清點（2026-11-06）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3664,7 +3684,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v24（2026-11-05）。</span>
+        <span style="font-size:11px;">本說明對應 2026v25（2026-11-06）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4256,7 +4276,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 
 <div class="toast" id="toast"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" integrity="sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG" crossorigin="anonymous"></script>
 <script>
 // ══════════════════════════════════════════════════════════════
 // ── APP STATE (v82 refactor: unified state object) ──
@@ -4264,8 +4284,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v24';
-const APP_BUILD = 'v180';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v25';
+const APP_BUILD = 'v181';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -4785,7 +4805,7 @@ videoFileInput.addEventListener('change', e => {
   if (!file || !file.type.startsWith('video/')) return showToast('⚠️ 請選擇影片檔案');
   videoFile = file;
   document.getElementById('videoControls').style.display = 'block';
-  document.getElementById('videoUploadZone').innerHTML = `<div class="icon">✅</div><p>已選取：<strong>${file.name}</strong><br>${(file.size / 1024 / 1024).toFixed(1)} MB</p>`;
+  document.getElementById('videoUploadZone').innerHTML = `<div class="icon">✅</div><p>已選取：<strong>${escHtml(file.name)}</strong><br>${(file.size / 1024 / 1024).toFixed(1)} MB</p>`;
   showToast('✅ 影片已載入，點擊「開始截取精彩時刻」');
 });
 
@@ -5279,7 +5299,9 @@ function addCustomGroup() {
 }
 function removeCustomGroup(id) { customGroupDefs = customGroupDefs.filter(g => g.id !== id); renderCustomGroupList(); }
 function updateCustomGroup(id, field, value) { const g = customGroupDefs.find(g => g.id === id); if (g) g[field] = value; }
-function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escHtml(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;'); }
+// 2026v25: 放進 onclick="f(…)" 的字串參數 → JSON 字串再做 HTML 跳脫（單引號、雙引號、< > 都不會跳出去）
+function jsArg(s) { return escHtml(JSON.stringify(String(s ?? ''))); }
 function renderCustomGroupList() {
   setTimeout(() => { try { updateAnalyzeChoice(); } catch {} }, 0);
   document.getElementById('customGroupsList').innerHTML = customGroupDefs.map(g => `
@@ -5561,7 +5583,7 @@ async function sessShowList() {
   const el = document.getElementById('sessListBox'); if (!el) return;
   if (el.innerHTML) { el.innerHTML = ''; return; }
   const list = await sessList();
-  el.innerHTML = `<div class="sess-list">${list.slice(0, 10).map(s => `<div class="sess-row"><span>${sessWhen(s.savedAt)}・${s.n} 張・${s.groups.length} 組・${s.done ? '已匯出' : '第 ' + s.step + ' 步'}<small>${escHtml((s.groups.find(g => g.eventName) || s.groups[0] || {}).name || '')}${s.groups.length > 1 ? ' 等' : ''}</small></span><button onclick="sessDelete('${s.id}')" title="刪掉這筆記錄">🗑</button></div>`).join('')}
+  el.innerHTML = `<div class="sess-list">${list.slice(0, 10).map(s => `<div class="sess-row"><span>${sessWhen(s.savedAt)}・${s.n} 張・${s.groups.length} 組・${s.done ? '已匯出' : '第 ' + s.step + ' 步'}<small>${escHtml((s.groups.find(g => g.eventName) || s.groups[0] || {}).name || '')}${s.groups.length > 1 ? ' 等' : ''}</small></span><button onclick="sessDelete(${jsArg(s.id)})" title="刪掉這筆記錄">🗑</button></div>`).join('')}
     <p class="sess-tip">把那批照片再拖進來，就會自動接上。</p></div>`;
 }
 async function sessDelete(id) { await idbKvDel('sess:' + id); const el = document.getElementById('sessListBox'); if (el) el.innerHTML = ''; sessCheck(); }
@@ -5575,7 +5597,7 @@ async function sessResume() {
   const m = _sessCand; if (!m || window._analysisInProgress) return;
   const s = m.s;
   window._sessId = s.id; _sessLastSig = '';
-  if (s.scenario) { const sel = document.getElementById('scenarioSelect'); if (sel) { window._scenPicked = true; sel.value = s.scenario; try { applyScenario(); } catch {} } }
+  if (s.scenario) { const sel = document.getElementById('scenarioSelect'); if (sel && [...sel.options].some(o => o.value === s.scenario)) { window._scenPicked = true; sel.value = s.scenario; try { applyScenario(); } catch {} } }
   try { acSetMode(s.acMode === 'album' ? 'album' : 'one', true); } catch {}
   albumMode = !!s.album;
   const pn = document.getElementById('photographerName'); if (pn && s.photographer && !pn.value) pn.value = s.photographer;
@@ -6827,8 +6849,7 @@ const FACE_API_MODEL_BASE = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1
 async function loadFaceApiLibrary() {
   if (window.faceapi) { faceApiState.available = true; return true; }
   return new Promise((resolve) => {
-    const s = document.createElement('script');
-    s.src = FACE_API_CDN;
+    const s = sriScript(FACE_API_CDN);   // 2026v25: SRI
     s.onload = () => { faceApiState.available = true; resolve(true); };
     s.onerror = () => {
       faceApiState.error = '載入 face-api.js 失敗（網路問題？）';
@@ -6899,11 +6920,17 @@ const YUNET_MAX_CANDIDATES = 4000;
 const YUNET_MAX_FACES = 200;
 const yunetState = { session: null, loaded: false, loading: null, error: '', inputName: 'input', slowLogged: false, msTotal: 0, runs: 0 };
 
+// 2026v25: 外部程式庫的 SRI 雜湊（npm 原檔的 SHA-384；jsDelivr 與 npm 逐位元相同）。檔案被改過，瀏覽器就拒絕執行
+const SRI = {
+  'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/dist/face-api.js': 'sha384-1hSisOX+umG254ClWaLauH3hLxdwhs8oUHLoKR5xELvquQSDfvu/wLAencDLUqFm',
+  'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.wasm.min.js': 'sha384-6hgW9I+eQKl5CrHLstudPd4L3E2eTYHm+qNKvf4pI+RZnfBJILOHAiaalHV+trgG',
+  'https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js': 'sha384-OTofQ0MEeiSgh62havBcemCIK0gqj809wX6UA0uPISNMRnR6NZyCdGzX3SbLrgwL',
+};
+function sriScript(src) { const s = document.createElement('script'); s.src = src; s.crossOrigin = 'anonymous'; if (SRI[src]) s.integrity = SRI[src]; return s; }
 function loadScriptOnce(src) {
   return new Promise((resolve) => {
     if ([...document.scripts].some(s => s.src === src && s.dataset.loaded)) return resolve(true);
-    const s = document.createElement('script');
-    s.src = src; s.crossOrigin = 'anonymous';
+    const s = sriScript(src);
     s.onload = () => { s.dataset.loaded = '1'; resolve(true); };
     s.onerror = () => resolve(false);
     document.head.appendChild(s);
@@ -8368,7 +8395,7 @@ async function handleScheduleUpload(file) {
     const thumbUrl = await generateThumbFromFile(file, 300);
     previewEl.innerHTML = `<img src="${thumbUrl}" class="schedule-preview-img">`;
   } else {
-    previewEl.innerHTML = `<div style="padding:8px;font-size:12px;color:var(--text-dim);">📄 ${file.name}</div>`;
+    previewEl.innerHTML = `<div style="padding:8px;font-size:12px;color:var(--text-dim);">📄 ${escHtml(file.name)}</div>`;
   }
 
   showScheduleStatus('loading', '🔄 AI 辨識中，請稍候...');
@@ -8393,10 +8420,10 @@ async function handleScheduleUpload(file) {
 - 只回覆純 JSON 陣列`;
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },   // 2026v25: Key 不放網址
         body: JSON.stringify({
           contents: [{
             parts: [
@@ -9020,7 +9047,7 @@ function photoCard(p, rej = false) {
 
   const rTag = p.selected ? null : rejectTag(p);
   return `<div class="photo-card ${borderClass}"${rTag ? ` data-reason="${rTag.k}"` : ''} onclick="openLightbox(${idx})">
-    <img src="${p.thumbUrl}" alt="${p.name}" loading="lazy" decoding="async">
+    <img src="${p.thumbUrl}" alt="${escHtml(p.name)}" loading="lazy" decoding="async">
     ${rTag ? `<div class="reject-tag" title="${escHtml(p.selectReason || '')}">${rTag.label}</div>` : ''}
     <div class="photo-toggle ${toggleClass}" onclick="event.stopPropagation();togglePhoto(${idx})" title="${p.selected?'點擊移除':'點擊加入'}">${toggleIcon}</div>
     ${p.selected ? '' : `<button class="keep-btn" onclick="event.stopPropagation();keepPhoto(${idx})" title="這張我要留（改成入選）">⭐ 留下</button>`}
@@ -9324,7 +9351,7 @@ function updateLightboxContent() {
     const reasonBg = p.selected ? 'rgba(45,212,160,0.1)' : 'rgba(255,71,87,0.08)';
     reasonHtml = `<span style="background:${reasonBg};border-left:3px solid ${reasonColor};padding:6px 10px;margin:4px 0;border-radius:4px;font-size:11px;line-height:1.5;display:block;">${p.selectReason}</span>`;
   }
-  document.getElementById('lightboxInfo').innerHTML = `<button class="lightbox-close" onclick="closeLightbox()">✕ 關閉預覽</button><div class="lb-keys" style="background:rgba(255,171,0,0.15);border:1px solid var(--accent);border-radius:6px;padding:8px 10px;margin:4px 0 10px;font-size:11px;line-height:1.8;"><span style="color:var(--accent);font-weight:700;">⌨️ 快捷鍵</span><br><kbd style="background:var(--surface);padding:1px 6px;border-radius:3px;font-size:10px;border:1px solid var(--border);">← →</kbd> 上/下一張　<kbd style="background:var(--surface);padding:1px 6px;border-radius:3px;font-size:10px;border:1px solid var(--border);">空白鍵</kbd> 入選/移除　<kbd style="background:var(--surface);padding:1px 6px;border-radius:3px;font-size:10px;border:1px solid var(--border);">ESC</kbd> 離開</div><span>📄 ${p.name}</span><span>🕐 ${timeStr}${p.time && customGroupDefs.some(d=>d.start) ? ` <a href="#" onclick="event.preventDefault();event.stopPropagation();calibrateOffsetFromPhoto(${currentLightboxIdx})" title="這張是某時段一開始拍的 → 自動算相機與手機的時間差" style="color:var(--accent);text-decoration:underline;font-size:10px;margin-left:4px;">⏱ 以此校正</a>` : ''}${p.gapFilled ? ' <span title="不在任何時段內，依「空檔照片歸最近時段」歸入" style="font-size:10px;color:var(--text-dim);">🧲 空檔歸入</span>' : ''}</span><span>${starsHtml} ${p.score}分</span>${reasonHtml}<span style="border-top:1px solid var(--border);padding-top:6px;margin-top:2px;font-size:10px;color:var(--text-dim);">── 評分細項 ──</span>${scoreDetails}${(p.textScore || 0) >= 30 ? `<span title="v121：本機判斷這張看得到布條／簡報／看板文字，Gemini 命名會優先用它">🔤 看得到文字 ${p.textScore}</span>` : ''}<span><button class="ocr-chip${p.ocrPinned ? ' on' : ''}" style="margin:2px 0;" onclick="event.stopPropagation();toggleOcrPin(${currentLightboxIdx});openLightbox(${currentLightboxIdx})">🔤 ${p.ocrPinned ? '已指定給 Gemini 讀（按此取消）' : '指定這張給 Gemini 讀布條／簡報'}</button></span><span style="border-top:1px solid var(--border);padding-top:6px;margin-top:2px;">👤 人臉 ${p.faceCount} <small style="color:var(--text-dim);">（${({yunet:'YuNet',faceapi:'face-api',skin:'膚色'})[p.faceDetector] || '膚色'}）</small></span>${currentScenario==='sports'?`<span>🏃 身體清晰 ${p.bodySharpness}</span>`:''}${p.closedEyeCount>0?`<span style="color:var(--yellow);">👁️ 閉眼 ${p.closedEyeCount} 人</span>`:''}<span style="color:${(p.compositionScore||50)>=70?'var(--green)':(p.compositionScore||50)>=40?'var(--text-dim)':'var(--yellow)'}">🎨 構圖 ${p.compositionScore||50}</span><span style="color:${(p.colorScore||50)>=70?'var(--green)':(p.colorScore||50)>=40?'var(--text-dim)':'var(--yellow)'}">🌈 色彩 ${p.colorScore||50}</span><span>📐 ${p.width}×${p.height}</span>${exifHtml}${p.burstGroupId >= 0 ? `<span>📸 連拍組 #${p.burstGroupId + 1}${p.burstGroupId >= 0 ? ' <a href="#" onclick="event.preventDefault();event.stopPropagation();closeLightbox();openSurveyMode('+p.burstGroupId+')" style="color:var(--accent);text-decoration:underline;font-size:10px;margin-left:4px;">📊 並排比較</a>' : ''}</span>` : ''}${g?`<span style="word-break:break-all;">📂 ${g.name}</span>`:''}`;
+  document.getElementById('lightboxInfo').innerHTML = `<button class="lightbox-close" onclick="closeLightbox()">✕ 關閉預覽</button><div class="lb-keys" style="background:rgba(255,171,0,0.15);border:1px solid var(--accent);border-radius:6px;padding:8px 10px;margin:4px 0 10px;font-size:11px;line-height:1.8;"><span style="color:var(--accent);font-weight:700;">⌨️ 快捷鍵</span><br><kbd style="background:var(--surface);padding:1px 6px;border-radius:3px;font-size:10px;border:1px solid var(--border);">← →</kbd> 上/下一張　<kbd style="background:var(--surface);padding:1px 6px;border-radius:3px;font-size:10px;border:1px solid var(--border);">空白鍵</kbd> 入選/移除　<kbd style="background:var(--surface);padding:1px 6px;border-radius:3px;font-size:10px;border:1px solid var(--border);">ESC</kbd> 離開</div><span>📄 ${escHtml(p.name)}</span><span>🕐 ${timeStr}${p.time && customGroupDefs.some(d=>d.start) ? ` <a href="#" onclick="event.preventDefault();event.stopPropagation();calibrateOffsetFromPhoto(${currentLightboxIdx})" title="這張是某時段一開始拍的 → 自動算相機與手機的時間差" style="color:var(--accent);text-decoration:underline;font-size:10px;margin-left:4px;">⏱ 以此校正</a>` : ''}${p.gapFilled ? ' <span title="不在任何時段內，依「空檔照片歸最近時段」歸入" style="font-size:10px;color:var(--text-dim);">🧲 空檔歸入</span>' : ''}</span><span>${starsHtml} ${p.score}分</span>${reasonHtml}<span style="border-top:1px solid var(--border);padding-top:6px;margin-top:2px;font-size:10px;color:var(--text-dim);">── 評分細項 ──</span>${scoreDetails}${(p.textScore || 0) >= 30 ? `<span title="v121：本機判斷這張看得到布條／簡報／看板文字，Gemini 命名會優先用它">🔤 看得到文字 ${p.textScore}</span>` : ''}<span><button class="ocr-chip${p.ocrPinned ? ' on' : ''}" style="margin:2px 0;" onclick="event.stopPropagation();toggleOcrPin(${currentLightboxIdx});openLightbox(${currentLightboxIdx})">🔤 ${p.ocrPinned ? '已指定給 Gemini 讀（按此取消）' : '指定這張給 Gemini 讀布條／簡報'}</button></span><span style="border-top:1px solid var(--border);padding-top:6px;margin-top:2px;">👤 人臉 ${p.faceCount} <small style="color:var(--text-dim);">（${({yunet:'YuNet',faceapi:'face-api',skin:'膚色'})[p.faceDetector] || '膚色'}）</small></span>${currentScenario==='sports'?`<span>🏃 身體清晰 ${p.bodySharpness}</span>`:''}${p.closedEyeCount>0?`<span style="color:var(--yellow);">👁️ 閉眼 ${p.closedEyeCount} 人</span>`:''}<span style="color:${(p.compositionScore||50)>=70?'var(--green)':(p.compositionScore||50)>=40?'var(--text-dim)':'var(--yellow)'}">🎨 構圖 ${p.compositionScore||50}</span><span style="color:${(p.colorScore||50)>=70?'var(--green)':(p.colorScore||50)>=40?'var(--text-dim)':'var(--yellow)'}">🌈 色彩 ${p.colorScore||50}</span><span>📐 ${p.width}×${p.height}</span>${exifHtml}${p.burstGroupId >= 0 ? `<span>📸 連拍組 #${p.burstGroupId + 1}${p.burstGroupId >= 0 ? ' <a href="#" onclick="event.preventDefault();event.stopPropagation();closeLightbox();openSurveyMode('+p.burstGroupId+')" style="color:var(--accent);text-decoration:underline;font-size:10px;margin-left:4px;">📊 並排比較</a>' : ''}</span>` : ''}${g?`<span style="word-break:break-all;">📂 ${escHtml(g.name)}</span>`:''}`;
 
   const btn = document.getElementById('lightboxToggle');
   if (p.selected) {
@@ -9587,7 +9614,7 @@ function renderAutoTimePreview(grps, containerId) {
         ${grps.map((g, i) => `
           <div style="font-size:10px;padding:2px 0;color:var(--text-dim);display:flex;gap:4px;">
             <span style="color:var(--accent);font-weight:600;min-width:16px;">${i+1}.</span>
-            <span style="flex:1;color:var(--text);">${g.name || '未命名'}</span>
+            <span style="flex:1;color:var(--text);">${escHtml(g.name || '未命名')}</span>
             <span style="font-family:var(--mono);font-size:9px;">${formatTime(g.start)}~${formatTime(g.end)}</span>
           </div>
         `).join('')}
@@ -9816,7 +9843,7 @@ function renderMultiRawFolderList() {
   }
   list.innerHTML = multiRawSubfolders.map((sf, i) =>
     `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--surface2);border-radius:6px;margin-bottom:4px;">
-      <span style="font-size:12px;flex:1;">📁 <b>${sf.name}</b>　${sf.files.length} 張</span>
+      <span style="font-size:12px;flex:1;">📁 <b>${escHtml(sf.name)}</b>　${sf.files.length} 張</span>
       <button onclick="removeMultiRawFolder(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;" title="移除">✕</button>
     </div>`).join('');
   const total = multiRawSubfolders.reduce((s, f) => s + f.files.length, 0);
@@ -9829,7 +9856,7 @@ async function multiRawSelectOutput() {
     multiRawOutputDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
     document.getElementById('multiRawOutputBtn').textContent = `✅ ${multiRawOutputDirHandle.name}`;
     document.getElementById('multiRawOutputInfo').style.display = 'block';
-    document.getElementById('multiRawOutputInfo').innerHTML = `💡 匯出到：<span style="color:var(--green);font-weight:600;">${multiRawOutputDirHandle.name}/${new Date().toISOString().slice(0,10)}_整合結果/</span>`;
+    document.getElementById('multiRawOutputInfo').innerHTML = `💡 匯出到：<span style="color:var(--green);font-weight:600;">${escHtml(multiRawOutputDirHandle.name)}/${new Date().toISOString().slice(0,10)}_整合結果/</span>`;
     updateMultiRawStartBtn();
   } catch(e) { if (e.name !== 'AbortError') showToast('❌ ' + e.message); }
 }
@@ -10002,7 +10029,7 @@ function renderMergeFolderList() {
   list.innerHTML = mergeSubfolders.map((sf, i) => {
     const count = sf.sessions.reduce((s, se) => s + se.files.length, 0);
     return `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--surface2);border-radius:6px;margin-bottom:4px;">
-      <span style="font-size:12px;flex:1;">📁 <b>${sf.photographer}</b>　${sf.sessions.length} 個賽程，${count} 張</span>
+      <span style="font-size:12px;flex:1;">📁 <b>${escHtml(sf.photographer)}</b>　${sf.sessions.length} 個賽程，${count} 張</span>
       <button onclick="removeMergeFolder(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;" title="移除">✕</button>
     </div>`;
   }).join('');
@@ -10017,7 +10044,7 @@ async function mergeSelectOutput() {
     mergeOutputDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
     document.getElementById('mergeOutputBtn').textContent = `✅ ${mergeOutputDirHandle.name}`;
     document.getElementById('mergeOutputInfo').style.display = 'block';
-    document.getElementById('mergeOutputInfo').innerHTML = `💡 匯出到：<span style="color:var(--green);font-weight:600;">${mergeOutputDirHandle.name}/${new Date().toISOString().slice(0,10)}_整合結果/</span>`;
+    document.getElementById('mergeOutputInfo').innerHTML = `💡 匯出到：<span style="color:var(--green);font-weight:600;">${escHtml(mergeOutputDirHandle.name)}/${new Date().toISOString().slice(0,10)}_整合結果/</span>`;
     updateMergeStartBtn();
   } catch(e) { if (e.name !== 'AbortError') showToast('❌ ' + e.message); }
 }
@@ -10291,7 +10318,7 @@ async function exportToFolder() {
       showExportProgress('更新相簿庫索引 index.json...', 100, '');
       const n = await libraryIndexMerge(rootDir, indexEntries);
       hideExportProgress();
-      showExportSuccess(`✅ 已存進相簿庫「${rootName}」：新增 ${exported} 張${skipped ? `、略過 ${skipped} 張已存在` : ''}；索引共 ${n} 筆。按「📚 相簿庫」可查詢。`);
+      showExportSuccess(`✅ 已存進相簿庫「${escHtml(rootName)}」：新增 ${exported} 張${skipped ? `、略過 ${skipped} 張已存在` : ''}；索引共 ${n} 筆。按「📚 相簿庫」可查詢。`);
       return;
     }
 
@@ -10319,7 +10346,7 @@ async function exportToFolder() {
     }
 
     hideExportProgress();
-    showExportSuccess(`✅ 已匯出 ${exported} 張照片到「${rootName}」！${failed.length ? `　⚠️ ${failed.length} 張沒寫成功` : ''}`);
+    showExportSuccess(`✅ 已匯出 ${exported} 張照片到「${escHtml(rootName)}」！${failed.length ? `　⚠️ ${failed.length} 張沒寫成功` : ''}`);
     if (failed.length) alert(`有 ${failed.length} 張照片沒寫進資料夾（${fsErrorHint(lastErr)}）：\n${failed.slice(0, 8).join('\n')}${failed.length > 8 ? '\n…' : ''}\n\n建議：匯出到不在雲端同步範圍的資料夾，或改用「下載 ZIP」；如果是原始照片被改過，請重新匯入。`);
 
   } catch (err) {
@@ -11531,7 +11558,7 @@ async function convertHeic() {
   const items = triage.heic; if (!items.length) return;
   if (!window.heic2any) {
     if (!confirm(`要把 ${items.length} 張 HEIC 轉成 JPEG，需從 jsdelivr 下載 heic2any 函式庫（約 1.4MB，只下載一次）。\n照片仍在本機轉檔，不會上傳，也不會被拿去訓練任何模型。繼續？`)) return;
-    const ok = await new Promise(res => { const s = document.createElement('script'); s.src = HEIC2ANY_CDN; s.onload = () => res(true); s.onerror = () => res(false); document.head.appendChild(s); });
+    const ok = await new Promise(res => { const s = sriScript(HEIC2ANY_CDN); s.onload = () => res(true); s.onerror = () => res(false); document.head.appendChild(s); });
     if (!ok || !window.heic2any) { showToast('❌ heic2any 載入失敗（網路？）'); return; }
   }
   let done = 0, fail = 0, withExif = 0; const failed = [];
@@ -11723,9 +11750,9 @@ async function geminiCaptionBatch(apiKey, model, inlines, actName, style, opts =
   inlines.forEach((inl, i) => { parts.push({ text: `【照片 ${i + 1}】` }); parts.push({ inline_data: inl }); });
   const lively = !!style && style !== 'formal' && !!LIB_STYLES[style]; let bad = 0;
   parts.push({ text: (lively ? CAPTION_PROMPT_LIVELY.replace('STYLE', LIB_STYLES[style].cap) : CAPTION_PROMPT).replace(/ACT/g, actName).replace(/\bN\b/g, String(inlines.length)) });
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;   // 2026v25: Key 改放標頭
   for (let attempt = 0; attempt < 6; attempt++) {
-    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
       body: JSON.stringify({ contents: [{ parts }], generationConfig: { ...GEMINI_GEN, temperature: lively ? 0.9 : 0.4 } }), signal: opts.signal });
     if (res.status === 429 || res.status === 503) { const w = 8 * (attempt + 1); if (typeof opts !== 'undefined' && opts.onWait) opts.onWait(w, attempt + 2, res.status); await new Promise(r => setTimeout(r, w * 1000)); continue; }
     if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error?.message || `API 錯誤 ${res.status}`); }
@@ -13097,9 +13124,9 @@ async function geminiOcrBatch(apiKey, model, items) {
   const parts = [];
   for (let i = 0; i < items.length; i++) { parts.push({ text: `【照片 ${i + 1}】` }); parts.push({ inline_data: items[i].inline }); }
   parts.push({ text: OCR_PROMPT.replace('N', String(items.length)).replace('TOPICS', promoPromptList()) });
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;   // 2026v25: Key 改放標頭
   for (let attempt = 0; attempt < 4; attempt++) {
-    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
       body: JSON.stringify({ contents: [{ parts }], generationConfig: { temperature: 0.1, maxOutputTokens: 2048, responseMimeType: 'application/json' } }) });
     if (res.status === 429 || res.status === 503) { const w = 8 * (attempt + 1); if (typeof opts !== 'undefined' && opts.onWait) opts.onWait(w, attempt + 2, res.status); await new Promise(r => setTimeout(r, w * 1000)); continue; }
     if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error?.message || `API 錯誤 ${res.status}`); }
@@ -13871,10 +13898,10 @@ function libViewHtml(rows) {
     if (_libAlbum) {
       const a = albums.find(x => x.id === _libAlbum); if (!a) { _libAlbum = ''; return libViewHtml(rows); }
       const list = sorted.filter(e => (e.albums || []).includes(a.id));
-      return head(`<button onclick="libBack()">← 所有相簿</button> 📁 ${escHtml(a.name)}`, `${list.length} 張`, `<span style="flex:1"></span><button onclick="libRenameAlbum('${a.id}')">✏️ 改名</button><button onclick="libDeleteAlbum('${a.id}')">🗑 刪除相簿</button>`)
+      return head(`<button onclick="libBack()">← 所有相簿</button> 📁 ${escHtml(a.name)}`, `${list.length} 張`, `<span style="flex:1"></span><button onclick="libRenameAlbum(${jsArg(a.id)})">✏️ 改名</button><button onclick="libDeleteAlbum(${jsArg(a.id)})">🗑 刪除相簿</button>`)
         + scroll(list.length ? libGridHtml(list) : empty('這本相簿還是空的。<br>到「全部照片」「依日期」等勾選照片，再按上方「📁 加入相簿」。'));
     }
-    const cards = albums.map(a => { const list = sorted.filter(e => (e.albums || []).includes(a.id)); return libCardHtml(list[0], `📁 ${escHtml(a.name)}`, `${list.length} 張${libRange(list) ? ' · ' + libRange(list) : ''}`, `libOpen('album','${a.id}')`); }).join('');
+    const cards = albums.map(a => { const list = sorted.filter(e => (e.albums || []).includes(a.id)); return libCardHtml(list[0], `📁 ${escHtml(a.name)}`, `${list.length} 張${libRange(list) ? ' · ' + libRange(list) : ''}`, `libOpen('album',${jsArg(a.id)})`); }).join('');
     return head('📁 我的相簿', `${albums.length} 本`) + `<div class="lib-note">自己建的相簿，例如「校網首頁候選」「畢業光碟」。一張照片可以放進好幾本，照片檔案不會被複製或移動（只記在 index.json）。</div>`
       + scroll(`<div class="lib-cards"><div class="lib-card new" onclick="libNewAlbum()"><div class="cv">＋</div><div class="n">新增相簿</div><div class="m">勾選照片後也可以直接新增</div></div>${cards}</div>`);
   }
@@ -13892,17 +13919,17 @@ function libViewHtml(rows) {
       const sk = [...subs.keys()].sort((a, b) => (a === '') - (b === '') || subs.get(b).length - subs.get(a).length);
       const cells = sk.filter(s => s.startsWith('c:'));
       const ed = `<span style="flex:1"></span>`
-        + (_libPlace === 'none' ? `<button onclick="libSelAll()">全選</button> → 下方「📍 設地點」` : `<button onclick="libRenamePlace('${jsq(_libPlace)}')">✏️ 取名字</button>`)
-        + (cells.length ? ` <button onclick="libLookupPOI('${jsq(_libPlace)}')" title="把這裡 ${cells.length} 個位置的座標送到 OpenStreetMap 查附近地標名稱（照片不送）">🌐 查地標名稱</button>` : '');
+        + (_libPlace === 'none' ? `<button onclick="libSelAll()">全選</button> → 下方「📍 設地點」` : `<button onclick="libRenamePlace(${jsArg(_libPlace)})">✏️ 取名字</button>`)
+        + (cells.length ? ` <button onclick="libLookupPOI(${jsArg(_libPlace)})" title="把這裡 ${cells.length} 個位置的座標送到 OpenStreetMap 查附近地標名稱（照片不送）">🌐 查地標名稱</button>` : '');
       // v153: 第二層：依附近地點分段
       const body = sk.length > 1 || (sk[0] && sk[0] !== '')
-        ? sk.map(s => { const l = subs.get(s), nm = libSubName(s, l[0]); return `<div class="lib-place-sub"><div class="lib-place-sh"><b>${escHtml(nm)}</b><span>${meta(l)}</span>${s.startsWith('c:') ? `<button class="tip-link" onclick="libRenamePlace('${jsq(s)}')">✏️ 取名字</button>` : ''}</div>${libGridHtml(l)}</div>`; }).join('')
+        ? sk.map(s => { const l = subs.get(s), nm = libSubName(s, l[0]); return `<div class="lib-place-sub"><div class="lib-place-sh"><b>${escHtml(nm)}</b><span>${meta(l)}</span>${s.startsWith('c:') ? `<button class="tip-link" onclick="libRenamePlace(${jsArg(s)})">✏️ 取名字</button>` : ''}</div>${libGridHtml(l)}</div>`; }).join('')
         : libGridHtml(list);
       return head(`<button onclick="libBack()">← 所有地點</button> ${escHtml(libPlaceName(_libPlace))}`, meta(list), ed) + scroll(list.length ? body : empty('沒有照片'));
     }
     const groups = new Map(); for (const e of sorted) { const k = libPlaceKey(e); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(e); }
-    const card = k => libCardHtml(groups.get(k)[0], escHtml(k.startsWith('d:') && !(_libIndex?.places || {})[k] ? '📍 ' + k.split('|')[1] : libPlaceName(k)), meta(groups.get(k)), `libOpen('place','${jsq(k)}')`,
-      k !== 'none' ? `<button class="ed" onclick="event.stopPropagation();libRenamePlace('${jsq(k)}')">✏️</button>` : '');
+    const card = k => libCardHtml(groups.get(k)[0], escHtml(k.startsWith('d:') && !(_libIndex?.places || {})[k] ? '📍 ' + k.split('|')[1] : libPlaceName(k)), meta(groups.get(k)), `libOpen('place',${jsArg(k)})`,
+      k !== 'none' ? `<button class="ed" onclick="event.stopPropagation();libRenamePlace(${jsArg(k)})">✏️</button>` : '');
     // v153: 像 iPhone 的「地點」— 校內最前面、再依縣市分段（每個鄉鎮市區一張卡）、其他地點、沒有位置
     const byCnt = (a, b) => groups.get(b).length - groups.get(a).length;
     const keys = [...groups.keys()], secs = [];
@@ -13985,7 +14012,7 @@ function libRenderSelBar() {
     <button onclick="libSelEdit()" title="移到別的活動、加／拿掉標籤">✏️ 編輯</button>
     <button class="lib-del" onclick="libSelDelete()" title="移到回收桶">🗑 刪除</button>
     <button onclick="libSelFav(true)">⭐ 設為最愛</button><button onclick="libSelFav(false)">☆ 取消最愛</button>
-    <select id="libAddAlbumSel" onchange="const v=this.value;this.value='';if(v)libAddSelToAlbum(v)"><option value="">📁 加入相簿…</option>${albums.map(a => `<option value="${a.id}">${escHtml(a.name)}</option>`).join('')}<option value="__new">＋ 新相簿…</option></select>
+    <select id="libAddAlbumSel" onchange="const v=this.value;this.value='';if(v)libAddSelToAlbum(v)"><option value="">📁 加入相簿…</option>${albums.map(a => `<option value="${escHtml(a.id)}">${escHtml(a.name)}</option>`).join('')}<option value="__new">＋ 新相簿…</option></select>
     ${_libView === 'album' && _libAlbum ? `<button onclick="libRemoveSelFromAlbum()">➖ 從這本相簿移除</button>` : ''}
     <select onchange="const v=this.value;this.value='';if(v)libSetPlaceSel(v)" title="相機照片沒有 GPS → 自己設地點"><option value="">📍 設地點…</option>${libPlaceChoices().map(n => `<option value="${escHtml(n)}">${escHtml(n)}</option>`).join('')}<option value="__new">＋ 其他地點…</option><option value="__clear">✕ 清除手動地點</option></select>
     ${_libView === 'place' ? `<button onclick="libSetSchoolFromSel()">🏫 用這張當學校位置</button>` : ''}
@@ -14287,9 +14314,9 @@ async function geminiFbPost(apiKey, model, inlines, unit, act, date, caps, style
   const pts = String(opts.points || '').trim().slice(0, 600);   // v153: 老師的重點最後才放進去（避免裡面的字被當成佔位符替換）
   parts.push({ text: FB_PROMPT.replace('STYLE', styleRule).replace('TYPE', type || '（請從活動名稱和照片判斷）').replace(/UNIT/g, unit).replace(/ACT/g, act).replace(/DATE/g, date).replace(/CAPS/g, caps.map((c, i) => `${i + 1}. ${c}`).join('\n') || '（無）').replace(/\bN\b/g, String(inlines.length))
     .replace('POINTS', () => pts ? '\n' + pts.split(/\n+/).map(s => s.trim()).filter(Boolean).map(s => '・' + s.replace(/^[・\-*•\d.、]+\s*/, '')).join('\n') : '（沒寫，請自己從照片和活動名稱發揮）') });
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;   // 2026v25: Key 改放標頭
   for (let attempt = 0; attempt < 6; attempt++) {
-    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
       body: JSON.stringify({ contents: [{ parts }], generationConfig: { ...GEMINI_GEN, temperature: style === 'formal' ? 0.6 : 0.95 } }), signal: opts.signal });
     if (res.status === 429 || res.status === 503) { const w = 8 * (attempt + 1); if (typeof opts !== 'undefined' && opts.onWait) opts.onWait(w, attempt + 2, res.status); await new Promise(r => setTimeout(r, w * 1000)); continue; }
     if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error?.message || `API 錯誤 ${res.status}`); }
@@ -16031,7 +16058,7 @@ function _stepState() {
   const running = !!window._analysisInProgress;
   const sel = photos.filter(p => p.selected).length;
   const scen = document.getElementById('scenarioSelect');
-  const scenName = scenNeedPick() ? '還沒選' : scen ? scen.options[scen.selectedIndex].textContent.replace(/^\S+\s*/, '') : '';
+  const scenName = scenNeedPick() ? '還沒選' : scen && scen.selectedIndex >= 0 ? scen.options[scen.selectedIndex].textContent.replace(/^\S+\s*/, '') : '';
   const customOn = document.querySelector('.tab-switch .tab-btn[data-mode="custom"]')?.classList.contains('active');
   const defs = customGroupDefs.filter(d => d.start && d.end).length;
   const grp = customOn && defs ? `${defs} 個時段` : `每 ${document.getElementById('timeGap')?.value || 20} 分`;
@@ -16452,7 +16479,7 @@ function renderPromoSettings() {
   const c = promoCfg(), off = new Set((c.disabled || []).map(canonicalPromoName));   // v154
   const groupsOrder = [...new Set(PROMO_TOPICS.map(t => t.g))];
   el.innerHTML = groupsOrder.map(gr => `<div class="pt-group"><div class="pt-gname">${gr}</div>${PROMO_TOPICS.filter(t => t.g === gr).map(t =>
-    `<label class="pt-item" title="${escHtml(t.note || t.kw || '')}"><input type="checkbox" ${off.has(t.name) ? '' : 'checked'} onchange="togglePromoTopic('${escHtml(t.name)}', this.checked)"> ${escHtml(t.name)}${t.note ? `<small>${escHtml(t.note)}</small>` : ''}</label>`).join('')}</div>`).join('')
+    `<label class="pt-item" title="${escHtml(t.note || t.kw || '')}"><input type="checkbox" ${off.has(t.name) ? '' : 'checked'} onchange="togglePromoTopic(${jsArg(t.name)}, this.checked)"> ${escHtml(t.name)}${t.note ? `<small>${escHtml(t.note)}</small>` : ''}</label>`).join('')}</div>`).join('')
     + `<div class="pt-group"><div class="pt-gname">自訂</div>${(c.custom || []).map((n, i) => `<label class="pt-item">${escHtml(n)} <a href="#" onclick="event.preventDefault();removeCustomPromo(${i})" style="color:var(--red);margin-left:4px;">✕</a></label>`).join('') || '<div class="sd-note">（尚無）</div>'}</div>`;
 }
 function togglePromoTopic(name, on) {
@@ -16561,7 +16588,7 @@ function renderSurveyCards() {
       <div class="survey-card-img">
         <div class="survey-card-rank">${i + 1}</div>
         <div class="survey-card-toggle ${toggleClass}" onclick="event.stopPropagation();surveyToggle(${i})">${toggleIcon}</div>
-        <img src="${imgSrc}" alt="${p.name}" data-survey-idx="${i}" loading="lazy">
+        <img src="${imgSrc}" alt="${escHtml(p.name)}" data-survey-idx="${i}" loading="lazy">
       </div>
       <div class="survey-card-info">
         <div><span class="survey-score" style="color:${scoreColor}">${p.score}</span>${renderStars(p.stars||0)} ${p.selected ? '<span style="color:var(--green);">✅ 入選</span>' : '<span style="color:var(--red);">❌ 淘汰</span>'}</div>
@@ -16570,7 +16597,7 @@ function renderSurveyCards() {
         ${exifLine}
         <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">👤 ${p.faceCount}人　📐 ${p.width}×${p.height}</div>
         ${p.closedEyeCount > 0 ? `<div style="color:var(--yellow);font-size:10px;">👁️ 閉眼 ${p.closedEyeCount} 人</div>` : ''}
-        <div style="font-size:9px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.name}">📄 ${p.name}</div>
+        <div style="font-size:9px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(p.name)}">📄 ${escHtml(p.name)}</div>
       </div>
     </div>`;
   }).join('');
@@ -16809,12 +16836,12 @@ function tbRenderReport(results) {
 
   if (okFail.length > 0) {
     h += `<div class="tb-mismatch"><h5>⚠️ 誤殺 ${okFail.length} 張</h5><ul>`;
-    for (const r of okFail) h += `<li><strong>${r.name}</strong> 懲罰${r.totalPen} (遮${r.obP}+截${r.ftP}+焦${r.fmP}+糊${r.bsP}+臉${r.pcP}+前失焦${r.ffP}+快門${r.sbP||0})${r.exifStr?' ['+r.exifStr+']':''}</li>`;
+    for (const r of okFail) h += `<li><strong>${escHtml(r.name)}</strong> 懲罰${r.totalPen} (遮${r.obP}+截${r.ftP}+焦${r.fmP}+糊${r.bsP}+臉${r.pcP}+前失焦${r.ffP}+快門${r.sbP||0})${r.exifStr?' ['+r.exifStr+']':''}</li>`;
     h += `</ul></div>`;
   }
   if (badPass.length > 0) {
     h += `<div class="tb-mismatch"><h5>⚠️ 漏網 ${badPass.length} 張</h5><ul>`;
-    for (const r of badPass) h += `<li><strong>${r.name}</strong> 懲罰${r.totalPen} 分數${r.score}</li>`;
+    for (const r of badPass) h += `<li><strong>${escHtml(r.name)}</strong> 懲罰${r.totalPen} 分數${r.score}</li>`;
     h += `</ul></div>`;
   }
 
@@ -16827,7 +16854,7 @@ function tbRenderReport(results) {
     const pc = v => v > 0 ? 'tb-pen' : 'tb-pen-zero';
     return `<tr style="border-left:2px solid ${r.zone==='ok'?'var(--green)':'var(--red)'}">
       <td>${r.zone === 'ok' ? '✅' : '❌'}</td>
-      <td class="fname" title="${r.name}">${r.name}</td>
+      <td class="fname" title="${escHtml(r.name)}">${escHtml(r.name)}</td>
       <td style="font-weight:700;color:${r.score>=50?'var(--green)':'var(--red)'}">${r.score}</td>
       <td>${r.sharpness}</td><td>${r.bodySharp}</td><td>${r.faceCount}</td><td>${r.faceClarity}</td><td>${r.faceProminence}</td><td>${r.closedEyes>0?'<span style="color:var(--accent2)">'+r.closedEyes+'</span>':'0'}</td><td>${r.exposure}</td>
       <td class="${pc(r.obP)}">${r.obP}</td><td class="${pc(r.ftP)}">${r.ftP}</td><td class="${pc(r.fmP)}">${r.fmP}</td><td class="${pc(r.bsP)}">${r.bsP}</td><td class="${pc(r.pcP)}">${r.pcP}</td><td class="${pc(r.ffP)}">${r.ffP}</td><td class="${pc(r.sbP||0)}">${r.sbP||0}</td>
