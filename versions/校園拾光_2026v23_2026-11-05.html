@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v22 (2026-11-05)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v23 (2026-11-05)　（原名：AI 照片篩選器）
+  2026v23 (2026-11-05, build v179): 📸 相簿展示第一層改成「類別大相簿」的側面（書背寫類別名稱、本數、張數、學年度），點一本往前抽出、轉正，
+        裡面的活動相簿從它的位置散開到架上；「← 所有類別」或 Esc 收回
   2026v22 (2026-11-05, build v178): 📸 相簿展示（原「書櫃」）— 皮革相簿封面朝外擺在相簿架上；進場落下、滑鼠傾斜光澤、點了飛到中間、
         翻開封面、黑色相簿紙＋白邊相紙＋相角、翻頁陰影、收回飛回原位
   2026v21 (2026-11-05, build v177): 📚 相簿書櫃 — 相簿庫每個活動是一本書（一個學年度一層），點一本抽出來、打開封面、第一頁是活動大綱，
@@ -196,7 +198,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v22 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v23 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2617,6 +2619,34 @@
   @media (max-width: 760px) { .bk-head { padding: 16px 14px 4px; } .bk-title { font-size: 26px; } .bk-shelves { padding: 4px 12px 40px; } .bk-row { padding: 18px 4px 0; } .al-pages { display: none; } }
   html.reduce-motion .al, html.reduce-motion .bk-leaf, html.reduce-motion .bk-cover, html.reduce-motion .bk-light, html.reduce-motion .bk-dust i { animation: none !important; transition: none !important; }
   @media (prefers-reduced-motion: reduce) { .al, .bk-light, .bk-dust i { animation: none !important; } }
+  /* 2026v23 第一層：類別大相簿的書背（側面） */
+  .bk-back { font-family: inherit; font-size: 12.5px; padding: 5px 12px; border-radius: 999px; border: 1px solid rgba(255,214,150,.35); background: rgba(0,0,0,.25); color: #f3d9a4; cursor: pointer; margin-bottom: 4px; transition: background .2s, transform .2s; }
+  .bk-back:hover { background: rgba(217,179,109,.22); transform: translateX(-3px); }
+  .bk-spines-wrap { display: flex; flex-direction: column; justify-content: center; min-height: 0; }
+  .bk-spines { justify-content: center; align-items: flex-end; gap: 6px; padding: 30px 20px 0; flex-wrap: wrap; row-gap: 26px; perspective: 1400px; }
+  .sp { position: relative; width: var(--sw); height: var(--sh); padding: 0; border: 0; cursor: pointer; font-family: inherit; color: #fbeed2; border-radius: 6px 6px 3px 3px; display: flex; flex-direction: column; align-items: center; overflow: hidden;
+    background: linear-gradient(90deg, rgba(0,0,0,.55) 0, rgba(0,0,0,.15) 7%, rgba(255,255,255,.2) 20%, rgba(255,255,255,.06) 34%, rgba(0,0,0,.06) 66%, rgba(0,0,0,.3) 88%, rgba(0,0,0,.6) 100%),
+      repeating-radial-gradient(circle at 30% 20%, rgba(0,0,0,.06) 0 1px, transparent 1px 3px), linear-gradient(180deg, var(--c2), var(--c1));
+    box-shadow: 4px 0 6px rgba(0,0,0,.45), inset 0 2px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.35);
+    transform-origin: 50% 100%; transition: transform .4s cubic-bezier(.3,1.4,.5,1), filter .4s, opacity .4s; animation: spIn .75s cubic-bezier(.2,.9,.3,1.2) backwards; animation-delay: var(--d); }
+  @keyframes spIn { from { opacity: 0; transform: translateY(-90px) rotate(-6deg); } }
+  .bk-room.again .sp { animation: none; }
+  .sp:hover, .sp:focus-visible { transform: translateY(-22px) rotateY(-14deg); filter: brightness(1.12) drop-shadow(0 18px 18px rgba(0,0,0,.5)); outline: none; }
+  .sp.pull { transform: translateY(-80px) scale(1.12); filter: brightness(1.3) drop-shadow(0 0 30px rgba(255,214,150,.55)); transition-duration: .5s; z-index: 3; }
+  .sp.dim { opacity: .35; filter: grayscale(.4) brightness(.7); transform: translateY(6px); }
+  .sp-ridge { width: 100%; height: 22px; flex: none; position: relative; background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(255,255,255,.12) 45%, rgba(0,0,0,.3)); }
+  .sp-ridge::before, .sp-ridge::after { content: ''; position: absolute; left: 8%; right: 8%; height: 2px; background: linear-gradient(90deg, #8e6524, #fbe7b4 50%, #8e6524); }
+  .sp-ridge::before { top: 5px; } .sp-ridge::after { bottom: 5px; }
+  .sp-ridge.t { margin-top: 18px; } .sp-ridge.b { margin-bottom: 18px; }
+  .sp-label { margin: 10px 0 0; width: 74%; padding: 6px 2px; background: linear-gradient(180deg, #f6eedc, #e3d4b4); color: #4a3418; font-size: 10px; font-weight: 800; line-height: 1.3; text-align: center; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(120,90,40,.45), 0 2px 3px rgba(0,0,0,.35); font-family: var(--mono); }
+  .sp-title { flex: 1; min-height: 0; margin: 14px 0 10px; writing-mode: vertical-rl; text-orientation: mixed; font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif; font-weight: 900; letter-spacing: 3px; font-size: var(--fs, 24px); line-height: 1.1; white-space: nowrap; overflow: hidden;
+    background: linear-gradient(90deg, #b8893c 0%, #fff1cf 45%, #e7bf72 70%, #b8893c 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(1px 1px 0 rgba(0,0,0,.6)); }
+  .sp-meta { font-size: 10.5px; line-height: 1.35; text-align: center; color: rgba(255,232,190,.85); margin-bottom: 10px; font-family: var(--mono); } .sp-meta b { font-size: 15px; color: #fff1cf; }
+  .sp-shine { position: absolute; inset: 0; background: linear-gradient(105deg, transparent 30%, rgba(255,240,210,.25) 45%, transparent 60%); transform: translateX(-120%); transition: transform .8s; pointer-events: none; }
+  .sp:hover .sp-shine { transform: translateX(120%); }
+  .bk-tip { text-align: center; margin-top: 34px; font-size: 13px; color: rgba(246,236,220,.55); animation: bkBlink 2.4s ease-in-out infinite; }
+  @media (max-width: 760px) { .bk-spines { gap: 5px; padding: 20px 6px 0; flex-wrap: nowrap; } .sp-title { letter-spacing: 1px; } .sp-label { font-size: 9px; } }
+  html.reduce-motion .sp { animation: none !important; transition: none !important; }
   /* 2026v18: 實測修正 */
   body:has(.modal-overlay.show) #exportSuccessMsg, body:has(.modal-overlay.show) .grp-pick-bar { display: none !important; }
   #exportSuccessMsg { cursor: pointer; }
@@ -3128,7 +3158,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v22 · 2026-11-05</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v23 · 2026-11-05</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3205,7 +3235,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       網站版的 service worker 只快取工具與公開模型，<b>不會攔截或保存照片</b>；Gemini、Google、OpenStreetMap 的連線一律不經過快取。<br>
       本工具是單一 HTML 檔，可用文字編輯器搜尋 <code>fetch(</code>、<code>https://</code> 自行檢查所有連線。
 
-      <div class="pv-foot">本頁依 2026v22 程式逐項清點（2026-11-05）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v23 程式逐項清點（2026-11-05）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3632,7 +3662,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v22（2026-11-05）。</span>
+        <span style="font-size:11px;">本說明對應 2026v23（2026-11-05）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4232,8 +4262,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v22';
-const APP_BUILD = 'v178';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v23';
+const APP_BUILD = 'v179';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -12013,7 +12043,7 @@ function openBookshelf() {
   let st = document.getElementById('bkStage'); if (st) st.remove();
   st = document.createElement('div'); st.id = 'bkStage'; st.setAttribute('role', 'dialog'); st.setAttribute('aria-label', '相簿展示');
   document.body.appendChild(st);
-  _bk = { books: bkBooks(), open: null };
+  _bk = { books: bkBooks(), open: null, cat: null };
   bkRenderShelf();
   document.addEventListener('keydown', bkKey);
   window.addEventListener('resize', bkResize);
@@ -12029,7 +12059,7 @@ let _bkRz = 0;
 function bkResize() { clearTimeout(_bkRz); _bkRz = setTimeout(() => { if (_bk && !_bk.open) bkRenderShelf(true); }, 200); }
 function bkKey(e) {
   if (!_bk) return;
-  if (e.key === 'Escape') { e.preventDefault(); if (_bk.open) bkClose(); else closeBookshelf(); }
+  if (e.key === 'Escape') { e.preventDefault(); if (_bk.open) bkClose(); else if (_bk.cat) bkBackCats(); else closeBookshelf(); }
   else if (_bk.open && (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ')) { e.preventDefault(); bkFlip(1); }
   else if (_bk.open && (e.key === 'ArrowLeft' || e.key === 'PageUp')) { e.preventDefault(); bkFlip(-1); }
 }
@@ -12045,18 +12075,31 @@ function bkAlbumHtml(b, i, n) {
       <span class="al-shine"></span></span>
     ${b.isNew ? '<span class="al-new">NEW</span>' : ''}</button>`;
 }
+// 第一層：每個「大類別」是一本大相簿，先看側面（書背上寫類別名稱）；點了整個展開成裡面的活動相簿
+function bkCats() {
+  const m = new Map();
+  _bk.books.forEach((b, i) => { const k = b.cat || '其他'; if (!m.has(k)) m.set(k, { cat: k, ids: [], n: 0, c1: b.c1, c2: b.c2, sys: new Set() }); const c = m.get(k); c.ids.push(i); c.n += b.items.length; if (b.sy) c.sys.add(+b.sy); });
+  return [...m.values()].map(c => { const sy = [...c.sys].sort((a, b) => a - b); c.syLabel = sy.length ? (sy[0] === sy[sy.length - 1] ? `${sy[0]}` : `${sy[0]}–${sy[sy.length - 1]}`) : '';
+    c.w = Math.round(Math.min(132, 70 + Math.sqrt(c.n) * 2.8)); c.h = 380 + bkHash(c.cat) % 50; return c; })
+    .sort((x, y) => y.ids.length - x.ids.length || y.n - x.n);
+}
+function bkRoomHead(title, sub, back) {
+  return `<div class="bk-light"></div><div class="bk-dust">${Array.from({ length: 14 }, (_, k) => `<i style="--x:${(k * 73) % 100}%;--s:${6 + (k * 37) % 9}s;--dl:${(k * 0.7) % 6}s"></i>`).join('')}</div>
+    <header class="bk-head"><div>${back ? `<button class="bk-back" onclick="bkBackCats()" title="回到所有類別（Esc）">← 所有類別</button>` : '<div class="bk-kicker">PHOTO ALBUMS</div>'}<div class="bk-title">${escHtml(title)}</div><div class="bk-sub">${sub}</div></div>
+      <button class="bk-x" onclick="closeBookshelf()" title="關閉">✕</button></header>`;
+}
 function bkRenderShelf(again) {
   const st = document.getElementById('bkStage'); if (!st || !_bk) return;
-  const bySy = new Map(); _bk.books.forEach((b, i) => { const k = b.sy || '—'; if (!bySy.has(k)) bySy.set(k, []); bySy.get(k).push(i); });
+  if (!_bk.cat) return bkRenderCats(again);
+  const ids0 = _bk.books.map((b, i) => i).filter(i => (_bk.books[i].cat || '其他') === _bk.cat);
+  const bySy = new Map(); ids0.forEach(i => { const k = _bk.books[i].sy || '—'; if (!bySy.has(k)) bySy.set(k, []); bySy.get(k).push(i); });
   const sys = [...bySy.keys()].sort((a, b) => String(b).localeCompare(String(a)));
-  const total = _bk.books.reduce((s, b) => s + b.items.length, 0);
+  const total = ids0.reduce((s, i) => s + _bk.books[i].items.length, 0);
   const W = Math.min(innerWidth, 1280) - (innerWidth < 760 ? 24 : 96), itemW = innerWidth < 760 ? Math.floor((W - 18) / 2) : 176, gap = innerWidth < 760 ? 18 : 30;
   const per = Math.max(1, Math.floor((W + gap) / (itemW + gap)));
   let n = 0;
   st.style.setProperty('--alw', itemW + 'px'); st.style.setProperty('--algap', gap + 'px');
-  st.innerHTML = `<div class="bk-room${again ? ' again' : ''}"><div class="bk-light"></div><div class="bk-dust">${Array.from({ length: 14 }, (_, k) => `<i style="--x:${(k * 73) % 100}%;--s:${6 + (k * 37) % 9}s;--dl:${(k * 0.7) % 6}s"></i>`).join('')}</div>
-    <header class="bk-head"><div><div class="bk-kicker">PHOTO ALBUMS</div><div class="bk-title">我們的相簿</div><div class="bk-sub">${_bk.books.length} 本相簿・${total} 張相片${_libFilter.q || _libFilter.sy || _libFilter.cat ? '（依相簿庫目前的篩選）' : ''}・點一本打開來看</div></div>
-      <button class="bk-x" onclick="closeBookshelf()" title="關閉（Esc）">✕</button></header>
+  st.innerHTML = `<div class="bk-room${again ? ' again' : ''}">${bkRoomHead(_bk.cat, `${ids0.length} 本相簿・${total} 張相片・點一本打開來看`, true)}
     <div class="bk-shelves" id="bkShelves">${sys.map(sy => { const ids = bySy.get(sy), rows = []; for (let r = 0; r < ids.length; r += per) rows.push(ids.slice(r, r + per));
       return `<section class="bk-shelf"><div class="bk-plaque"><b>${sy === '—' ? '未分學年' : sy + ' 學年度'}</b><small>${ids.length} 本</small></div>
         ${rows.map(row => `<div class="bk-ledge-row"><div class="bk-row">${row.map(i => bkAlbumHtml(_bk.books[i], i, n++)).join('')}</div><div class="bk-ledge"></div></div>`).join('')}</section>`; }).join('')}</div></div>
@@ -12064,9 +12107,59 @@ function bkRenderShelf(again) {
   st.querySelectorAll('.al-win img').forEach(img => { const b = _bk.books[+img.closest('.al').dataset.i]; libThumbUrl(b.cover).then(u => { if (u) { img.onload = () => img.classList.add('in'); img.src = u; } }); });
   const sh = document.getElementById('bkShelves');
   if (sh && !reduceMotionOn()) {   // 滑鼠移動：相簿朝游標微微傾斜、亮光跟著跑
-    sh.addEventListener('pointermove', ev => { const a = ev.target.closest('.al'); if (!a || a.classList.contains('lift')) return; const r = a.getBoundingClientRect(); const x = (ev.clientX - r.left) / r.width - .5, y = (ev.clientY - r.top) / r.height - .5; a.style.setProperty('--ry', (x * 16).toFixed(2) + 'deg'); a.style.setProperty('--rx', (-y * 12).toFixed(2) + 'deg'); a.style.setProperty('--gx', ((x + .5) * 100).toFixed(1) + '%'); a.style.setProperty('--gy', ((y + .5) * 100).toFixed(1) + '%'); });
+    sh.addEventListener('pointermove', ev => { const a = ev.target.closest('.al'); if (!a) return; const r = a.getBoundingClientRect(); const x = (ev.clientX - r.left) / r.width - .5, y = (ev.clientY - r.top) / r.height - .5; a.style.setProperty('--ry', (x * 16).toFixed(2) + 'deg'); a.style.setProperty('--rx', (-y * 12).toFixed(2) + 'deg'); a.style.setProperty('--gx', ((x + .5) * 100).toFixed(1) + '%'); a.style.setProperty('--gy', ((y + .5) * 100).toFixed(1) + '%'); });
     sh.addEventListener('pointerout', ev => { const a = ev.target.closest('.al'); if (a && !a.contains(ev.relatedTarget)) { a.style.setProperty('--ry', '0deg'); a.style.setProperty('--rx', '0deg'); } });
   }
+}
+function bkRenderCats(again) {
+  const st = document.getElementById('bkStage'); if (!st || !_bk) return;
+  const cats = bkCats(), total = _bk.books.reduce((s, b) => s + b.items.length, 0);
+  _bk.cats = cats;
+  st.innerHTML = `<div class="bk-room${again ? ' again' : ''}">${bkRoomHead('我們的相簿', `${cats.length} 個類別・${_bk.books.length} 本相簿・${total} 張相片${_libFilter.q || _libFilter.sy || _libFilter.cat ? '（依相簿庫目前的篩選）' : ''}・點一本抽出來展開`, false)}
+    <div class="bk-shelves bk-spines-wrap" id="bkShelves"><div class="bk-ledge-row"><div class="bk-row bk-spines">${cats.map((c, k) => { const mob = innerWidth < 760, w = mob ? Math.max(52, Math.min(c.w, Math.floor((innerWidth - 40) / cats.length) - 6)) : c.w, h = mob ? 300 + bkHash(c.cat) % 30 : c.h, len = [...c.cat].length, fs = Math.max(13, Math.min(32, Math.floor((h - 205) / len) - 2, Math.floor(w * .42)));
+        return `<button class="sp" data-c="${k}" style="--sw:${w}px;--sh:${h}px;--fs:${fs}px;--c1:${c.c1};--c2:${c.c2};--d:${k * 70}ms;" onclick="bkEnterCat(${k})" title="${escHtml(c.cat)}・${c.ids.length} 本・${c.n} 張">
+        <span class="sp-ridge t"></span><span class="sp-label">${c.syLabel ? `${c.syLabel}<br>學年度` : '相簿'}</span>
+        <span class="sp-title">${escHtml(c.cat)}</span>
+        <span class="sp-meta"><b>${c.ids.length}</b> 本<br>${c.n} 張</span><span class="sp-ridge b"></span><span class="sp-shine"></span></button>`; }).join('')}</div><div class="bk-ledge"></div></div>
+      <div class="bk-tip">👆 每一本是一個類別，點一下整個展開</div></div></div>
+    <div class="bk-open" id="bkOpen" hidden></div>`;
+}
+// 點類別：那本大相簿往前抽出來、轉成正面，裡面的活動相簿從它的位置散開到架上
+function bkEnterCat(k) {
+  if (!_bk || _bk.open || _bk.busy) return;
+  const c = (_bk.cats || [])[k], sp = document.querySelector(`.sp[data-c="${k}"]`); if (!c || !sp) return;
+  const from = sp.getBoundingClientRect();
+  const go = () => {
+    _bk.cat = c.cat; bkRenderShelf(true);
+    if (reduceMotionOn()) return;
+    document.querySelectorAll('#bkShelves .al').forEach((a, j) => {
+      const r = a.getBoundingClientRect();
+      const dx = from.left + from.width / 2 - (r.left + r.width / 2), dy = from.top + from.height / 2 - (r.top + r.height / 2);
+      a.animate([{ transform: `translate(${dx}px, ${dy}px) scale(.35) rotateY(80deg)`, opacity: 0 }, { opacity: 1, offset: .35 }, { transform: `rotate(${a.style.getPropertyValue('--rot')})`, opacity: 1 }],
+        { duration: 700, delay: Math.min(900, j * 55), easing: 'cubic-bezier(.2,.85,.25,1.15)', fill: 'backwards' });
+    });
+    const h = document.querySelector('#bkStage .bk-head'); if (h) h.animate([{ opacity: 0, transform: 'translateY(-10px)' }, { opacity: 1, transform: 'none' }], { duration: 400 });
+  };
+  if (reduceMotionOn()) { go(); return; }
+  _bk.busy = true;
+  document.querySelectorAll('.sp').forEach(o => { if (o !== sp) o.classList.add('dim'); });
+  sp.classList.add('pull');
+  setTimeout(() => { _bk.busy = false; go(); }, 520);
+}
+function bkBackCats() {
+  if (!_bk || _bk.open || _bk.busy) return;
+  const cat = _bk.cat; _bk.cat = null;
+  const als = [...document.querySelectorAll('#bkShelves .al')];
+  const finish = () => {
+    bkRenderCats(true);
+    const k = (_bk.cats || []).findIndex(c => c.cat === cat), sp = document.querySelector(`.sp[data-c="${k}"]`);
+    if (sp && !reduceMotionOn()) sp.animate([{ transform: 'translateY(-40px) scale(1.06)', filter: 'brightness(1.3)' }, { transform: 'none', filter: 'none' }], { duration: 520, easing: 'cubic-bezier(.3,1.4,.5,1)' });
+  };
+  if (reduceMotionOn() || !als.length) { finish(); return; }
+  _bk.busy = true;
+  const cx = innerWidth / 2, cy = innerHeight * .55;
+  als.forEach((a, j) => { const r = a.getBoundingClientRect(); a.animate([{ opacity: 1 }, { transform: `translate(${cx - (r.left + r.width / 2)}px, ${cy - (r.top + r.height / 2)}px) scale(.3) rotateY(-80deg)`, opacity: 0 }], { duration: 420, delay: Math.min(300, j * 25), easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' }); });
+  setTimeout(() => { _bk.busy = false; finish(); }, 560);
 }
 // 點一本：相簿從架上飛到畫面中間（FLIP），封面朝外；點封面再打開
 function bkPull(i) {
