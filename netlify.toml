@@ -29,3 +29,11 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
     Strict-Transport-Security = "max-age=31536000"
+
+# 2026v27 資安：舊版本（versions/）有已修正的漏洞，又跟新版同一個網站（共用瀏覽器裡的 Gemini Key、相簿庫權限）
+# → 網站上不再提供，一律轉到目前版本；舊版只留在 GitHub 備查
+[[redirects]]
+  from = "/versions/*"
+  to = "/"
+  status = 301
+  force = true

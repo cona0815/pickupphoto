@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v26 (2026-11-06)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v27 (2026-11-06)　（原名：AI 照片篩選器）
+  2026v27 (2026-11-06, build v183): 🔒 資安第三輪 — 照片 EXIF 相機型號不能藏程式碼；AI 人臉引擎的 .mjs／.wasm 比對 SHA-256；
+        ZIP 路徑防跳到外層（ZIP slip）；不收 SVG；CSP 收緊到路徑；docx 去控制字元
   2026v26 (2026-11-06, build v182): 🔒 資安第二輪 — 相簿庫 index.json、整理記錄讀進來先檢查格式（學年度、日期、時間範圍不能藏程式碼；亂掉的檔案不會讓相簿庫打不開）；
         CSV 防 Excel 公式注入；分享入口不收別的網站硬塞的照片、分享進來先秀縮圖再匯入
   2026v25 (2026-11-06, build v181): 🔒 資安檢查與修正 — 檔名／相簿庫／整理記錄／記錄器連結裡的文字不會再被當成程式執行（XSS）；
@@ -198,8 +200,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- 2026v25 資安：CSP — 這個網頁只准連到下面這些網站（其他網址一律被瀏覽器擋下）；不准 <object>、<base>、表單送出。
-     'unsafe-inline'：單一 HTML 檔，程式寫在頁面裡；'unsafe-eval'：HEIC 轉檔函式庫 heic2any（libheif）在背景執行緒用到，拿掉 HEIC 就轉不了 -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://cdn.jsdelivr.net https://media.githubusercontent.com https://raw.githubusercontent.com https://generativelanguage.googleapis.com https://www.googleapis.com https://oauth2.googleapis.com https://accounts.google.com https://nominatim.openstreetmap.org; worker-src 'self' blob:; frame-src 'self' blob: https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+     'unsafe-inline'：單一 HTML 檔，程式寫在頁面裡；'unsafe-eval'：HEIC 轉檔函式庫 heic2any（libheif）在背景執行緒用到，拿掉 HEIC 就轉不了；
+     blob:：AI 人臉引擎的 .mjs 先比對指紋再從記憶體載入。2026v27 起連線收緊到「路徑」（只准 Gemini 產生內容、雲端硬碟檔案 API…） -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net/npm/jszip@3.10.1/ https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/npm/heic2any@0.0.4/ https://accounts.google.com/gsi/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://media.githubusercontent.com/media/opencv/opencv_zoo/ https://generativelanguage.googleapis.com/v1beta/models/ https://www.googleapis.com/drive/v3/files https://www.googleapis.com/upload/drive/v3/files https://www.googleapis.com/upload/drive/v3/files/ https://oauth2.googleapis.com/revoke https://accounts.google.com/gsi/ https://nominatim.openstreetmap.org/reverse; worker-src 'self' blob:; frame-src 'self' blob: https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- 2026v4: PWA（放在網站上時可以安裝成 App） -->
 <link rel="manifest" href="manifest.webmanifest">
@@ -207,7 +210,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v26 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v27 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3168,7 +3171,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v26 · 2026-11-06</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v27 · 2026-11-06</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3244,16 +3247,21 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       網站版的 service worker 只快取工具與公開模型，<b>不會攔截或保存照片</b>；Gemini、Google、OpenStreetMap 的連線一律不經過快取。<br>
       本工具是單一 HTML 檔，可用文字編輯器搜尋 <code>fetch(</code>、<code>https://</code> 自行檢查所有連線。
 
-      <div class="pv-h" id="pvSec">⑥ 資安檢查（2026-11-06，2026v25；第二輪 2026v26）</div>
+      <div class="pv-h" id="pvSec">⑥ 資安檢查（2026-11-06，2026v25；第二輪 2026v26；第三輪 2026v27）</div>
       <div class="pv-note" style="margin-bottom:8px;">近期資安事件多，這一版逐項檢查了「別人有沒有辦法透過這個工具偷資料、執行惡意程式」。結果與處理如下：</div>
       <table class="pv-table">
         <tr><th>檢查項目</th><th>結果</th><th>處理</th></tr>
         <tr class="ok"><td>跨站腳本（XSS）：照片檔名、別人的相簿庫 index.json、匯入的整理記錄、⏱ 記錄器的分享連結、AI 回傳的文字，會不會被當成程式執行</td><td>舊版有幾處<b>會</b>（例如檔名或相簿 id 故意寫成程式碼）</td><td>已修正：外來文字一律當純文字顯示；用自動測試把每個來源都換成攻擊字串、走過每個畫面，0 個被執行</td></tr>
         <tr class="ok"><td>Gemini API Key 外洩</td><td>舊版把 Key 放在網址（?key=…），可能留在瀏覽紀錄或公司代理伺服器記錄</td><td>已改放在連線標頭（x-goog-api-key）；Key 只存在這台電腦的瀏覽器，程式裡沒有寫死任何 Key</td></tr>
         <tr class="ok"><td>外部程式庫被竄改（供應鏈攻擊）</td><td>舊版直接執行 CDN 上的檔案</td><td>已加 SRI 雜湊：JSZip、face-api.js、onnxruntime-web、heic2any 都比對 SHA-384，被改過一個位元就拒絕執行；人臉模型原本就比對 SHA-256。版本全部鎖定</td></tr>
-        <tr class="ok"><td>偷偷把資料傳到別的網站</td><td>程式只連第②表列的網站</td><td>已加 CSP：瀏覽器只准連 jsDelivr、GitHub（模型）、Google 字型、Gemini、Google 登入／雲端硬碟、OpenStreetMap；其他網址一律擋下。就算有漏網的惡意字串，也送不出去</td></tr>
+        <tr class="ok"><td>偷偷把資料傳到別的網站</td><td>程式只連第②表列的網站</td><td>已加 CSP：瀏覽器只准連 jsDelivr（指定版本的程式庫）、GitHub（人臉模型）、Google 字型、Gemini（只准「產生內容」）、Google 登入／雲端硬碟（只准檔案 API）、OpenStreetMap（只准地名反查）；其他網址一律擋下。萬一有漏網的惡意字串，大部分管道都送不出去（雲端硬碟功能本身會上傳檔案，這條管道無法完全封死）</td></tr>
         <tr class="ok"><td>網頁被嵌進別的網站騙點擊（點擊劫持）</td><td>—</td><td>網站版加上禁止被嵌入（frame-ancestors 'none'）、不猜檔案類型（nosniff）、只送出網域不送網址細節（Referrer）、不准用相機／麥克風／定位</td></tr>
         <tr class="ok"><td>第二輪：連「應該是數字／日期」的欄位（學年度、日期、分數、座標）、Gemini 與 OpenStreetMap 回傳的文字、匯入的各月份活動 CSV 也換成攻擊字串</td><td>2026v25 還有 3 處會執行（相簿庫的學年度、日期；整理記錄的時間範圍）；格式亂掉的 index.json 會讓相簿庫打不開</td><td>已修正：相簿庫與整理記錄讀進來先檢查格式（學年度只收數字、日期只收 年-月-日…），畫面上一律跳脫；再測 0 個被執行</td></tr>
+        <tr class="ok"><td>第三輪：照片 EXIF 裡的相機型號（別人傳來、故意改過的照片）</td><td>2026v26 以前打開燈箱會執行</td><td>已修正：EXIF 文字一律當純文字，去掉控制字元</td></tr>
+        <tr class="ok"><td>第三輪：AI 人臉引擎另外下載的 .mjs／.wasm</td><td>2026v26 以前沒比對指紋</td><td>已修正：下載後比對 SHA-256，對了才使用；不對就不啟用 AI 人臉</td></tr>
+        <tr class="ok"><td>第三輪：下載的 ZIP 會不會寫到別的資料夾（ZIP slip）</td><td>匯入的整理記錄可把資料夾名稱寫成 ../</td><td>已修正：匯入與匯出 ZIP 時每一層路徑都清理</td></tr>
+        <tr class="ok"><td>第三輪：SVG 圖檔（可以帶程式）</td><td>2026v26 以前會被當成照片匯入</td><td>已修正：不收 SVG</td></tr>
+        <tr class="ok"><td>第三輪：網站上的舊版本（versions/）</td><td>舊版有已修正的漏洞，又跟新版同一個網站（共用瀏覽器裡的 Gemini Key）</td><td>已修正：舊版不再放在網站上，網址會轉到目前版本；舊版只留在 GitHub 備查</td></tr>
         <tr class="ok"><td>CSV 公式注入（用 Excel 打開匯出的 CSV）</td><td>活動名稱開頭是 = + - @ 會被 Excel 當成公式</td><td>已修正：匯出時前面加 '，匯入時自動拿掉</td></tr>
         <tr class="ok"><td>手機分享進來的照片</td><td>2026v25 時別的網站可以用表單把照片硬塞進分享入口</td><td>已修正：別的網站送來的不收；分享進來的照片先秀縮圖，老師按「匯入」才匯入；暫存匯入後立刻刪</td></tr>
         <tr class="ok"><td>追蹤碼、Cookie、廣告、遙測</td><td>都沒有</td><td>—</td></tr>
@@ -3261,7 +3269,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v26 程式逐項清點（2026-11-06）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v27 程式逐項清點（2026-11-06）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3688,7 +3696,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v26（2026-11-06）。</span>
+        <span style="font-size:11px;">本說明對應 2026v27（2026-11-06）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4288,8 +4296,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v26';
-const APP_BUILD = 'v182';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v27';
+const APP_BUILD = 'v183';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -4573,7 +4581,10 @@ async function handleFiles(files) {
   }
   const all = [...files];
   const videoCount = all.filter(f => f.type.startsWith('video/')).length;
-  const imgs = all.filter(f => f.type.startsWith('image/') || isHeicFile(f));
+  // 2026v27 資安：SVG 是可以帶程式的向量圖，不是照片 → 不收
+  const svgN = all.filter(f => f.type === 'image/svg+xml' || /\.svgz?$/i.test(f.name)).length;
+  if (svgN) showToast(`🚫 略過 ${svgN} 個 SVG 檔（不是照片）`);
+  const imgs = all.filter(f => (f.type.startsWith('image/') || isHeicFile(f)) && f.type !== 'image/svg+xml' && !/\.svgz?$/i.test(f.name));
   if (!imgs.length) return showToast('⚠️ 未偵測到圖片檔案');
   memMonLogEvent('files_loaded', `📂 匯入 ${imgs.length} 張照片`);
 
@@ -5703,6 +5714,8 @@ async function sessImportFile(file) {
     }
     return g; };
   j.groups = j.groups.map(cleanG).filter(Boolean);
+  j.groups.forEach(g => { if ('folderName' in g) g.folderName = safePath(g.folderName); });   // 2026v27: 資料夾名稱不能跳到外層
+  if ('photographer' in j) j.photographer = safeName(typeof j.photographer === 'string' ? j.photographer : '');
   j.keys = j.keys.map(k => String(k)); j.st = String(j.st).replace(/[^prd]/g, 'p');
   const rec = { keys: j.keys, st: j.st, man: Array.isArray(j.man) ? j.man.filter(i => Number.isInteger(i)) : [], groups: j.groups, scenario: String(j.scenario || ''), album: !!j.album, acMode: j.acMode === 'album' ? 'album' : 'one',
     photographer: String(j.photographer || ''), step: +j.step || 4, named: +j.named || 0, total: +j.total || j.groups.length,
@@ -5976,7 +5989,7 @@ function parseExifSegment(view, tiffStart, maxLen, result) {
     // Tag 0x0110 = Model
     if (tag === 0x0110) {
       const strOff = count > 4 ? getU32(valOff) : valOff;
-      result.model = getString(strOff, Math.min(count, 64));
+      result.model = getString(strOff, Math.min(count, 64)).replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 64);   // 2026v27: 去掉控制字元
     }
     // Tag 0x8769 = ExifIFDPointer
     if (tag === 0x8769) {
@@ -6954,6 +6967,11 @@ const YUNET_MAX_FACES = 200;
 const yunetState = { session: null, loaded: false, loading: null, error: '', inputName: 'input', slowLogged: false, msTotal: 0, runs: 0 };
 
 // 2026v25: 外部程式庫的 SRI 雜湊（npm 原檔的 SHA-384；jsDelivr 與 npm 逐位元相同）。檔案被改過，瀏覽器就拒絕執行
+// 2026v27: onnxruntime-web 另外下載的兩個檔（npm 原檔的 SHA-256）
+const ORT_FILES = {
+  'ort-wasm-simd-threaded.mjs': { size: 24618, sha256: '745eb7c0ce6f18a6aa521971b2877babc7ffb27eecb58ab3bc6e5ef4692672e8' },
+  'ort-wasm-simd-threaded.wasm': { size: 11246032, sha256: '207d02be4591c156b0a98f024f3d58005b5b04c92274d759fb390338c63559ea' },
+};
 const SRI = {
   'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/dist/face-api.js': 'sha384-1hSisOX+umG254ClWaLauH3hLxdwhs8oUHLoKR5xELvquQSDfvu/wLAencDLUqFm',
   'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.wasm.min.js': 'sha384-6hgW9I+eQKl5CrHLstudPd4L3E2eTYHm+qNKvf4pI+RZnfBJILOHAiaalHV+trgG',
@@ -7012,8 +7030,20 @@ async function ensureYuNetReady(progressCb) {
       pc(5, '下載 ONNX 推論引擎（onnxruntime-web，首次約 11 MB）...');
       if (!window.ort) await loadScriptOnce(ORT_BASE + 'ort.wasm.min.js');
       if (!window.ort || !ort.InferenceSession) throw new Error('onnxruntime-web 載入失敗（網路問題？）');
-      ort.env.wasm.wasmPaths = ORT_BASE;
-      ort.env.wasm.numThreads = (self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 1) : 1);
+      // 2026v27 資安：引擎還要再下載 .mjs 與 .wasm → 先比對 SHA-256，對了才交給引擎（不對就不啟用 AI 人臉）
+      pc(20, '驗證推論引擎檔案（SHA-256）...');
+      const ortFile = async (name) => {
+        const res = await fetch(ORT_BASE + name, { mode: 'cors' }); if (!res.ok) throw new Error('HTTP ' + res.status);
+        const buf = await res.arrayBuffer();
+        if (buf.byteLength !== ORT_FILES[name].size || await sha256Hex(buf) !== ORT_FILES[name].sha256) {
+          try { memMonLogEvent('ort_hash_fail', `⚠️ ${name} 驗證失敗`); } catch (e) {}
+          throw new Error(`推論引擎檔案驗證失敗（${name}，SHA-256 不符），已丟棄`);
+        }
+        return buf;
+      };
+      const [mjsBuf, wasmBuf] = await Promise.all([ortFile('ort-wasm-simd-threaded.mjs'), ortFile('ort-wasm-simd-threaded.wasm')]);
+      ort.env.wasm.wasmPaths = { mjs: URL.createObjectURL(new Blob([mjsBuf], { type: 'text/javascript' })), wasm: URL.createObjectURL(new Blob([wasmBuf], { type: 'application/wasm' })) };
+      ort.env.wasm.numThreads = 1;   // 驗證過的檔案用 blob: 載入，單執行緒
       pc(40, '下載 YuNet 人臉模型（232 KB）...');
       let buf = null, lastErr = null;
       for (const u of YUNET_URLS) {
@@ -9375,7 +9405,7 @@ function updateLightboxContent() {
   // Build EXIF info section
   let exifHtml = '';
   if (p.exifShutterSpeed) {
-    exifHtml = `<span style="border-top:1px solid var(--border);padding-top:4px;margin-top:2px;font-size:10px;color:var(--text-dim);">── EXIF ──</span><span>📷 ${formatShutterSpeed(p.exifShutterSpeed)}${p.exifFocalLength?' · '+Math.round(p.exifFocalLength)+'mm':''}${p.exifISO?' · ISO'+p.exifISO:''}${p.exifModel?' · '+p.exifModel:''}</span>${p.shutterBlurPenalty>0?'<span style="color:var(--red);">⚠️ 快門過慢，動態模糊風險</span>':''}`;
+    exifHtml = `<span style="border-top:1px solid var(--border);padding-top:4px;margin-top:2px;font-size:10px;color:var(--text-dim);">── EXIF ──</span><span>📷 ${formatShutterSpeed(p.exifShutterSpeed)}${p.exifFocalLength?' · '+Math.round(p.exifFocalLength)+'mm':''}${p.exifISO?' · ISO'+p.exifISO:''}${p.exifModel?' · '+escHtml(p.exifModel):''}</span>${p.shutterBlurPenalty>0?'<span style="color:var(--red);">⚠️ 快門過慢，動態模糊風險</span>':''}`;
   }
   // Build reason block: why was this photo kept/rejected?
   let reasonHtml = '';
@@ -10429,7 +10459,7 @@ async function exportZip(flat) {
   const _ntRowsZ = {};
   for (let i = 0; i < allSelected.length; i++) {
     const { p, folder } = allSelected[i];
-    const folderPath = `${rootPrefix}/${folder}`;
+    const folderPath = safePath(`${rootPrefix}/${folder}`) || rootPrefix;   // 2026v27: ZIP slip
     const _g = groupOfPhoto(p);
     try {
       let fileData;
@@ -11843,6 +11873,8 @@ function slotLabel(i, n, p) {
 }
 function fmtHM(d) { return d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '--:--'; }
 function safeName(s) { return String(s).replace(/[\\/:*?"<>|]/g, '_').replace(/\s+/g, ' ').trim().slice(0, 60); }
+// 2026v27 資安：多層路徑（類別/活動）→ 每一層都清理，去掉 . 與 ..，不會跳到外層資料夾（ZIP slip）
+function safePath(p) { return String(p ?? '').split(/[\\/]+/).map(s => safeName(s.replace(/[\u0000-\u001f\u007f]/g, ''))).filter(s => s && !/^\.+$/.test(s)).join('/'); }
 
 // Resize to JPEG blob under maxBytes (steps quality down)
 async function resizeToBlobUnder(file, maxDim, maxBytes) {
@@ -11884,7 +11916,7 @@ async function buildCollage(items, title) {
 }
 
 // ── Minimal DOCX writer (OOXML via JSZip): title + 2-column photo table ──
-function xmlEsc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function xmlEsc(s) { return String(s ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\ufffe\uffff]/g, '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 async function buildDocx(title, subtitle, items, notes) {
   const zip = new JSZip();
   const cmEmu = 360000, imgW = 7.6 * cmEmu;
@@ -12382,7 +12414,7 @@ async function exportResultPack(mode) {
   const rootDir = dirHandle ? await dirHandle.getDirectoryHandle(rootName, { create: true }) : null;
   let rescue = null, rescueN = 0, lastFsErr = null; const unreadable = [];
   const writeFile = async (folderName, fileName, blob) => {
-    if (zip) { zip.file(`${rootName}/${folderName}/${fileName}`, blob); return; }
+    if (zip) { zip.file(safePath(`${rootName}/${folderName}/${fileName}`), blob); return; }   // 2026v27: ZIP slip
     try { await fsWriteRetry(() => dirAt(rootDir, folderName), fileName, blob); }
     catch (e) {
       if (e && (e.name === 'NotAllowedError' || e.name === 'QuotaExceededError')) throw e;
