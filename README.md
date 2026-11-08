@@ -41,7 +41,7 @@
 | `versions/` | 各版本單檔（檔名含版本與日期；只放 GitHub 備查，網站上轉到目前版本） |
 | `manifest.webmanifest`、`sw.js`、`icon-*.png` | 安裝成 App（PWA）、離線快取 |
 | `netlify.toml` | Netlify 設定：純靜態，`index.html`、`sw.js` 不快取，更新才會立刻生效 |
-| `audio/bgm/*.mp3` | 回顧短片內建配樂 24 首（CC0）；單檔版從 jsDelivr 抓 Git 標籤 `bgm-1` 的同一批檔案，所以這批檔案改了要打新標籤、改程式裡的網址與雜湊 |
+| `audio/bgm/*.mp3` | 回顧短片內建配樂 24 首（CC0）；單檔版從 jsDelivr 抓 commit `a09a924` 那一版的同一批檔案（網址固定在那個 commit），所以這批檔案改了要改程式裡的網址與雜湊 |
 | `docs/各月份常見活動_範例_大橋國小.csv` | 各月份常見活動的範例清單；其他學校可以改成自己的，再從 ⚙️ 設定 → 🏷 分類 匯入 |
 
 ## 更新方式

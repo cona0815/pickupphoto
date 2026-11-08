@@ -2,7 +2,7 @@
 <!--
   校園拾光 — 2026v31 (2026-11-08)　（原名：AI 照片篩選器）
   2026v31 (2026-11-08, build v187): 🎵 回顧短片內建配樂 24 首（CC0，出自 Doory）：8 類、🔊 試聽、循環接縫；
-        網站版從自己網站抓、單檔版從 jsDelivr（GitHub 固定標籤）抓，都比對 SHA-256
+        網站版從自己網站抓、單檔版從 jsDelivr（GitHub 固定 commit）抓，都比對 SHA-256
   2026v30 (2026-11-08, build v186): 🎬 成果包加「回顧短片」— 片頭 7 種標題動畫、照片緩慢推近／平移、8 種過場、片尾；16:9／9:16；
         ▶ 預覽 3 秒；自選配樂；瀏覽器內轉 MP4（WebCodecs＋mp4-muxer，SRI 鎖定），不支援時退到 WebM
   2026v29 (2026-11-08, build v185): 🖼 成果包加「活動海報」— A4 直式／IG 方形／限動直式、四配色、精選照片拼貼＋活動名稱＋日期＋學校＋標語；
@@ -209,7 +209,7 @@
 <!-- 2026v25 資安：CSP — 這個網頁只准連到下面這些網站（其他網址一律被瀏覽器擋下）；不准 <object>、<base>、表單送出。
      'unsafe-inline'：單一 HTML 檔，程式寫在頁面裡；'unsafe-eval'：HEIC 轉檔函式庫 heic2any（libheif）在背景執行緒用到，拿掉 HEIC 就轉不了；
      blob:：AI 人臉引擎的 .mjs 先比對指紋再從記憶體載入。2026v27 起連線收緊到「路徑」（只准 Gemini 產生內容、雲端硬碟檔案 API…） -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net/npm/jszip@3.10.1/ https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/npm/heic2any@0.0.4/ https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/ https://accounts.google.com/gsi/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@bgm-1/audio/bgm/ https://media.githubusercontent.com/media/opencv/opencv_zoo/ https://generativelanguage.googleapis.com/v1beta/models/ https://www.googleapis.com/drive/v3/files https://www.googleapis.com/upload/drive/v3/files https://www.googleapis.com/upload/drive/v3/files/ https://oauth2.googleapis.com/revoke https://accounts.google.com/gsi/ https://nominatim.openstreetmap.org/reverse; worker-src 'self' blob:; frame-src 'self' blob: https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net/npm/jszip@3.10.1/ https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/npm/heic2any@0.0.4/ https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/ https://accounts.google.com/gsi/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@a09a924bbb45b1abf0da9d5b40a12cee6f32c8d5/audio/bgm/ https://media.githubusercontent.com/media/opencv/opencv_zoo/ https://generativelanguage.googleapis.com/v1beta/models/ https://www.googleapis.com/drive/v3/files https://www.googleapis.com/upload/drive/v3/files https://www.googleapis.com/upload/drive/v3/files/ https://oauth2.googleapis.com/revoke https://accounts.google.com/gsi/ https://nominatim.openstreetmap.org/reverse; worker-src 'self' blob:; frame-src 'self' blob: https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- 2026v4: PWA（放在網站上時可以安裝成 App） -->
 <link rel="manifest" href="manifest.webmanifest">
@@ -3243,7 +3243,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><td>本工具的網站（例如 Netlify 上的網址）</td><td>用網站版開啟時</td><td>工具本身（約 0.3 MB）與圖示；網站主機會有一般的存取紀錄（IP、時間），不含照片。用 file:// 直接開檔案時沒有這一項</td></tr>
         <tr><td>fonts.googleapis.com</td><td>每次開啟網頁</td><td>中文字型（Google 會看到你的 IP，不含照片）</td></tr>
         <tr><td>cdn.jsdelivr.net</td><td>每次開啟網頁；開啟 AI 人臉／勾 128 維特徵／HEIC 轉檔／製作回顧短片時</td><td>JSZip（壓縮 ZIP 用，MIT）；onnxruntime-web（MIT）、face-api.js（MIT）、heic2any；mp4-muxer（MIT，只在製作 🎬 回顧短片時載入）。<b>都比對 SRI 雜湊</b>，被改過就不執行</td></tr>
-        <tr><td>網站本身 <code>audio/bgm/</code>；單檔版改用 cdn.jsdelivr.net/gh/…/pickupphoto@bgm-1/audio/bgm/</td><td>回顧短片選了內建配樂，按 🔊 試聽或 🎬 製作時</td><td>只<b>下載</b>那一首配樂（約 450 KB，網址裡只有曲目代號），不送出任何資料。24 首都是 CC0 公眾領域音樂（出自開源專案 Doory）。抓回來比對 SHA-256，被改過就不用。沒網路時請用「自己選檔案」</td></tr>
+        <tr><td>網站本身 <code>audio/bgm/</code>；單檔版改用 cdn.jsdelivr.net/gh/…/pickupphoto@a09a924bbb45b1abf0da9d5b40a12cee6f32c8d5/audio/bgm/</td><td>回顧短片選了內建配樂，按 🔊 試聽或 🎬 製作時</td><td>只<b>下載</b>那一首配樂（約 450 KB，網址裡只有曲目代號），不送出任何資料。24 首都是 CC0 公眾領域音樂（出自開源專案 Doory）。抓回來比對 SHA-256，被改過就不用。沒網路時請用「自己選檔案」</td></tr>
         <tr><td>media.githubusercontent.com</td><td>開啟 AI 人臉時</td><td>YuNet 人臉模型（MIT，比對 SHA-256 才使用）</td></tr>
         <tr><td>accounts.google.com、googleapis.com</td><td>按「同步到 Google Drive」時</td><td>Google 登入；權限只有 drive.file（只看得到本工具建立的檔案）</td></tr>
       </table>
@@ -15045,7 +15045,7 @@ const BGM_LIB = [
 ];
 const BGM_MOODS = {"upbeat": "輕快", "calm": "溫柔", "cinematic": "壯闊", "lofi": "悠閒", "corporate": "正式", "playful": "童趣", "romantic": "溫馨", "dramatic": "緊張"};
 const BGM_FIT = {"upbeat": "運動會、園遊會、戶外教學", "calm": "閱讀、晨光、低年級", "cinematic": "畢業典禮、學年回顧", "lofi": "社團、美術、科展", "corporate": "始業式、頒獎、成果發表", "playful": "幼兒園、低年級、萬聖節", "romantic": "母親節、感恩、畢業感言", "dramatic": "比賽、防災演練"};
-const BGM_CDN = 'https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@bgm-1/audio/bgm/';
+const BGM_CDN = 'https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@a09a924bbb45b1abf0da9d5b40a12cee6f32c8d5/audio/bgm/';
 const _bgmCache = new Map();   // 代號 → ArrayBuffer（只在記憶體）
 let _bgmAudio = null;
 function bgmInfo(id) { const r = BGM_LIB.find(x => x[0] === id); return r ? { id: r[0], mood: r[1], title: r[2], sec: r[3], bpm: r[4], sha: r[5] } : null; }
