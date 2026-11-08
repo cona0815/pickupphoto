@@ -2,11 +2,12 @@
    - 網頁本身（index.html、圖示）：先上網拿最新版，沒網路才用快取 → 老師永遠拿到最新版本
    - 公開程式庫與模型（jsDelivr、cdnjs、Google Fonts、YuNet 模型）：第一次下載後存起來，之後離線也能篩照片
    - Gemini、Google 登入／雲端硬碟、OpenStreetMap：一律直接上網，不快取（這些也只有老師按了才會送）
+   - 2026v31：回顧短片的內建配樂（audio/bgm/，含 jsDelivr 上的同一批檔案）一律直接上網、不快取 → 不佔手機空間
    - 2026v27：資安第三輪（網頁端）；網站上不再提供 versions/ 舊版
    - 2026v26：分享入口不收別的網站（referrer 是別的網域）送來的照片；網頁匯入前先讓老師確認
    - 2026v25：外部程式庫改用 SRI（crossorigin）載入 → 程式庫快取換成 libs-v2；舊快取裡沒有 CORS 的版本刪掉，不然 SRI 會拒絕
    - 2026v16：手機相簿「分享 → 校園拾光」（manifest share_target）→ 收到的照片暫存在這支手機的 IndexedDB，網頁匯入後立刻刪掉；不經過任何伺服器 */
-const VERSION = '2026v28';
+const VERSION = '2026v31';
 const SHELL = `shell-${VERSION}`, LIBS = 'libs-v2';
 const SHELL_FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon.png'];
 const LIB_HOSTS = ['cdn.jsdelivr.net', 'cdnjs.cloudflare.com', 'fonts.googleapis.com', 'fonts.gstatic.com', 'media.githubusercontent.com', 'raw.githubusercontent.com'];
@@ -47,6 +48,7 @@ self.addEventListener('fetch', e => {
     return;
   }
   if (req.method !== 'GET') return;
+  if (url.pathname.includes('/audio/bgm/')) return;   // 2026v31：內建配樂不快取（只在試聽／製作時抓那一首）
   if (url.origin === self.location.origin) {
     // 網頁本身：網路優先
     e.respondWith(fetch(req).then(res => { if (res.ok) { const copy = res.clone(); caches.open(SHELL).then(c => c.put(req, copy)); } return res; })

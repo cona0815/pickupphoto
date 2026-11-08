@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v28 (2026-11-07)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v31 (2026-11-08)　（原名：AI 照片篩選器）
+  2026v31 (2026-11-08, build v187): 🎵 回顧短片內建配樂 24 首（CC0，出自 Doory）：8 類、🔊 試聽、循環接縫；
+        網站版從自己網站抓、單檔版從 jsDelivr（GitHub 固定標籤）抓，都比對 SHA-256
+  2026v30 (2026-11-08, build v186): 🎬 成果包加「回顧短片」— 片頭 7 種標題動畫、照片緩慢推近／平移、8 種過場、片尾；16:9／9:16；
+        ▶ 預覽 3 秒；自選配樂；瀏覽器內轉 MP4（WebCodecs＋mp4-muxer，SRI 鎖定），不支援時退到 WebM
+  2026v29 (2026-11-08, build v185): 🖼 成果包加「活動海報」— A4 直式／IG 方形／限動直式、四配色、精選照片拼貼＋活動名稱＋日期＋學校＋標語；
+        校徽（只存在這台電腦）；下載 PNG、列印／PDF；成果包 ZIP 多放 IG 版海報
   2026v28 (2026-11-07, build v184): 📅 活動名稱表加「閱讀存摺」（每個月都有，共 100 項）
   2026v27 (2026-11-06, build v183): 🔒 資安第三輪 — 照片 EXIF 相機型號不能藏程式碼；AI 人臉引擎的 .mjs／.wasm 比對 SHA-256；
         ZIP 路徑防跳到外層（ZIP slip）；不收 SVG；CSP 收緊到路徑；docx 去控制字元
@@ -203,7 +209,7 @@
 <!-- 2026v25 資安：CSP — 這個網頁只准連到下面這些網站（其他網址一律被瀏覽器擋下）；不准 <object>、<base>、表單送出。
      'unsafe-inline'：單一 HTML 檔，程式寫在頁面裡；'unsafe-eval'：HEIC 轉檔函式庫 heic2any（libheif）在背景執行緒用到，拿掉 HEIC 就轉不了；
      blob:：AI 人臉引擎的 .mjs 先比對指紋再從記憶體載入。2026v27 起連線收緊到「路徑」（只准 Gemini 產生內容、雲端硬碟檔案 API…） -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net/npm/jszip@3.10.1/ https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/npm/heic2any@0.0.4/ https://accounts.google.com/gsi/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://media.githubusercontent.com/media/opencv/opencv_zoo/ https://generativelanguage.googleapis.com/v1beta/models/ https://www.googleapis.com/drive/v3/files https://www.googleapis.com/upload/drive/v3/files https://www.googleapis.com/upload/drive/v3/files/ https://oauth2.googleapis.com/revoke https://accounts.google.com/gsi/ https://nominatim.openstreetmap.org/reverse; worker-src 'self' blob:; frame-src 'self' blob: https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net/npm/jszip@3.10.1/ https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/npm/heic2any@0.0.4/ https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/ https://accounts.google.com/gsi/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@bgm-1/audio/bgm/ https://media.githubusercontent.com/media/opencv/opencv_zoo/ https://generativelanguage.googleapis.com/v1beta/models/ https://www.googleapis.com/drive/v3/files https://www.googleapis.com/upload/drive/v3/files https://www.googleapis.com/upload/drive/v3/files/ https://oauth2.googleapis.com/revoke https://accounts.google.com/gsi/ https://nominatim.openstreetmap.org/reverse; worker-src 'self' blob:; frame-src 'self' blob: https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- 2026v4: PWA（放在網站上時可以安裝成 App） -->
 <link rel="manifest" href="manifest.webmanifest">
@@ -211,7 +217,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v28 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v31 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2706,6 +2712,27 @@
   .lib-qres b { color: var(--text); }
   .heic-fail { font-size: 10.5px; color: var(--yellow); margin-top: 4px; line-height: 1.5; }
   /* 2026v13: 成果包 → 分享 */
+  /* 2026v30 🎬 回顧短片 */
+  .lp-clip { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(120,140,255,0.08); border: 1px solid rgba(120,140,255,0.35); }
+  .lp-clip .lp-poster-row select { min-width: 92px; }
+  .lp-clip-pv { display: none; margin: 6px 0; background: #000; border-radius: 8px; overflow: hidden; width: fit-content; }
+  .lp-clip-pv.on { display: block; }
+  .lp-clip-pv canvas { display: block; max-width: 100%; }
+  .lp-clip-caps { font-size: 12px; margin-left: 4px; }
+  .lp-clip-caps.ok { color: #6cd49a; } .lp-clip-caps.warn { color: var(--yellow, #ffd166); } .lp-clip-caps.bad { color: #ff7a7a; }
+  /* 2026v29 🖼 活動海報 */
+  .lp-poster { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255,138,76,0.07); border: 1px solid rgba(255,138,76,0.35); }
+  .lp-poster-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 6px 0; font-size: 12px; color: var(--text-dim); }
+  .lp-poster-row select, .lp-poster-row input[type=text] { font-size: 12px; padding: 5px 8px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,0.06); color: var(--text); }
+  .lp-poster-row input[type=text] { flex: 1; min-width: 180px; }
+  .lp-poster-body { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+  .lp-poster-pv { background: rgba(0,0,0,0.25); border-radius: 8px; padding: 6px; display: flex; align-items: center; justify-content: center; min-width: 140px; min-height: 140px; }
+  .lp-poster-pv canvas { display: block; max-height: 300px; max-width: 300px; border-radius: 4px; box-shadow: 0 4px 14px rgba(0,0,0,0.35); cursor: zoom-in; }
+  .lp-poster-side { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 6px; }
+  .lp-poster-logo { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--text-dim); }
+  .lp-poster-logo img { width: 36px; height: 36px; object-fit: contain; border-radius: 6px; background: rgba(255,255,255,0.85); }
+  .lp-poster-big { position: fixed; inset: 0; z-index: 4000; background: rgba(0,0,0,0.82); display: flex; align-items: center; justify-content: center; cursor: zoom-out; }
+  .lp-poster-big img { max-width: 92vw; max-height: 92vh; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
   .lp-share { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(90,200,140,0.08); border: 1px solid rgba(90,200,140,0.35); }
   .lp-share-btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 4px; }
   .lp-share-btns .modal-btn { font-size: 12px; padding: 7px 12px; }
@@ -3172,7 +3199,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v28 · 2026-11-07</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v31 · 2026-11-08</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3215,7 +3242,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><th>連線</th><th>何時</th><th>下載什麼</th></tr>
         <tr><td>本工具的網站（例如 Netlify 上的網址）</td><td>用網站版開啟時</td><td>工具本身（約 0.3 MB）與圖示；網站主機會有一般的存取紀錄（IP、時間），不含照片。用 file:// 直接開檔案時沒有這一項</td></tr>
         <tr><td>fonts.googleapis.com</td><td>每次開啟網頁</td><td>中文字型（Google 會看到你的 IP，不含照片）</td></tr>
-        <tr><td>cdn.jsdelivr.net</td><td>每次開啟網頁；開啟 AI 人臉／勾 128 維特徵／HEIC 轉檔時</td><td>JSZip（壓縮 ZIP 用，MIT）；onnxruntime-web（MIT）、face-api.js（MIT）、heic2any。<b>都比對 SRI 雜湊</b>，被改過就不執行</td></tr>
+        <tr><td>cdn.jsdelivr.net</td><td>每次開啟網頁；開啟 AI 人臉／勾 128 維特徵／HEIC 轉檔／製作回顧短片時</td><td>JSZip（壓縮 ZIP 用，MIT）；onnxruntime-web（MIT）、face-api.js（MIT）、heic2any；mp4-muxer（MIT，只在製作 🎬 回顧短片時載入）。<b>都比對 SRI 雜湊</b>，被改過就不執行</td></tr>
+        <tr><td>網站本身 <code>audio/bgm/</code>；單檔版改用 cdn.jsdelivr.net/gh/…/pickupphoto@bgm-1/audio/bgm/</td><td>回顧短片選了內建配樂，按 🔊 試聽或 🎬 製作時</td><td>只<b>下載</b>那一首配樂（約 450 KB，網址裡只有曲目代號），不送出任何資料。24 首都是 CC0 公眾領域音樂（出自開源專案 Doory）。抓回來比對 SHA-256，被改過就不用。沒網路時請用「自己選檔案」</td></tr>
         <tr><td>media.githubusercontent.com</td><td>開啟 AI 人臉時</td><td>YuNet 人臉模型（MIT，比對 SHA-256 才使用）</td></tr>
         <tr><td>accounts.google.com、googleapis.com</td><td>按「同步到 Google Drive」時</td><td>Google 登入；權限只有 drive.file（只看得到本工具建立的檔案）</td></tr>
       </table>
@@ -3236,9 +3264,9 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><td>📲 從手機相簿分享進來（Android，安裝成 App 後）</td><td>你選的照片交給這個網頁 App，暫存在這支手機瀏覽器的 IndexedDB，打開頁面匯入後立刻刪掉；不經過任何伺服器</td><td>只在這支手機</td></tr>
         <tr><td>📤 匯出整理記錄（.json）</td><td>檔名、分組、活動名稱、標籤、入選／淘汰（<b>不含照片</b>）存成檔案，由你自己帶到別台電腦</td><td>你放哪就在哪</td></tr>
         <tr><td>📲 直接分享（手機）</td><td>你在成果包按「直接分享」時，縮好的照片（最多 9 張）與群組訊息交給你在手機上選的 App（LINE、FB…），由那個 App 送出</td><td>看你選的 App</td></tr>
-        <tr><td>瀏覽器 IndexedDB（設定）</td><td>相簿庫、備份資料夾的位置；<b>最近整理記錄</b>（每批照片的檔名、分組、活動名稱、標籤、入選／淘汰，不含照片，最多 20 批，匯出後 7 天自動清）</td><td>設定 → 儲存 →「清除整理記錄」；或清除瀏覽器網站資料</td></tr>
+        <tr><td>瀏覽器 IndexedDB（設定）</td><td>相簿庫、備份資料夾的位置；活動海報的<b>校徽</b>（你自己選的圖，轉成 PNG 存在這裡）；<b>最近整理記錄</b>（每批照片的檔名、分組、活動名稱、標籤、入選／淘汰，不含照片，最多 20 批，匯出後 7 天自動清）</td><td>設定 → 儲存 →「清除整理記錄」；或清除瀏覽器網站資料</td></tr>
         <tr><td>瀏覽器 Cache Storage（網站版／安裝成 App）</td><td>工具本身、圖示，以及公開程式庫與人臉模型（離線用）。<b>不含照片、不含分析結果</b></td><td>解除安裝 App，或清除瀏覽器網站資料</td></tr>
-        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關、整理動畫的開關、分享浮水印的開關、相簿庫最近 5 次搜尋、⏱ 時間記錄器的賽程與按下的時間（都不含照片；「📲 傳到手機」的連結把賽程放在網址 # 後面，只在兩台裝置之間傳，不經過伺服器）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
+        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關、整理動畫的開關、分享浮水印的開關、活動海報的版型／配色／勾選、回顧短片的設定（比例、秒數、動畫、過場、音量、選的內建配樂代號）、相簿庫最近 5 次搜尋、⏱ 時間記錄器的賽程與按下的時間（都不含照片；「📲 傳到手機」的連結把賽程放在網址 # 後面，只在兩台裝置之間傳，不經過伺服器）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
         <tr><td>你選的相簿庫資料夾</td><td>匯出的照片、index.json（檔名、日期、活動、分數、人數、拍攝者名字、最愛、自建相簿名稱、照片本身帶的 <b>GPS 經緯度</b>、你設定的學校位置、自己取的地點名稱與查到的地標名稱）、索引歷史（_index_history）與每天的記錄備份（_相簿庫記錄備份，保留 30 天）。設為最愛的照片檔內會寫入「5 顆星」。在相簿庫刪除的照片先放進「_回收桶」資料夾，按「永久刪除」才真的刪掉</td><td>自行管理資料夾</td></tr>
       </table>
       <div class="pv-note">共用電腦用完請清除分析快取；離職或交接時一併刪除相簿庫與 Gemini Key。</div>
@@ -3270,7 +3298,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v27 程式逐項清點（2026-11-06）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v31 程式逐項清點（2026-11-08）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3697,7 +3725,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v28（2026-11-07）。</span>
+        <span style="font-size:11px;">本說明對應 2026v31（2026-11-08）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4297,8 +4325,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v28';
-const APP_BUILD = 'v184';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v31';
+const APP_BUILD = 'v187';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -6976,6 +7004,7 @@ const ORT_FILES = {
 const SRI = {
   'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/dist/face-api.js': 'sha384-1hSisOX+umG254ClWaLauH3hLxdwhs8oUHLoKR5xELvquQSDfvu/wLAencDLUqFm',
   'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.wasm.min.js': 'sha384-6hgW9I+eQKl5CrHLstudPd4L3E2eTYHm+qNKvf4pI+RZnfBJILOHAiaalHV+trgG',
+  'https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/build/mp4-muxer.js': 'sha384-wr0AQH9RBAKio/g7bHM5245MBCU5B/b0Y9u42cTxRYQQJXKEijZvWEJKL9JG26hs',   // 2026v30 回顧短片
   'https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js': 'sha384-OTofQ0MEeiSgh62havBcemCIK0gqj809wX6UA0uPISNMRnR6NZyCdGzX3SbLrgwL',
 };
 function sriScript(src) { const s = document.createElement('script'); s.src = src; s.crossOrigin = 'anonymous'; if (SRI[src]) s.integrity = SRI[src]; return s; }
@@ -14499,12 +14528,16 @@ function libPackRender() {
       <textarea id="lpPost" placeholder="按「✨ AI 寫 FB 貼文」產生 200–300 字的貼文，也可以自己寫。發布前請再看一次：沒有學生姓名、照片沒有不該公開的孩子（例如家長不同意公開的）。" oninput="_libPack.post=this.value;const l=fbBodyLen(this.value);const s=document.getElementById('lpLen');s.textContent=this.value?l+' 字':'';s.classList.toggle('warn',!!this.value&&(l<200||l>300))">${escHtml(_libPack.post)}</textarea>
       <label class="lp-chk"><input type="checkbox" id="lpPostInDoc" ${_libPack.postInDoc ? 'checked' : ''} onchange="_libPack.postInDoc=this.checked"> 把貼文放進成果表最後（活動紀要）</label></div>
     ${libShareHtml(busy)}
+    ${posterHtml(busy)}
+    ${clipHtml(busy)}
     <div class="modal-actions" style="margin-top:10px;">
-      <button class="modal-btn" onclick="libPackSync();document.getElementById('libPackModal').classList.remove('show')" ${busy ? 'disabled' : ''}>關閉</button>
+      <button class="modal-btn" onclick="libPackSync();clipPvStop();bgmStop();document.getElementById('libPackModal').classList.remove('show')" ${busy ? 'disabled' : ''}>關閉</button>
       <button class="modal-btn" onclick="libPackDocx()" ${busy ? 'disabled' : ''} title="只要 Word 檔">⬇ 只要成果表.docx</button>
       <button class="modal-btn confirm" id="lpZipBtn" onclick="libPackZip()" ${busy ? 'disabled' : ''} title="成果表.docx＋照片＋拼貼.jpg＋照片說明.txt＋FB貼文.txt">📦 下載成果包（Word＋照片＋文字）</button></div>
   </div>`;
   m.querySelectorAll('.lp-item img').forEach(img => { const it = _libPack.items[+img.dataset.k]; libThumbUrl(it.e).then(u => { if (u) img.src = u; }); });
+  posterPreviewSoon(0);   // 2026v29
+  clipCapsShow();         // 2026v30
 }
 async function libPackFile(e) { const d = await libDirRead(library.handle, e.path); return await (await d.getFileHandle(e.file)).getFile(); }
 // v135: 成果包視窗內的進度（不會被視窗蓋住）
@@ -14669,6 +14702,784 @@ async function libShareNative() {
   try { await navigator.share({ files, text: libShareMsg(), title: _libPack.act }); showToast('📲 已交給你選的 App'); }
   catch (e) { if (e?.name !== 'AbortError') showToast(`❌ 分享沒成功：${e.message || e}`); }
 }
+// ═══ 2026v29 🖼 活動海報 ═══════════════════════════════════════
+// 全部在本機 canvas 畫；照片、校徽都不離開這台電腦。規格：SPEC_成果包海報與回顧短片 §2
+const POSTER_MAX = 12;
+const POSTER_LAYOUTS = {
+  a4: { label: 'A4 直式', w: 2480, h: 3508, page: '210mm 297mm', file: 'A4直式' },
+  ig: { label: 'IG 方形', w: 1080, h: 1080, page: '200mm 200mm', file: 'IG方形' },
+  story: { label: '限動直式', w: 1080, h: 1920, page: '108mm 192mm', file: '限動直式' },
+};
+const POSTER_THEMES = {   // 主色上的文字對比都 ≥ 4.5:1
+  blue: { label: '校園藍', bg: '#0f4c81', fg: '#ffffff', sub: '#d6e6f5', accent: '#ffd166', paper: '#f2f6fb' },
+  orange: { label: '活力橘', bg: '#ff8a4c', fg: '#2b1405', sub: '#4a2510', accent: '#2b1405', paper: '#fff6ef' },
+  green: { label: '森林綠', bg: '#2f7d4f', fg: '#ffffff', sub: '#dcefe2', accent: '#ffe08a', paper: '#f1f8f3' },
+  white: { label: '素雅白', bg: '#f7f4ef', fg: '#1f2933', sub: '#52606d', accent: '#c8553d', paper: '#ffffff' },
+};
+const POSTER_FONT = '"Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif';
+function posterPref(k, v) {
+  const keys = { layout: 'posterLayout', theme: 'posterTheme', opts: 'posterOpts' };
+  try {
+    if (v === undefined) {
+      const s = localStorage.getItem(keys[k]);
+      if (k === 'opts') { const o = s ? JSON.parse(s) : {}; return { date: o.date !== false, unit: o.unit !== false, brand: !!o.brand }; }
+      if (k === 'layout') return POSTER_LAYOUTS[s] ? s : 'a4';
+      if (k === 'theme') return POSTER_THEMES[s] ? s : 'blue';
+    }
+    localStorage.setItem(keys[k], k === 'opts' ? JSON.stringify(v) : v);
+  } catch {}
+  return v;
+}
+function posterSloganDefault() {
+  const post = (_libPack?.post || '').trim();
+  if (post) {
+    const t = post.replace(/^【[^】]*】\s*/, '').split(/[。！？!?\n]/).map(s => s.trim()).filter(Boolean)[0] || '';
+    if (t) return t.slice(0, 40);
+  }
+  const e = _libPack?.items?.[0]?.e;
+  return e ? [e.sy ? `${e.sy} 學年度` : '', e.category || ''].filter(Boolean).join(' · ') : '';
+}
+function posterSlogan() { if (_libPack && _libPack.posterSlogan == null) _libPack.posterSlogan = posterSloganDefault(); return (_libPack?.posterSlogan || '').slice(0, 40); }
+let _posterLogo = undefined;   // undefined = 還沒讀；null = 沒有校徽
+async function posterLogoGet() {
+  if (_posterLogo !== undefined) return _posterLogo;
+  try { const b = await idbKvGet('posterLogo'); _posterLogo = b instanceof Blob ? await createImageBitmap(b) : null; } catch { _posterLogo = null; }
+  return _posterLogo;
+}
+// 校徽：任何圖片（含 SVG）先在 <img> 裡畫到 canvas、轉成 PNG 再存 → SVG 裡的程式碼不會執行、也不會存下來
+async function posterSetLogo(file) {
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error('讀不到這張圖')); i.src = url; });
+    const w0 = img.naturalWidth || 512, h0 = img.naturalHeight || 512, k = Math.min(1, 512 / Math.max(w0, h0));
+    const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w0 * k)); c.height = Math.max(1, Math.round(h0 * k));
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    const png = await new Promise(r => c.toBlob(r, 'image/png'));
+    await idbKvSet('posterLogo', png);
+    _posterLogo = await createImageBitmap(png);
+    showToast('🏫 校徽已存在這台電腦（不會上傳）');
+  } catch (e) { showToast(`❌ 校徽沒存成：${e.message || e}`); }
+  finally { URL.revokeObjectURL(url); libPackRender(); }
+}
+async function posterClearLogo() { try { await idbKvDel('posterLogo'); } catch {} _posterLogo = null; libPackRender(); }
+function posterHtml(busy) {
+  if (!_libPack) return '';
+  const n = Math.min(POSTER_MAX, _libPack.items.length), lay = posterPref('layout'), th = posterPref('theme'), o = posterPref('opts');
+  const opt = (obj, cur) => Object.entries(obj).map(([k, v]) => `<option value="${k}"${k === cur ? ' selected' : ''}>${v.label}</option>`).join('');
+  const logo = _posterLogo ? '' : '';
+  return `<div class="lp-poster"><div class="lp-post-h"><b>🖼 活動海報</b><span class="lp-note">前 ${n} 張${_libPack.items.length > POSTER_MAX ? `（最多 ${POSTER_MAX}）` : ''}，第一張放大；在這台電腦畫好，不經過任何伺服器</span></div>
+    <div class="lp-poster-row">版型 <select id="lpPosterLayout" onchange="posterPref('layout',this.value);posterPreviewSoon()">${opt(POSTER_LAYOUTS, lay)}</select>
+      配色 <select id="lpPosterTheme" onchange="posterPref('theme',this.value);posterPreviewSoon()">${opt(POSTER_THEMES, th)}</select></div>
+    <div class="lp-poster-body">
+      <div class="lp-poster-pv"><canvas id="lpPosterCv" width="10" height="10" title="點一下放大" onclick="posterZoom()"></canvas></div>
+      <div class="lp-poster-side">
+        <div class="lp-poster-row" style="margin:0;">標語 <input type="text" id="lpPosterSlogan" maxlength="40" value="${escHtml(posterSlogan())}" placeholder="一句話（最多 40 字）" oninput="_libPack.posterSlogan=this.value;posterPreviewSoon()"></div>
+        <label class="lp-chk"><input type="checkbox" id="lpPosterDate" ${o.date ? 'checked' : ''} onchange="posterOptSet('date',this.checked)"> 顯示日期</label>
+        <label class="lp-chk"><input type="checkbox" id="lpPosterUnit" ${o.unit ? 'checked' : ''} onchange="posterOptSet('unit',this.checked)"> 顯示學校／單位</label>
+        <label class="lp-chk"><input type="checkbox" id="lpPosterBrand" ${o.brand ? 'checked' : ''} onchange="posterOptSet('brand',this.checked)"> 右下角加「校園拾光」小字</label>
+        <div class="lp-poster-logo">🏫 校徽 <span id="lpPosterLogoPv"></span>
+          <button class="tip-link" onclick="document.getElementById('lpPosterLogoIn').click()">${_posterLogo ? '換一張' : '選圖片…'}</button>
+          ${_posterLogo ? `<button class="tip-link" onclick="posterClearLogo()">✕ 移除</button>` : ''}
+          <input type="file" id="lpPosterLogoIn" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display:none" onchange="posterSetLogo(this.files[0]);this.value=''"></div>
+        <div class="lp-note" style="margin-top:-2px;">校徽只存在這台電腦的瀏覽器裡，不會放進公開檔案。</div>
+        <div class="lp-share-btns">
+          <button class="modal-btn" id="lpPosterPng" onclick="posterDownload()" ${busy || !n ? 'disabled' : ''}>⬇ 下載 PNG</button>
+          <button class="modal-btn" id="lpPosterPrint" onclick="posterPrint()" ${busy || !n ? 'disabled' : ''} title="在列印視窗選「另存為 PDF」">🖨 列印／PDF</button>
+        </div>
+      </div>
+    </div></div>`;
+}
+function posterOptSet(k, v) { const o = posterPref('opts'); o[k] = !!v; posterPref('opts', o); posterPreviewSoon(); }
+function posterInfo() {
+  const o = posterPref('opts');
+  return { act: (_libPack.act || '').trim() || '活動', date: o.date ? libPackDates() : '', unit: o.unit ? (libPackUnit() || '') : '', slogan: posterSlogan(), brand: o.brand };
+}
+// 把 n 張照片排進一個矩形；第一張放大（3、5、6 張時），其餘用「齊行」排滿不留空格
+function posterCells(n, x, y, w, h, gap) {
+  const R = (a, b, c, d) => ({ x: a, y: b, w: c, h: d });
+  if (n <= 0) return [];
+  if (n === 1) return [R(x, y, w, h)];
+  const wide = w >= h;
+  if (n === 2) return wide ? [R(x, y, (w - gap) / 2, h), R(x + (w + gap) / 2, y, (w - gap) / 2, h)] : [R(x, y, w, (h - gap) / 2), R(x, y + (h + gap) / 2, w, (h - gap) / 2)];
+  if (n === 3) {
+    if (wide) { const bw = (w - gap) * 0.64, sw = w - gap - bw, sh = (h - gap) / 2; return [R(x, y, bw, h), R(x + bw + gap, y, sw, sh), R(x + bw + gap, y + sh + gap, sw, sh)]; }
+    const bh = (h - gap) * 0.62, sh = h - gap - bh, sw = (w - gap) / 2; return [R(x, y, w, bh), R(x, y + bh + gap, sw, sh), R(x + sw + gap, y + bh + gap, sw, sh)];
+  }
+  if (n === 5) { const bh = (h - gap) * 0.55; return [R(x, y, w, bh), ...posterRows(4, x, y + bh + gap, w, h - bh - gap, gap, 2)]; }
+  if (n === 6) {   // 3×3，第一張佔左上 2×2
+    const cw = (w - 2 * gap) / 3, ch = (h - 2 * gap) / 3, C = (c, r) => [x + c * (cw + gap), y + r * (ch + gap)];
+    return [R(x, y, 2 * cw + gap, 2 * ch + gap), R(...C(2, 0), cw, ch), R(...C(2, 1), cw, ch), R(...C(0, 2), cw, ch), R(...C(1, 2), cw, ch), R(...C(2, 2), cw, ch)];
+  }
+  return posterRows(n, x, y, w, h, gap, n <= 4 ? 2 : n <= 9 ? 3 : 4);
+}
+function posterRows(n, x, y, w, h, gap, cols) {
+  const rows = Math.ceil(n / cols), rh = (h - (rows - 1) * gap) / rows, out = [];
+  let k = 0;
+  for (let r = 0; r < rows; r++) {
+    const m = Math.min(cols, n - k), cw = (w - (m - 1) * gap) / m;   // 最後一列張數少 → 每格變寬，排滿
+    for (let c = 0; c < m; c++, k++) out.push({ x: x + c * (cw + gap), y: y + r * (rh + gap), w: cw, h: rh });
+  }
+  return out;
+}
+function posterCover(ctx, src, r, rad) {
+  const sw0 = src.width || src.naturalWidth, sh0 = src.height || src.naturalHeight; if (!sw0 || !sh0) return;
+  const sc = Math.max(r.w / sw0, r.h / sh0), sw = r.w / sc, sh = r.h / sc;
+  ctx.save(); ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(r.x, r.y, r.w, r.h, rad); else ctx.rect(r.x, r.y, r.w, r.h); ctx.clip();
+  ctx.drawImage(src, (sw0 - sw) / 2, (sh0 - sh) / 2, sw, sh, r.x, r.y, r.w, r.h); ctx.restore();
+}
+// 逐字量寬斷行（中文沒有空白），最多 maxLines 行，超過的最後一行加「…」
+function posterWrap(ctx, text, maxW, maxLines) {
+  const lines = []; let cur = '';
+  for (const ch of String(text)) {
+    if (ch === '\n') { lines.push(cur); cur = ''; continue; }
+    if (ctx.measureText(cur + ch).width > maxW && cur) { lines.push(cur); cur = ch; } else cur += ch;
+  }
+  if (cur) lines.push(cur);
+  if (lines.length > maxLines) { const keep = lines.slice(0, maxLines); let last = keep[maxLines - 1]; while (last && ctx.measureText(last + '…').width > maxW) last = last.slice(0, -1); keep[maxLines - 1] = last + '…'; return keep; }
+  return lines;
+}
+// 標題：先試大字 2 行，放不下就縮字，最後截斷
+function posterFitTitle(ctx, text, maxW, size0, sizeMin, maxLines) {
+  for (let s = size0; s >= sizeMin; s = Math.floor(s * 0.92)) {
+    ctx.font = `800 ${s}px ${POSTER_FONT}`;
+    const L = posterWrap(ctx, text, maxW, 99);
+    if (L.length <= maxLines) return { size: s, lines: L };
+  }
+  ctx.font = `800 ${sizeMin}px ${POSTER_FONT}`;
+  return { size: sizeMin, lines: posterWrap(ctx, text, maxW, maxLines) };
+}
+function posterText(ctx, lines, x, y, size, lh, color, align = 'left', weight = 800) {
+  ctx.font = `${weight} ${size}px ${POSTER_FONT}`; ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = 'top';
+  lines.forEach((l, i) => ctx.fillText(l, x, y + i * size * lh));
+  return y + lines.length * size * lh;
+}
+// 畫一張海報：srcs = 照片（canvas／ImageBitmap／img），k = 縮放（預覽用 0.25）
+async function posterRender(layout, srcs, k = 1, info) {
+  const L = POSTER_LAYOUTS[layout] || POSTER_LAYOUTS.a4, T = POSTER_THEMES[posterPref('theme')] || POSTER_THEMES.blue;
+  info = info || posterInfo();
+  try { await document.fonts.ready; } catch {}
+  const W = Math.round(L.w * k), H = Math.round(L.h * k), S = Math.min(W, H);
+  const c = document.createElement('canvas'); c.width = W; c.height = H; const ctx = c.getContext('2d');
+  const logo = await posterLogoGet();
+  const gap = Math.max(2, S * 0.01), rad = S * 0.012, pad = S * 0.045;
+  const imgs = srcs.filter(Boolean).slice(0, POSTER_MAX);
+  const metaLine = [info.date, info.unit].filter(Boolean).join('　');
+  const drawLogo = (x, y, h) => { if (!logo) return 0; const w = h * logo.width / logo.height; ctx.drawImage(logo, x, y, w, h); return w; };
+  if (layout === 'ig') {
+    // 照片填滿，下方 38% 漸層壓主色，標題壓在上面
+    ctx.fillStyle = T.paper; ctx.fillRect(0, 0, W, H);
+    posterCells(imgs.length, 0, 0, W, H, gap).forEach((r, i) => posterCover(ctx, imgs[i], r, 0));
+    const g = ctx.createLinearGradient(0, H * 0.52, 0, H);
+    g.addColorStop(0, T.bg + '00'); g.addColorStop(0.35, T.bg + 'd9'); g.addColorStop(1, T.bg + 'f5');
+    ctx.fillStyle = g; ctx.fillRect(0, H * 0.52, W, H * 0.48);
+    let lh = 0; const lsz = S * 0.085;
+    if (logo) lh = drawLogo(pad, H - pad - lsz - S * 0.004, lsz) + S * 0.02;
+    const tx = pad + lh, tw = W - pad - tx;
+    const t = posterFitTitle(ctx, info.act, tw, S * 0.075, S * 0.05, 2);
+    let blockH = t.lines.length * t.size * 1.18 + (info.slogan ? S * 0.042 * 1.3 + S * 0.012 : 0) + (metaLine ? S * 0.032 * 1.3 + S * 0.01 : 0);
+    let y = H - pad - blockH;
+    y = posterText(ctx, t.lines, tx, y, t.size, 1.18, T.fg);
+    if (info.slogan) { y += S * 0.012; y = posterText(ctx, posterWrap((ctx.font = `500 ${S * 0.042}px ${POSTER_FONT}`, ctx), info.slogan, tw, 1), tx, y, S * 0.042, 1.3, T.sub, 'left', 500); }
+    if (metaLine) { y += S * 0.01; posterText(ctx, [metaLine], tx, y, S * 0.032, 1.3, T.accent, 'left', 700); }
+  } else {
+    const story = layout === 'story';
+    const headH = story ? 0 : H * 0.2, footH = story ? H * (1 / 3) : H * 0.125;
+    ctx.fillStyle = T.paper; ctx.fillRect(0, 0, W, H);
+    // 照片區
+    const px = story ? 0 : pad, py = story ? 0 : headH + pad * 0.7, pw = story ? W : W - pad * 2, ph = story ? H - footH : H - headH - footH - pad * 1.4;
+    posterCells(imgs.length, px, py, pw, ph, gap).forEach((r, i) => posterCover(ctx, imgs[i], r, story ? 0 : rad));
+    if (!story) {
+      // 標題帶
+      ctx.fillStyle = T.bg; ctx.fillRect(0, 0, W, headH);
+      ctx.fillStyle = T.accent; ctx.fillRect(pad, headH - S * 0.012, S * 0.16, S * 0.006);
+      const lsz = headH * 0.62; let lw = 0;
+      if (logo) lw = drawLogo(pad, (headH - lsz) / 2, lsz) + S * 0.03;
+      const tx = pad + lw, tw = W - pad - tx;
+      const t = posterFitTitle(ctx, info.act, tw, S * 0.085, S * 0.055, 2);
+      const sl = info.slogan ? posterWrap((ctx.font = `500 ${S * 0.034}px ${POSTER_FONT}`, ctx), info.slogan, tw, 1) : [];
+      const bh = t.lines.length * t.size * 1.15 + (sl.length ? S * 0.034 * 1.35 + S * 0.012 : 0);
+      let y = (headH - bh) / 2;
+      y = posterText(ctx, t.lines, tx, y, t.size, 1.15, T.fg);
+      if (sl.length) posterText(ctx, sl, tx, y + S * 0.012, S * 0.034, 1.35, T.sub, 'left', 500);
+      // 資訊帶
+      ctx.fillStyle = T.bg; ctx.fillRect(0, H - footH, W, footH);
+      if (metaLine) posterText(ctx, posterWrap((ctx.font = `700 ${S * 0.038}px ${POSTER_FONT}`, ctx), metaLine, W - pad * 2, 2), pad, H - footH + footH * 0.3, S * 0.038, 1.3, T.fg, 'left', 700);
+    } else {
+      ctx.fillStyle = T.bg; ctx.fillRect(0, H - footH, W, footH);
+      ctx.fillStyle = T.accent; ctx.fillRect(pad, H - footH + pad, S * 0.18, S * 0.008);
+      let y = H - footH + pad * 1.6;
+      const lsz = S * 0.13; let lw = 0;
+      if (logo) lw = drawLogo(pad, y, lsz) + S * 0.035;
+      const tx = pad + lw, tw = W - pad - tx;
+      const t = posterFitTitle(ctx, info.act, tw, S * 0.1, S * 0.065, 2);
+      y = posterText(ctx, t.lines, tx, y, t.size, 1.15, T.fg);
+      if (info.slogan) y = posterText(ctx, posterWrap((ctx.font = `500 ${S * 0.045}px ${POSTER_FONT}`, ctx), info.slogan, W - pad * 2, 2), pad, Math.max(y + S * 0.02, H - footH + pad * 1.6 + lsz + S * 0.02), S * 0.045, 1.35, T.sub, 'left', 500);
+      if (metaLine) posterText(ctx, [metaLine], pad, H - pad - S * 0.04, S * 0.04, 1.2, T.accent, 'left', 700);
+    }
+  }
+  if (info.brand) { ctx.globalAlpha = 0.75; posterText(ctx, ['校園拾光'], W - pad * 0.6, H - pad * 0.6 - S * 0.022, S * 0.022, 1, layout === 'ig' || layout === 'story' || true ? T.sub : T.sub, 'right', 500); ctx.globalAlpha = 1; }
+  return c;
+}
+// 預覽：用相簿庫縮圖，1/4 尺寸
+let _posterPvTimer = 0, _posterPvSeq = 0;
+function posterPreviewSoon(ms = 250) { clearTimeout(_posterPvTimer); _posterPvTimer = setTimeout(posterPreview, ms); }
+async function posterThumbs() {
+  if (!_libPack) return [];
+  const items = _libPack.items.slice(0, POSTER_MAX), key = items.map(it => it.e.key).join('|');
+  if (_libPack._pvKey === key && _libPack._pvImgs) return _libPack._pvImgs;
+  const imgs = await Promise.all(items.map(async it => { try { const u = await libThumbUrl(it.e); if (!u) return null; const im = new Image(); im.src = u; await im.decode(); return im; } catch { return null; } }));
+  _libPack._pvKey = key; _libPack._pvImgs = imgs;
+  return imgs;
+}
+async function posterPreview() {
+  const cv = document.getElementById('lpPosterCv'); if (!cv || !_libPack) return;
+  const seq = ++_posterPvSeq;
+  const lp = document.getElementById('lpPosterLogoPv');
+  const logo = await posterLogoGet();
+  if (lp) { if (logo && !lp.firstChild) { const c = document.createElement('canvas'); c.width = 36; c.height = 36; const g = c.getContext('2d'); const s = Math.min(36 / logo.width, 36 / logo.height); g.drawImage(logo, (36 - logo.width * s) / 2, (36 - logo.height * s) / 2, logo.width * s, logo.height * s); c.style.cssText = 'border-radius:6px;background:rgba(255,255,255,0.85);vertical-align:middle;'; lp.appendChild(c); } }
+  const imgs = await posterThumbs(); if (seq !== _posterPvSeq) return;
+  const lay = posterPref('layout'), L = POSTER_LAYOUTS[lay];
+  const c = await posterRender(lay, imgs, 300 / Math.max(L.w, L.h) * 2); if (seq !== _posterPvSeq) return;
+  const cv2 = document.getElementById('lpPosterCv'); if (!cv2) return;
+  cv2.width = c.width; cv2.height = c.height; cv2.getContext('2d').drawImage(c, 0, 0);
+  const k = 300 / Math.max(c.width, c.height); cv2.style.width = Math.round(c.width * k) + 'px'; cv2.style.height = Math.round(c.height * k) + 'px';
+}
+function posterZoom() {
+  const cv = document.getElementById('lpPosterCv'); if (!cv) return;
+  const d = document.createElement('div'); d.className = 'lp-poster-big'; d.title = '點一下關閉';
+  const im = new Image(); im.src = cv.toDataURL('image/png'); im.alt = '海報預覽'; d.appendChild(im);
+  d.onclick = () => d.remove(); document.body.appendChild(d);
+}
+// 正式輸出：讀原檔（不是縮圖），A4 用長邊 2000px，其他 1400px
+async function posterFull(layout) {
+  const items = _libPack.items.slice(0, POSTER_MAX), long = layout === 'a4' ? 2000 : 1400, out = [];
+  for (let i = 0; i < items.length; i++) {
+    libPackProg((i + 1) / items.length * 80, `讀照片 ${i + 1} / ${items.length}：${items[i].e.file}`);
+    if (_libPack.cancel) throw new Error('已取消');
+    try { const r = await resizeToBlobUnder(await libPackFile(items[i].e), long, 8 * 1048576); out.push(r?.canvas || null); } catch { out.push(null); }
+  }
+  if (!out.some(Boolean)) throw new Error('照片都讀不到');
+  libPackProg(88, '排版中…');
+  const c = await posterRender(layout, out, 1);
+  out.forEach(x => { if (x) { x.width = 1; x.height = 1; } });
+  return c;
+}
+async function posterDownload() {
+  libPackSync(); if (!_libPack || _libPack.busy) return;
+  const lay = posterPref('layout'), L = POSTER_LAYOUTS[lay];
+  libPackStart(`🖼 產生海報（${L.label}）`);
+  try {
+    const c = await posterFull(lay);
+    libPackProg(95, '存成 PNG…');
+    const b = await new Promise(r => c.toBlob(r, 'image/png')); c.width = c.height = 1;
+    libPackDl(b, `${safeName(_libPack.act) || '活動'}_海報_${L.file}.png`);
+    showToast(`🖼 海報已下載（${L.label}，${(b.size / 1048576).toFixed(1)} MB）`);
+  } catch (e) { showToast(`❌ 海報沒做成：${e.message || e}`); }
+  finally { libPackEnd(); }
+}
+async function posterPrint() {
+  libPackSync(); if (!_libPack || _libPack.busy) return;
+  const lay = posterPref('layout'), L = POSTER_LAYOUTS[lay];
+  libPackStart(`🖨 準備列印海報（${L.label}）`);
+  try {
+    const c = await posterFull(lay);
+    const url = URL.createObjectURL(await new Promise(r => c.toBlob(r, 'image/jpeg', 0.92))); c.width = c.height = 1;
+    let f = document.getElementById('posterPrintFrame'); if (f) f.remove();
+    f = document.createElement('iframe'); f.id = 'posterPrintFrame'; f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;';
+    document.body.appendChild(f);
+    const [pw, ph] = L.page.split(' ');
+    const d = f.contentDocument; d.open();
+    d.write(`<!doctype html><html><head><meta charset="utf-8"><title>${escHtml(_libPack.act)}</title><style>@page{size:${L.page};margin:0}html,body{margin:0}img{display:block;width:${pw};height:${ph};object-fit:contain}</style></head><body><img src="${url}" alt=""></body></html>`);
+    d.close();
+    await Promise.all([...d.images].map(im => im.complete ? 0 : new Promise(r => { im.onload = im.onerror = r; })));
+    f.contentWindow.focus(); f.contentWindow.print();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch (e) { showToast(`❌ 沒做成：${e.message || e}`); }
+  finally { libPackEnd(); }
+}
+// ═══ 2026v30 🎬 回顧短片 ═══════════════════════════════════════
+// 在瀏覽器裡把照片做成 MP4：canvas 逐格畫 → WebCodecs 編碼 → mp4-muxer 裝箱。照片與音樂都不離開這台電腦。
+const CLIP_MIN = 3, CLIP_MAX = 20, CLIP_FPS = 30;
+const CLIP_MUX_URL = 'https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/build/mp4-muxer.js';
+const CLIP_TITLES = { fadeup: '淡入上移', pop: '逐字彈出', type: '打字機', slide: '左右滑入', focus: '聚焦放大', line: '線條揭開', none: '無動畫' };
+const CLIP_TRANS = { fade: '交叉淡化', push: '推移', wipe: '擦除', zoom: '縮放穿越', black: '黑場', page: '翻頁', random: '隨機', cut: '硬切' };
+const CLIP_MOTIONS = { alt: '交替', zoom: '緩慢推近', pan: '左右平移' };
+const CLIP_VOLS = { low: { label: '小', db: -12 }, mid: { label: '中', db: -6 }, high: { label: '大', db: 0 } };
+const CLIP_DEF = { ratio: '16:9', sec: 3, motion: 'alt', title: 'fadeup', trans: 'fade', vol: 'mid', intro: true, outro: true, caps: false, introPhoto: true, bgm: 'sunrise-run' };
+function clipOpts(v) {
+  try {
+    if (v === undefined) { const o = JSON.parse(localStorage.getItem('clipOpts') || '{}'); return { ...CLIP_DEF, ...o }; }
+    localStorage.setItem('clipOpts', JSON.stringify(v));
+  } catch {}
+  return v;
+}
+function clipSet(k, v) { const o = clipOpts(); o[k] = v; clipOpts(o); clipPvStop(); if (k !== 'bgm' && k !== 'vol') bgmStop(); libPackRender(); }
+let _clipMusic = null;   // { name, ab: ArrayBuffer } 自己選的音樂，只在記憶體
+// 2026v31 🎵 內建配樂：24 首 CC0（Doory contributors 用程式合成、宣告 CC0-1.0）。[代號, 分類, 曲名, 秒數, bpm, SHA-256]
+const BGM_LIB = [
+  ['sunrise-run', 'upbeat', 'Sunrise Run', 31, 124, '051858db31af1c0b5959808aed74277731e330ea5ead25231ed850fc33e3e04b'],
+  ['good-morning-energy', 'upbeat', 'Good Morning Energy', 32, 120, '6b7d24db90b2952bed9ba4d258b6261413472c94bdccf2085ed1a2120b99f770'],
+  ['bright-side', 'upbeat', 'Bright Side', 30, 128, '3b5baf0657947ad3301828edced61233b397578f552007b2674692c79c2062b2'],
+  ['still-water', 'calm', 'Still Water', 42, 68, 'e2f7b5fe7bf7052664770f76359e666ba1e81ce2e49801c1e90cabe9d4414380'],
+  ['morning-mist', 'calm', 'Morning Mist', 40, 72, '101a5457a48967f773b80949c308cb0f436048fb57b60ffd0d0936c12d0792b7'],
+  ['gentle-tide', 'calm', 'Gentle Tide', 45, 64, '0b92b2f2f629fec6eb138c66ce2d1ac36b857371912ff5f34439a92665747725'],
+  ['rising-horizon', 'cinematic', 'Rising Horizon', 43, 90, 'ca1c1c10a380d22066126d72292ebcdeb740e4ce6cba4921bc857b228a28765b'],
+  ['epic-journey', 'cinematic', 'Epic Journey', 38, 100, 'cad5abf97374109c5d19cb890211e8c79341b50021d60a0c8150c63fa9a19adb'],
+  ['vast-skies', 'cinematic', 'Vast Skies', 48, 80, '39749cf1cacc30638aec3aca2b1a05be0df910440f5fce83e2e6db213324eb62'],
+  ['rainy-window', 'lofi', 'Rainy Window', 51, 76, '5e5fd1cce043918cd78585948580a8194c5d57979d58e34fc2d7bd2db88896f2'],
+  ['late-night-study', 'lofi', 'Late Night Study', 47, 82, 'c1a842887df2788fbe6feea8ac20854e1be040baeba6008b9679565a2eca215f'],
+  ['coffee-break', 'lofi', 'Coffee Break', 44, 88, '84160d4259a6438fce61bbb0ad059181743fca3c99d3f4c684ee78c1a9c6ab44'],
+  ['forward-motion', 'corporate', 'Forward Motion', 36, 108, 'd79be5f6c19d7953bce8f03b95d9356a63de32abed59716d4eddc42559bc2aa0'],
+  ['clear-vision', 'corporate', 'Clear Vision', 38, 100, 'cbff48bfc5f47b5ae5d12cd0e6a78f3cd9abc0420bda6885e7ccf4a6aae3ffec'],
+  ['team-spirit', 'corporate', 'Team Spirit', 34, 112, '319142028f7180767279dd931b834170d5024ee8805f084242f0b8e9ac085c30'],
+  ['jelly-bounce', 'playful', 'Jelly Bounce', 33, 116, 'cb9683ddaf839c3bd7bd3872c86887eac6c7aea2036b9399bf0f8476c0b803f2'],
+  ['pogo-parade', 'playful', 'Pogo Parade', 30, 126, 'ab81d183d21f16a68bd9737ecf1283b14381277017fc6326a0c56161d1beea6c'],
+  ['tiny-circus', 'playful', 'Tiny Circus', 36, 132, '124bad00edee1cc60d6664a7fecab13e2d2eafe6ebe1aeb6d9de3f067bfcc243'],
+  ['candlelight', 'romantic', 'Candlelight', 44, 66, 'b664109d7bc7e3056189a88ecb6d58c62ce0c047bedf566648603d7688ab7c9e'],
+  ['slow-dance', 'romantic', 'Slow Dance', 40, 72, 'c3702d0ffd5aa565809b4524a501bb0beeee17be87a427177e221402a4d025b3'],
+  ['first-kiss', 'romantic', 'First Kiss', 48, 60, 'a191c1d681b0295868060de934e96eaf78aff47618b975805980bfa433593ad1'],
+  ['tension-rising', 'dramatic', 'Tension Rising', 35, 110, '05529f3ce9ecc2f64b09c72ab92cf80304e35d18070bf505c082abaa6a6029b9'],
+  ['final-stand', 'dramatic', 'Final Stand', 32, 120, '1b95b8922d06787068e27847ee4dc4530881320c7a165f2abc33da3e2234395b'],
+  ['dark-pulse', 'dramatic', 'Dark Pulse', 38, 100, 'a5ecac85de1edd6387a9d4df3f630c7e68e6ec3a07197046eade80e21ec9fce6']
+];
+const BGM_MOODS = {"upbeat": "輕快", "calm": "溫柔", "cinematic": "壯闊", "lofi": "悠閒", "corporate": "正式", "playful": "童趣", "romantic": "溫馨", "dramatic": "緊張"};
+const BGM_FIT = {"upbeat": "運動會、園遊會、戶外教學", "calm": "閱讀、晨光、低年級", "cinematic": "畢業典禮、學年回顧", "lofi": "社團、美術、科展", "corporate": "始業式、頒獎、成果發表", "playful": "幼兒園、低年級、萬聖節", "romantic": "母親節、感恩、畢業感言", "dramatic": "比賽、防災演練"};
+const BGM_CDN = 'https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@bgm-1/audio/bgm/';
+const _bgmCache = new Map();   // 代號 → ArrayBuffer（只在記憶體）
+let _bgmAudio = null;
+function bgmInfo(id) { const r = BGM_LIB.find(x => x[0] === id); return r ? { id: r[0], mood: r[1], title: r[2], sec: r[3], bpm: r[4], sha: r[5] } : null; }
+async function bgmFetch(id) {
+  const b = bgmInfo(id); if (!b) throw new Error('沒有這首配樂');
+  if (_bgmCache.has(id)) return _bgmCache.get(id);
+  const urls = /^https?:$/.test(location.protocol) ? [`./audio/bgm/${id}.mp3`, BGM_CDN + id + '.mp3'] : [BGM_CDN + id + '.mp3'];
+  let ab = null, why = '';
+  for (const u of urls) {
+    try { const r = await fetch(u, { credentials: 'omit', cache: 'force-cache' }); if (!r.ok) { why = 'HTTP ' + r.status; continue; }
+      const a = await r.arrayBuffer(); const h = [...new Uint8Array(await crypto.subtle.digest('SHA-256', a))].map(x => x.toString(16).padStart(2, '0')).join('');
+      if (h !== b.sha) { why = 'SHA-256 不符（檔案被改過）'; continue; }
+      ab = a; break;
+    } catch (e) { why = navigator.onLine === false ? '沒有網路' : (e.message || '網路錯誤'); }
+  }
+  if (!ab) throw new Error(`內建配樂下載失敗（${why}）；內建音樂要有網路，離線請用「自己選檔案」`);
+  _bgmCache.set(id, ab); return ab;
+}
+function bgmStop() { if (_bgmAudio) { try { _bgmAudio.a.pause(); URL.revokeObjectURL(_bgmAudio.url); } catch {} clearTimeout(_bgmAudio.t); _bgmAudio = null; } const b = document.getElementById('lpBgmTry'); if (b) b.textContent = '🔊 試聽'; }
+async function bgmTry() {
+  const id = clipOpts().bgm; if (_bgmAudio) { const same = _bgmAudio.id === id; bgmStop(); if (same) return; }
+  if (!bgmInfo(id)) return;
+  const btn = document.getElementById('lpBgmTry'); if (btn) btn.textContent = '⏳ 下載中…';
+  try {
+    const ab = await bgmFetch(id); const url = URL.createObjectURL(new Blob([ab], { type: 'audio/mpeg' })); const a = new Audio(url);
+    _bgmAudio = { id, a, url, t: setTimeout(bgmStop, 12000) }; a.onended = bgmStop; await a.play();
+    const b2 = document.getElementById('lpBgmTry'); if (b2) b2.textContent = '⏹ 停止';
+  } catch (e) { bgmStop(); showToast('⚠️ ' + (e.message || e)); }
+}
+function clipMusicPick(v) {
+  bgmStop();
+  if (v === 'file') { document.getElementById('lpClipMusicIn')?.click(); if (!_clipMusic) return; }
+  clipSet('bgm', v);
+}
+const CLIP_TRANS_DUR = k => k === 'cut' ? 0 : k === 'black' ? 1.0 : 0.5;
+function clipRng(seed) { let a = (seed * 2654435761) >>> 0 || 1; return () => { a ^= a << 13; a >>>= 0; a ^= a >> 17; a ^= a << 5; a >>>= 0; return a / 4294967296; }; }
+// 時間軸：片頭 I 秒（最後 0.6 秒疊在第一張上淡出）→ 每張 D 秒、和下一張重疊一個過場 → 片尾 3 秒（前 0.5 秒疊上）
+function clipPlan(o, n, ov = {}) {
+  const I = ov.I ?? (o.intro ? 2.5 : 0), D = ov.D ?? (+o.sec || 3), O = ov.O ?? (o.outro ? 3 : 0);
+  const rnd = clipRng(n), pool = ['fade', 'push', 'wipe', 'zoom', 'black', 'page'];
+  const kinds = [], starts = [], motions = [];
+  for (let i = 0; i < n - 1; i++) kinds.push(o.trans === 'random' ? pool[Math.floor(rnd() * pool.length)] : o.trans);
+  let p = I ? I - 0.6 : 0;
+  for (let i = 0; i < n; i++) { starts.push(p); motions.push(o.motion === 'alt' ? (i % 2 ? 'pan' : 'zoom') : o.motion); if (i < n - 1) p += D - CLIP_TRANS_DUR(kinds[i]); }
+  const E = n ? starts[n - 1] + D : I, outroStart = O ? Math.max(I, E - 0.5) : E, total = O ? outroStart + O : E;
+  return { I, D, O, n, kinds, starts, motions, E, outroStart, total };
+}
+function clipSize(o, small) { const big = small ? 1280 : 1920, s = small ? 720 : 1080; return o.ratio === '9:16' ? [s, big] : [big, s]; }
+const clipEase = x => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+const clipOut = x => 1 - Math.pow(1 - x, 3);
+const clipSpring = x => x >= 1 ? 1 : 1 - Math.exp(-6 * x) * Math.cos(9 * x);
+const clamp01 = x => x < 0 ? 0 : x > 1 ? 1 : x;
+// 一張照片（Ken Burns）
+function clipPhoto(ctx, src, W, H, v, motion, cap, S) {
+  ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
+  if (!src) return;
+  const sw = src.width || src.naturalWidth, sh = src.height || src.naturalHeight; if (!sw || !sh) return;
+  const s0 = Math.max(W / sw, H / sh); let s = s0, dx = 0, dy = 0;
+  if (motion === 'pan') {
+    s = s0 * 1.07; const ex = (sw * s - W) / 2, ey = (sh * s - H) / 2, e = clipEase(v);
+    if (sw / sh >= W / H) dx = (e - 0.5) * 2 * Math.min(ex, W * 0.03); else dy = (e - 0.5) * 2 * Math.min(ey, H * 0.03);
+  } else s = s0 * (1 + 0.08 * v);
+  const dw = sw * s, dh = sh * s;
+  ctx.drawImage(src, (W - dw) / 2 + dx, (H - dh) / 2 + dy, dw, dh);
+  if (cap) {
+    const a = clamp01((v * 1) * 6 - 0.4); if (a <= 0) return;
+    ctx.save(); ctx.globalAlpha = a; ctx.font = `600 ${Math.round(S * 0.042)}px ${POSTER_FONT}`;
+    const t = posterWrap(ctx, cap.slice(0, 40), W * 0.8, 1)[0] || '', tw = ctx.measureText(t).width, ph = S * 0.075;
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(S * 0.04, H - S * 0.06 - ph, tw + S * 0.05, ph);
+    ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left'; ctx.fillText(t, S * 0.065, H - S * 0.06 - ph / 2); ctx.restore();
+  }
+}
+// 片頭：主色底（可疊模糊的第一張照片）＋標題動畫
+function clipIntro(ctx, W, H, tau, I, o, info, T, bg, logo) {
+  const S = Math.min(W, H);
+  ctx.fillStyle = T.bg; ctx.fillRect(0, 0, W, H);
+  if (bg && o.introPhoto) { ctx.save(); ctx.globalAlpha = 0.55; ctx.imageSmoothingQuality = 'high'; const sw = bg.width, sh = bg.height, s = Math.max(W / sw, H / sh) * (1.15 + 0.05 * tau / Math.max(I, 0.1)); ctx.drawImage(bg, (W - sw * s) / 2, (H - sh * s) / 2, sw * s, sh * s); ctx.restore(); ctx.fillStyle = T.bg + 'a6'; ctx.fillRect(0, 0, W, H); }
+  const ft = posterFitTitle(ctx, info.act, W * 0.82, S * 0.1, S * 0.06, 2), size = ft.size, lh = size * 1.18;
+  const subSize = S * 0.042, lines = ft.lines, blockH = lines.length * lh + (info.date ? subSize * 1.6 : 0) + (logo ? S * 0.14 : 0);
+  let y0 = (H - blockH) / 2;
+  if (logo) { const lhh = S * 0.11, lw = lhh * logo.width / logo.height; ctx.save(); ctx.globalAlpha = clamp01(tau / 0.5); ctx.drawImage(logo, (W - lw) / 2, y0, lw, lhh); ctx.restore(); y0 += S * 0.14; }
+  const cx = W / 2;
+  ctx.textBaseline = 'top'; ctx.textAlign = 'center'; ctx.font = `800 ${size}px ${POSTER_FONT}`;
+  const sub = (a, dy = 0) => { if (!info.date || a <= 0) return; ctx.save(); ctx.globalAlpha = a; ctx.font = `500 ${subSize}px ${POSTER_FONT}`; ctx.fillStyle = T.sub; ctx.textAlign = 'center'; ctx.fillText(info.date, cx, y0 + lines.length * lh + subSize * 0.5 + dy); ctx.restore(); };
+  const line = (str, y, a = 1, dx = 0, sc = 1) => { ctx.save(); ctx.globalAlpha = a; ctx.translate(cx + dx, y + size / 2); ctx.scale(sc, sc); ctx.fillStyle = T.fg; ctx.font = `800 ${size}px ${POSTER_FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(str, 0, 0); ctx.restore(); };
+  const kind = o.title;
+  if (kind === 'none') { lines.forEach((l, i) => line(l, y0 + i * lh)); sub(1); }
+  else if (kind === 'fadeup') { const a = clipOut(clamp01(tau / 0.6)); lines.forEach((l, i) => line(l, y0 + i * lh + 24 * (S / 1080) * (1 - a), a)); const b = clipOut(clamp01((tau - 0.3) / 0.6)); sub(b, 18 * (S / 1080) * (1 - b)); }
+  else if (kind === 'pop') {
+    let k = 0;
+    lines.forEach((l, li) => { ctx.font = `800 ${size}px ${POSTER_FONT}`; const tw = ctx.measureText(l).width; let x = cx - tw / 2;
+      for (const ch of l) { const cw = ctx.measureText(ch).width, u = clamp01((tau - k * 0.08) / 0.35), sc = 1.4 - 0.4 * clipSpring(u);
+        if (u > 0) { ctx.save(); ctx.globalAlpha = clamp01(u * 3); ctx.translate(x + cw / 2, y0 + li * lh + size / 2); ctx.scale(sc, sc); ctx.fillStyle = T.fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ch, 0, 0); ctx.restore(); }
+        x += cw; k++; } });
+    sub(clipOut(clamp01((tau - k * 0.08 - 0.1) / 0.4)));
+  } else if (kind === 'type') {
+    const all = lines.join(''), shown = Math.min(all.length, Math.floor(tau / 0.07)); let used = 0, lastX = cx, lastY = y0;
+    lines.forEach((l, li) => { const part = l.slice(0, Math.max(0, shown - used)); used += l.length; ctx.font = `800 ${size}px ${POSTER_FONT}`; const fullW = ctx.measureText(l).width, x0 = cx - fullW / 2;
+      ctx.fillStyle = T.fg; ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.fillText(part, x0, y0 + li * lh); if (part.length) { lastX = x0 + ctx.measureText(part).width; lastY = y0 + li * lh; } else if (li === 0) { lastX = x0; } });
+    if (Math.floor(tau / 0.35) % 2 === 0 || shown < all.length) { ctx.fillStyle = T.accent; ctx.fillRect(lastX + size * 0.06, lastY + size * 0.08, Math.max(3, size * 0.06), size * 0.9); }
+    sub(clipOut(clamp01((tau - all.length * 0.07 - 0.1) / 0.4)));
+  } else if (kind === 'slide') {
+    const u = clipOut(clamp01(tau / 0.5)), off = (1 - u) * W * 0.35;
+    lines.forEach((l, i) => { if (u < 1) for (let g = 3; g >= 1; g--) line(l, y0 + i * lh, 0.12, -off - g * (1 - u) * S * 0.03); line(l, y0 + i * lh, clamp01(u * 1.5), -off); });
+    const v = clipOut(clamp01((tau - 0.15) / 0.5)); if (info.date && v > 0) { ctx.save(); ctx.translate((1 - v) * W * 0.35, 0); sub(clamp01(v * 1.5)); ctx.restore(); }
+  } else if (kind === 'focus') {
+    const u = clipOut(clamp01(tau / 0.7)), sc = 1.3 - 0.3 * u, b = 8 * (S / 1080) * (1 - u);
+    ctx.save(); if (b > 0.3) ctx.filter = `blur(${b.toFixed(1)}px)`; lines.forEach((l, i) => line(l, y0 + i * lh, clamp01(u * 1.4), 0, sc)); ctx.restore();
+    sub(clipOut(clamp01((tau - 0.5) / 0.5)));
+  } else if (kind === 'line') {
+    const u = clipOut(clamp01(tau / 0.5)), ly = y0 + lines.length * lh + S * 0.005, lw = W * 0.5 * u;
+    ctx.fillStyle = T.accent; ctx.fillRect(cx - lw / 2, ly, lw, Math.max(3, S * 0.006));
+    const r = clipOut(clamp01((tau - 0.3) / 0.6));
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, ly); ctx.clip(); lines.forEach((l, i) => line(l, y0 + i * lh + (1 - r) * lh * lines.length, r)); ctx.restore();
+    sub(clipOut(clamp01((tau - 0.7) / 0.5)), S * 0.02);
+  }
+}
+function clipOutro(ctx, W, H, tau, O, info, T, logo, n) {
+  const S = Math.min(W, H);
+  ctx.fillStyle = T.bg; ctx.fillRect(0, 0, W, H);
+  const a = clipOut(clamp01(tau / 0.6)); ctx.save(); ctx.globalAlpha = a;
+  let y = H * 0.38;
+  if (logo) { const lh = S * 0.12, lw = lh * logo.width / logo.height; ctx.drawImage(logo, (W - lw) / 2, y - lh - S * 0.04, lw, lh); }
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  const unit = info.unit || info.act;
+  ctx.font = `800 ${S * 0.075}px ${POSTER_FONT}`; ctx.fillStyle = T.fg;
+  posterWrap(ctx, unit, W * 0.84, 2).forEach((l, i) => ctx.fillText(l, W / 2, y + i * S * 0.09));
+  y += S * 0.2;
+  ctx.fillStyle = T.accent; ctx.fillRect(W / 2 - S * 0.06, y - S * 0.04, S * 0.12, Math.max(3, S * 0.005));
+  ctx.font = `500 ${S * 0.036}px ${POSTER_FONT}`; ctx.fillStyle = T.sub;
+  ctx.fillText(`${info.act}・${n} 張精選`, W / 2, y);
+  ctx.font = `500 ${S * 0.026}px ${POSTER_FONT}`; ctx.fillText('校園拾光', W / 2, y + S * 0.07);
+  ctx.restore();
+  const f = clamp01((tau - (O - 0.8)) / 0.8); if (f > 0) { ctx.fillStyle = `rgba(0,0,0,${f})`; ctx.fillRect(0, 0, W, H); }
+}
+// 兩張之間的過場：A = 前一張、B = 下一張（各自先畫在自己的 canvas 上）
+function clipTrans(ctx, kind, u, A, B, W, H, tmp) {
+  const e = clipEase(u);
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  if (kind === 'fade') { ctx.drawImage(A, 0, 0); ctx.globalAlpha = e; ctx.drawImage(B, 0, 0); ctx.globalAlpha = 1; }
+  else if (kind === 'push') { if (W >= H) { ctx.drawImage(A, -e * W, 0); ctx.drawImage(B, (1 - e) * W, 0); } else { ctx.drawImage(A, 0, -e * H); ctx.drawImage(B, 0, (1 - e) * H); } }
+  else if (kind === 'wipe') {
+    ctx.drawImage(A, 0, 0);
+    const g = tmp.getContext('2d'); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, W, H); g.drawImage(B, 0, 0);
+    const f = 0.06, p = e * (1 + 2 * f) - f, grd = g.createLinearGradient(0, 0, W, H);
+    grd.addColorStop(clamp01(p - f), 'rgba(0,0,0,1)'); grd.addColorStop(clamp01(p + f), 'rgba(0,0,0,0)');
+    g.globalCompositeOperation = 'destination-in'; g.fillStyle = grd; g.fillRect(0, 0, W, H); g.globalCompositeOperation = 'source-over';
+    ctx.drawImage(tmp, 0, 0);
+  } else if (kind === 'zoom') {
+    const sa = 1 + 0.3 * e, sb = 0.9 + 0.1 * e;
+    ctx.globalAlpha = 1 - e; ctx.drawImage(A, (W - W * sa) / 2, (H - H * sa) / 2, W * sa, H * sa);
+    ctx.globalAlpha = e; ctx.drawImage(B, (W - W * sb) / 2, (H - H * sb) / 2, W * sb, H * sb); ctx.globalAlpha = 1;
+  } else if (kind === 'black') {
+    if (u < 0.5) { ctx.drawImage(A, 0, 0); ctx.fillStyle = `rgba(0,0,0,${clamp01(u * 2)})`; } else { ctx.drawImage(B, 0, 0); ctx.fillStyle = `rgba(0,0,0,${clamp01((1 - u) * 2)})`; }
+    ctx.fillRect(0, 0, W, H);
+  } else if (kind === 'page') {
+    ctx.drawImage(B, 0, 0);
+    const w = W * (1 - e); if (w > 1) {
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = 40; ctx.drawImage(A, 0, 0, W, H, 0, 0, w, H); ctx.restore();
+      const sh = ctx.createLinearGradient(w - W * 0.18, 0, w, 0); sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, `rgba(0,0,0,${0.45 * e})`);
+      ctx.fillStyle = sh; ctx.fillRect(Math.max(0, w - W * 0.18), 0, Math.min(w, W * 0.18), H);
+    }
+  } else ctx.drawImage(B, 0, 0);
+}
+// 一格畫面
+function clipFrame(st, t) {
+  const { ctx, W, H, plan, o, info, T, logo, srcs, caps, A, B, tmp } = st, S = Math.min(W, H);
+  const act = [];
+  for (let i = 0; i < plan.n; i++) if (t >= plan.starts[i] && t < plan.starts[i] + plan.D) act.push(i);
+  if (!act.length && plan.n) act.push(t < plan.starts[0] ? 0 : plan.n - 1);
+  const draw = (cv, i) => clipPhoto(cv.getContext('2d'), srcs(i), W, H, clamp01((t - plan.starts[i]) / plan.D), plan.motions[i], o.caps ? (caps[i] || '') : '', S);
+  if (plan.n) {
+    if (act.length >= 2) {
+      const i = act[0], j = act[1], k = plan.kinds[i], d = CLIP_TRANS_DUR(k);
+      draw(A, i); draw(B, j); clipTrans(ctx, k, d ? clamp01((t - plan.starts[j]) / d) : 1, A, B, W, H, tmp);
+    } else { draw(A, act[0]); ctx.drawImage(A, 0, 0); }
+  } else { ctx.fillStyle = T.bg; ctx.fillRect(0, 0, W, H); }
+  if (plan.I && t < plan.I) {
+    const a = t < plan.I - 0.6 ? 1 : clamp01(1 - (t - (plan.I - 0.6)) / 0.6);
+    ctx.save(); ctx.globalAlpha = a; clipIntro(ctx, W, H, t, plan.I, o, info, T, srcs(0), logo); ctx.restore();
+  }
+  if (plan.O && t >= plan.outroStart) {
+    ctx.save(); ctx.globalAlpha = clipOut(clamp01((t - plan.outroStart) / 0.5)); clipOutro(ctx, W, H, t - plan.outroStart, plan.O, info, T, logo, plan.n); ctx.restore();
+  }
+}
+function clipCanvas(W, H) { const c = document.createElement('canvas'); c.width = W; c.height = H; return c; }
+// 照片載入：只留現在和下一張（20 張全像素會吃光記憶體）
+function clipLoader(items, long) {
+  const cache = new Map(), pend = new Map();
+  const load = i => {
+    if (i < 0 || i >= items.length) return Promise.resolve(null);
+    if (cache.has(i)) return Promise.resolve(cache.get(i));
+    if (!pend.has(i)) pend.set(i, (async () => {
+      try { const f = await libPackFile(items[i].e); const bm = await createImageBitmap(f); const k = Math.min(1, long / Math.max(bm.width, bm.height));
+        if (k >= 1) return bm; const c = clipCanvas(Math.round(bm.width * k), Math.round(bm.height * k)); const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(bm, 0, 0, c.width, c.height); bm.close(); return c; }
+      catch { return null; }
+    })().then(c => { cache.set(i, c); pend.delete(i); return c; }));
+    return pend.get(i);
+  };
+  const drop = c => { if (!c) return; if (c.close) c.close(); else { c.width = 1; c.height = 1; } };
+  return {
+    get: i => cache.get(i) || null,
+    async ensure(plan, t) {
+      const need = new Set(); if (t < plan.I) need.add(0);
+      for (let i = 0; i < plan.n; i++) if (t >= plan.starts[i] - 0.05 && t < plan.starts[i] + plan.D) need.add(i);
+      if (!need.size) need.add(t < (plan.starts[0] || 0) ? 0 : plan.n - 1);
+      await Promise.all([...need].map(load));
+      const lo = Math.min(...need), hi = Math.max(...need);
+      for (const [k, c] of cache) if (k < lo || (k > hi + 1)) { drop(c); cache.delete(k); }
+      load(hi + 1);
+    },
+    close() { for (const c of cache.values()) drop(c); cache.clear(); },
+  };
+}
+// 能力偵測：H.264 → VP9（都放進 MP4）→ MediaRecorder WebM → 不支援
+let _clipCaps = null;
+async function clipCaps(W = 1920, H = 1080) {
+  const r = { mode: null, ext: 'mp4', video: null, audio: null, label: '', cls: 'bad' };
+  try {
+    if (window.VideoEncoder && window.VideoFrame && window.isSecureContext !== false) {
+      const sup = async cfg => { try { return (await VideoEncoder.isConfigSupported(cfg)).supported; } catch { return false; } };
+      for (const [codec, mux] of [['avc1.640028', 'avc'], ['avc1.4d0028', 'avc'], ['avc1.42e028', 'avc'], ['vp09.00.40.08', 'vp9']])
+        if (await sup({ codec, width: W, height: H, bitrate: 8e6, framerate: CLIP_FPS })) { r.video = { codec, mux }; break; }
+      if (r.video) {
+        r.mode = 'wc';
+        const asup = async cfg => { try { return window.AudioEncoder && (await AudioEncoder.isConfigSupported(cfg)).supported; } catch { return false; } };
+        if (await asup({ codec: 'mp4a.40.2', sampleRate: 44100, numberOfChannels: 2, bitrate: 128000 })) r.audio = { codec: 'mp4a.40.2', mux: 'aac', rate: 44100 };
+        else if (await asup({ codec: 'opus', sampleRate: 48000, numberOfChannels: 2, bitrate: 128000 })) r.audio = { codec: 'opus', mux: 'opus', rate: 48000 };
+      }
+    }
+  } catch {}
+  if (!r.mode) {
+    try { const c = document.createElement('canvas'); if (window.MediaRecorder && c.captureStream && (MediaRecorder.isTypeSupported('video/webm;codecs=vp9') || MediaRecorder.isTypeSupported('video/webm'))) { r.mode = 'mr'; r.ext = 'webm'; } } catch {}
+  }
+  if (r.mode === 'wc' && r.video.mux === 'avc') { r.label = `可以輸出 MP4（H.264）✅${r.audio?.mux === 'opus' ? '；配樂會是 Opus 格式，較舊的 iPhone 可能沒聲音' : ''}`; r.cls = 'ok'; }
+  else if (r.mode === 'wc') { r.label = '可以輸出 MP4（VP9 格式）：電腦、Android 都能播；較舊的 iPhone 可能播不了。要給 LINE 群組，建議用 Windows／Mac 上的 Chrome 或 Edge 製作'; r.cls = 'warn'; }
+  else if (r.mode === 'mr') { r.label = '這個瀏覽器只能輸出 WebM（Safari／Firefox）；LINE、FB 都收，要 MP4 請用 Chrome／Edge'; r.cls = 'warn'; }
+  else r.label = '這個瀏覽器不支援製作影片，請用電腦版 Chrome 或 Edge ❌';
+  return r;
+}
+async function clipCapsShow() {
+  const el = document.getElementById('lpClipCaps'); if (!el) return;
+  if (!_clipCaps) _clipCaps = await clipCaps();
+  const el2 = document.getElementById('lpClipCaps'); if (!el2) return;
+  el2.textContent = _clipCaps.label; el2.className = 'lp-clip-caps ' + _clipCaps.cls;
+  const btn = document.getElementById('lpClipMake'); if (btn && !_clipCaps.mode) btn.disabled = true;
+  if (btn && _clipCaps.mode) btn.textContent = `🎬 製作 ${_clipCaps.ext === 'webm' ? 'WebM' : 'MP4'}`;
+}
+function clipMobile() { return innerWidth < 720 || /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent || ''); }
+function clipHtml(busy) {
+  if (!_libPack) return '';
+  const o = clipOpts(), n = Math.min(CLIP_MAX, _libPack.items.length), plan = clipPlan(o, n);
+  const sel = (id, obj, cur, key, conv = 'this.value') => `<select id="${id}" onchange="clipSet('${key}',${conv})">${Object.entries(obj).map(([k, v]) => `<option value="${k}"${String(k) === String(cur) ? ' selected' : ''}>${typeof v === 'string' ? v : v.label}</option>`).join('')}</select>`;
+  const few = _libPack.items.length < CLIP_MIN, long = plan.total > 40;
+  return `<div class="lp-clip"><div class="lp-post-h"><b>🎬 回顧短片</b><span class="lp-note">前 ${n} 張${_libPack.items.length > CLIP_MAX ? `（最多 ${CLIP_MAX}）` : ''}，順序同上；在這台電腦轉檔，不經過任何伺服器</span></div>
+    <div class="lp-poster-row">比例 ${sel('lpClipRatio', { '16:9': '16:9 橫式', '9:16': '9:16 直式' }, o.ratio, 'ratio')}
+      每張 ${sel('lpClipSec', { 2: '2 秒', 3: '3 秒', 4: '4 秒' }, o.sec, 'sec', '+this.value')}
+      照片動態 ${sel('lpClipMotion', CLIP_MOTIONS, o.motion, 'motion')}</div>
+    <div class="lp-poster-row">標題動畫 ${sel('lpClipTitle', CLIP_TITLES, o.title, 'title')}
+      過場動畫 ${sel('lpClipTrans', CLIP_TRANS, o.trans, 'trans')}
+      <button class="tip-link" id="lpClipPvBtn" onclick="clipPreview()" ${few ? 'disabled' : ''}>▶ 預覽 3 秒</button></div>
+    <div class="lp-clip-pv" id="lpClipPvBox"><canvas id="lpClipPv" width="10" height="10"></canvas></div>
+    <div class="lp-poster-row">配樂 <span id="lpClipMusicSlot">${clipMusicHtml(o)}</span>
+      音量 ${sel('lpClipVol', CLIP_VOLS, o.vol, 'vol')}</div>
+    <div class="lp-poster-row" style="gap:12px;">
+      <label class="lp-chk"><input type="checkbox" id="lpClipIntro" ${o.intro ? 'checked' : ''} onchange="clipSet('intro',this.checked)"> 片頭（活動名稱＋日期）</label>
+      <label class="lp-chk"><input type="checkbox" id="lpClipIntroPhoto" ${o.introPhoto ? 'checked' : ''} onchange="clipSet('introPhoto',this.checked)"> 片頭用照片當底</label>
+      <label class="lp-chk"><input type="checkbox" id="lpClipOutro" ${o.outro ? 'checked' : ''} onchange="clipSet('outro',this.checked)"> 片尾（學校＋張數）</label>
+      <label class="lp-chk"><input type="checkbox" id="lpClipCaps2" ${o.caps ? 'checked' : ''} onchange="clipSet('caps',this.checked)"> 顯示照片說明</label></div>
+    <div class="lp-note">預估：約 ${Math.round(plan.total)} 秒 · ${clipMobile() ? '720p' : '1080p'} · 轉檔約 ${Math.round(plan.total * 1.2)}–${Math.round(plan.total * 2.5)} 秒${long ? '　<b style="color:var(--yellow);">FB 限動最多 60 秒、LINE 建議 30 秒內</b>' : ''}${few ? `　<b style="color:var(--yellow);">至少要 ${CLIP_MIN} 張照片</b>` : ''}</div>
+    <div class="lp-share-btns"><button class="modal-btn confirm" id="lpClipMake" onclick="clipMake()" ${busy || few ? 'disabled' : ''}>🎬 製作 MP4</button><span id="lpClipCaps" class="lp-clip-caps">檢查這個瀏覽器能不能轉檔…</span></div>
+    <div class="lp-note">影片裡有學生照片，發布前請再看一次：沒有學生姓名、照片沒有家長不同意公開的孩子。</div></div>`;
+}
+function clipMusicHtml(o) {
+  const cur = o.bgm === 'file' && !_clipMusic ? '' : o.bgm, b = bgmInfo(cur);
+  const groups = Object.entries(BGM_MOODS).map(([m, lab]) => `<optgroup label="${lab}（${BGM_FIT[m]}）">${BGM_LIB.filter(r => r[1] === m).map(r => `<option value="${r[0]}"${r[0] === cur ? ' selected' : ''}>${lab} · ${r[2]}（${r[3]} 秒）</option>`).join('')}</optgroup>`).join('');
+  return `<select id="lpClipBgm" onchange="clipMusicPick(this.value)"><option value=""${!cur ? ' selected' : ''}>不放音樂</option>${groups}<option value="file"${cur === 'file' ? ' selected' : ''}>📁 自己選檔案…</option></select>
+    ${b ? `<button class="tip-link" id="lpBgmTry" onclick="bgmTry()">${_bgmAudio?.id === cur ? '⏹ 停止' : '🔊 試聽'}</button><span class="lp-note" style="margin-left:6px">${b.sec} 秒 · ${b.bpm} bpm · CC0 公眾領域</span>` : ''}
+    ${cur === 'file' ? `<span class="lp-note">🎵 ${escHtml(_clipMusic.name)}</span> <button class="tip-link" onclick="document.getElementById('lpClipMusicIn').click()">換一首</button>` : ''}
+    <input type="file" id="lpClipMusicIn" accept="audio/*,.mp3,.m4a,.wav,.ogg" style="display:none" onchange="clipPickMusic(this.files[0]);this.value=''">
+    ${cur === 'file' ? '<div class="lp-note">請用自己有授權的音樂（例如 Freesound、Free Music Archive、FreePD 上 CC0 的曲子）</div>' : ''}`;
+}
+async function clipPickMusic(f) {
+  if (!f) return;
+  if (f.size > 40 * 1048576) { showToast('⚠️ 音樂檔超過 40 MB，請換小一點的'); return; }
+  _clipMusic = { name: f.name, ab: await f.arrayBuffer() };
+  clipSet('bgm', 'file');
+}
+// 配樂：裁到片長或循環（接縫 0.3 秒交叉）、頭 0.5 秒淡入、尾 1.5 秒淡出、音量
+async function clipAudio(ab, total, rate, db) {
+  const dec = await new OfflineAudioContext(2, rate, rate).decodeAudioData(ab.slice(0));
+  const len = Math.max(1, Math.ceil(total * rate)), oc = new OfflineAudioContext(2, len, rate);
+  const g0 = Math.pow(10, db / 20), master = oc.createGain(); master.connect(oc.destination);
+  master.gain.setValueAtTime(0, 0); master.gain.linearRampToValueAtTime(g0, Math.min(0.5, total / 4));
+  master.gain.setValueAtTime(g0, Math.max(0.5, total - 1.5)); master.gain.linearRampToValueAtTime(0, total);
+  const L = dec.duration, xf = Math.min(0.3, L / 4);
+  for (let k = 0, s = 0; s < total && k < 200; k++, s = k * (L - xf)) {
+    const src = oc.createBufferSource(), g = oc.createGain(); src.buffer = dec; src.connect(g); g.connect(master);
+    if (k > 0) { g.gain.setValueAtTime(0, s); g.gain.linearRampToValueAtTime(1, s + xf); }
+    if (s + L < total) { g.gain.setValueAtTime(1, s + L - xf); g.gain.linearRampToValueAtTime(0, s + L); }
+    src.start(s);
+  }
+  return await oc.startRendering();
+}
+function clipInfo() { const o = posterPref('opts'); return { act: (_libPack.act || '').trim() || '活動', date: libPackDates(), unit: libPackUnit() || '' }; }
+async function clipMake() {
+  libPackSync(); if (!_libPack || _libPack.busy) return;
+  const items = _libPack.items.slice(0, CLIP_MAX);
+  if (items.length < CLIP_MIN) { showToast(`⚠️ 回顧短片至少要 ${CLIP_MIN} 張照片`); return; }
+  clipPvStop();
+  const o = clipOpts(), small = clipMobile(), [W, H] = clipSize(o, small);
+  libPackStart('🎬 製作回顧短片');
+  let loader = null;
+  try {
+    const caps = await clipCaps(W, H); _clipCaps = _clipCaps || caps;
+    if (!caps.mode) throw new Error('這個瀏覽器不支援製作影片，請用電腦版 Chrome 或 Edge');
+    if (caps.mode === 'wc' && !window.Mp4Muxer) {
+      libPackProg(2, '載入 mp4-muxer（MIT，比對 SRI 雜湊）…');
+      if (!(await loadScriptOnce(CLIP_MUX_URL)) || !window.Mp4Muxer) throw new Error('轉檔元件 mp4-muxer 載入失敗（網路不通，或檔案和 SRI 雜湊不符）');
+    }
+    const plan = clipPlan(o, items.length), info = clipInfo(), T = POSTER_THEMES[posterPref('theme')] || POSTER_THEMES.blue;
+    let audio = null;
+    const music = await clipMusicData(o);
+    if (music) {
+      libPackProg(4, '處理配樂…');
+      const rate = caps.mode === 'wc' ? (caps.audio?.rate || 0) : 48000;
+      if (caps.mode === 'wc' && !caps.audio) showToast('⚠️ 這個瀏覽器不能編碼音訊，影片會沒有配樂');
+      else audio = await clipAudio(music, plan.total, rate, (CLIP_VOLS[o.vol] || CLIP_VOLS.mid).db);
+    }
+    try { await document.fonts.ready; } catch {}
+    loader = clipLoader(items, Math.round(Math.max(W, H) * 1.15));
+    const st = { ctx: null, W, H, plan, o, info, T, logo: await posterLogoGet(), srcs: i => loader.get(i), caps: items.map(it => (it.caption || '').trim()), A: clipCanvas(W, H), B: clipCanvas(W, H), tmp: clipCanvas(W, H) };
+    const cv = clipCanvas(W, H); st.ctx = cv.getContext('2d');
+    const blob = caps.mode === 'wc' ? await clipEncodeWC(st, cv, loader, caps, audio, small) : await clipEncodeMR(st, cv, loader, audio, small);
+    const name = `${safeName(_libPack.act) || '活動'}_回顧短片.${caps.ext}`;
+    libPackDl(blob, name);
+    showToast(`🎬 已下載（${Math.round(plan.total)} 秒，${(blob.size / 1048576).toFixed(1)} MB）`);
+  } catch (e) { showToast(`❌ 短片沒做成：${e.message || e}`); }
+  finally { try { loader?.close(); } catch {} libPackEnd(); }
+}
+async function clipMusicData(o) {
+  if (o.bgm === 'file') return _clipMusic ? _clipMusic.ab : null;
+  if (!bgmInfo(o.bgm)) return null;
+  libPackProg(3, '下載內建配樂（比對 SHA-256）…');
+  return await bgmFetch(o.bgm);
+}
+async function clipEncodeWC(st, cv, loader, caps, audio, small) {
+  const { W, H, plan } = st, M = window.Mp4Muxer, target = new M.ArrayBufferTarget();
+  const muxer = new M.Muxer({ target, video: { codec: caps.video.mux, width: W, height: H, frameRate: CLIP_FPS },
+    audio: audio ? { codec: caps.audio.mux, numberOfChannels: 2, sampleRate: caps.audio.rate } : undefined, fastStart: 'in-memory', firstTimestampBehavior: 'offset' });
+  let err = null;
+  const ve = new VideoEncoder({ output: (ch, meta) => muxer.addVideoChunk(ch, meta), error: e => { err = e; } });
+  ve.configure({ codec: caps.video.codec, width: W, height: H, bitrate: small ? 4e6 : 8e6, framerate: CLIP_FPS, ...(caps.video.mux === 'avc' ? { avc: { format: 'avc' } } : {}) });
+  const F = Math.max(1, Math.round(plan.total * CLIP_FPS));
+  for (let f = 0; f < F; f++) {
+    if (_libPack?.cancel) throw new Error('已取消');
+    if (err) throw err;
+    const t = f / CLIP_FPS; await loader.ensure(plan, t);
+    clipFrame(st, t);
+    const vf = new VideoFrame(cv, { timestamp: Math.round(f * 1e6 / CLIP_FPS), duration: Math.round(1e6 / CLIP_FPS) });
+    ve.encode(vf, { keyFrame: f % (CLIP_FPS * 2) === 0 }); vf.close();
+    while (ve.encodeQueueSize > 6) await new Promise(r => setTimeout(r, 4));
+    if (f % 10 === 0) { libPackProg(6 + f / F * (audio ? 84 : 90), `畫面 ${f} / ${F} 格（${t.toFixed(1)} / ${plan.total.toFixed(1)} 秒）`); await new Promise(r => setTimeout(r)); }
+  }
+  await ve.flush(); ve.close(); if (err) throw err;
+  if (audio) {
+    libPackProg(92, '編碼配樂…');
+    const ae = new AudioEncoder({ output: (ch, meta) => muxer.addAudioChunk(ch, meta), error: e => { err = e; } });
+    ae.configure({ codec: caps.audio.codec, sampleRate: caps.audio.rate, numberOfChannels: 2, bitrate: 128000 });
+    const L = audio.length, c0 = audio.getChannelData(0), c1 = audio.numberOfChannels > 1 ? audio.getChannelData(1) : c0, rate = audio.sampleRate;
+    for (let i = 0; i < L; i += 1024) {
+      if (_libPack?.cancel) throw new Error('已取消');
+      const n = Math.min(1024, L - i), data = new Float32Array(n * 2); data.set(c0.subarray(i, i + n), 0); data.set(c1.subarray(i, i + n), n);
+      const ad = new AudioData({ format: 'f32-planar', sampleRate: rate, numberOfFrames: n, numberOfChannels: 2, timestamp: Math.round(i * 1e6 / rate), data });
+      ae.encode(ad); ad.close();
+      if (ae.encodeQueueSize > 20) await new Promise(r => setTimeout(r, 2));
+    }
+    await ae.flush(); ae.close(); if (err) throw err;
+  }
+  libPackProg(97, '裝成 MP4…');
+  muxer.finalize();
+  return new Blob([target.buffer], { type: 'video/mp4' });
+}
+// 沒有 WebCodecs（Safari／Firefox 舊版）：即時播放、用 MediaRecorder 錄成 WebM（片長多久就錄多久）
+async function clipEncodeMR(st, cv, loader, audio, small) {
+  const { plan } = st, stream = cv.captureStream(CLIP_FPS);
+  let ac = null, src = null;
+  if (audio) { ac = new AudioContext({ sampleRate: audio.sampleRate }); src = ac.createBufferSource(); src.buffer = audio; const d = ac.createMediaStreamDestination(); src.connect(d); d.stream.getAudioTracks().forEach(tr => stream.addTrack(tr)); }
+  const type = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp9', 'video/webm'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+  const rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: small ? 4e6 : 8e6 }), chunks = [];
+  rec.ondataavailable = e => { if (e.data?.size) chunks.push(e.data); };
+  const done = new Promise(r => { rec.onstop = r; });
+  await loader.ensure(plan, 0); clipFrame(st, 0);
+  rec.start(500); src?.start();
+  const t0 = performance.now();
+  try {
+    for (;;) {
+      if (_libPack?.cancel) throw new Error('已取消');
+      const t = (performance.now() - t0) / 1000; if (t >= plan.total) break;
+      await loader.ensure(plan, t); clipFrame(st, t);
+      libPackProg(5 + t / plan.total * 92, `錄製中 ${t.toFixed(1)} / ${plan.total.toFixed(1)} 秒（請不要切換分頁）`);
+      await new Promise(r => setTimeout(r, 1000 / CLIP_FPS));
+    }
+  } finally { try { rec.stop(); } catch {} try { src?.stop(); } catch {} }
+  await done; try { ac?.close(); } catch {}
+  stream.getTracks().forEach(tr => tr.stop());
+  if (_libPack?.cancel) throw new Error('已取消');
+  return new Blob(chunks, { type: 'video/webm' });
+}
+// ▶ 預覽 3 秒：用縮圖、小畫面、即時播，不轉檔
+let _clipPv = null;
+function clipPvStop() { if (_clipPv) { cancelAnimationFrame(_clipPv.raf); _clipPv = null; } }
+async function clipPreview() {
+  clipPvStop(); if (!_libPack) return;
+  const box = document.getElementById('lpClipPvBox'), cv = document.getElementById('lpClipPv'); if (!box || !cv) return;
+  const o = clipOpts(), imgs = (await posterThumbs()).slice(0, 3).filter(Boolean);
+  if (imgs.length < 2) { showToast('⚠️ 照片太少，沒辦法預覽'); return; }
+  const [W, H] = o.ratio === '9:16' ? [270, 480] : [480, 270];
+  cv.width = W; cv.height = H; box.classList.add('on');
+  const plan = clipPlan({ ...o, intro: true }, imgs.length, { I: 1.6, D: 1.5, O: 0 });
+  const st = { ctx: cv.getContext('2d'), W, H, plan, o: { ...o, intro: true }, info: clipInfo(), T: POSTER_THEMES[posterPref('theme')] || POSTER_THEMES.blue, logo: await posterLogoGet(), srcs: i => imgs[i] || null, caps: _libPack.items.map(it => (it.caption || '').trim()), A: clipCanvas(W, H), B: clipCanvas(W, H), tmp: clipCanvas(W, H) };
+  const pv = { raf: 0, t0: performance.now(), frames: 0 }; _clipPv = pv;
+  const step = () => {
+    if (_clipPv !== pv) return;
+    const t = (performance.now() - pv.t0) / 1000;
+    clipFrame(st, Math.min(t, plan.total - 0.01)); pv.frames++;
+    if (t < Math.min(3.2, plan.total)) pv.raf = requestAnimationFrame(step); else _clipPv = null;
+  };
+  step();
+}
+
+// 開成果包時先讀一次校徽（之後畫面才知道要顯示「換一張／移除」）
+posterLogoGet().catch(() => {});
+
 function libPackDl(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); }
 function libPackStamp() { return libPackDates().slice(0, 10) || new Date().toISOString().slice(0, 10); }
 // v136: 成果包 ZIP — 成果表.docx＋照片／＋拼貼.jpg＋照片說明.txt＋FB貼文.txt＋README.txt
@@ -14693,10 +15504,11 @@ async function libPackZip() {
     zip.file(`${root}/成果表.docx`, await buildDocx(_libPack.act, `${unit}　${libPackDates()}　共 ${out.length} 張`, out, _libPack.postInDoc && _libPack.post ? { title: '活動紀要', text: _libPack.post } : null));
     libPackProg(88, '做拼貼.jpg…');
     try { zip.file(`${root}/拼貼.jpg`, await buildCollage(out.slice(0, 12), `${unit}　${_libPack.act}`)); } catch (e) { console.warn('collage', e); }
+    try { libPackProg(91, '做海報（IG 方形）…'); const pc = await posterRender('ig', out.slice(0, POSTER_MAX).map(o => o.canvas), 1); zip.file(`${root}/海報_IG方形.png`, await new Promise(r => pc.toBlob(r, 'image/png'))); pc.width = pc.height = 1; } catch (e) { console.warn('poster', e); }   // 2026v29
     zip.file(`${root}/照片說明.txt`, '\uFEFF' + `${_libPack.act}　照片說明\n${'─'.repeat(30)}\n` + out.map(o => `${o.fname}\t${o.caption}`).join('\n') + '\n');
     if (_libPack.post) zip.file(`${root}/FB貼文.txt`, '\uFEFF' + _libPack.post.trim() + '\n');
     zip.file(`${root}/README.txt`, '\uFEFF' + [`成果包：${_libPack.act}`, `單位：${unit}`, `日期：${libPackDates()}`, `照片：${out.length} 張（長邊 1600px，每張 ≤ 2MB）`, `文字風格：${(LIB_STYLES[capStylePref()] || {}).label || ''}`, '',
-      '內容：', '　成果表.docx　照片＋說明（可直接編輯）' + (_libPack.postInDoc && _libPack.post ? '，最後附活動紀要' : ''), '　照片／　　　成果表裡的照片', '　拼貼.jpg　　校網／FB 一張搞定', '　照片說明.txt　每張照片的說明', _libPack.post ? '　FB貼文.txt　 貼文文字' : '', '',
+      '內容：', '　成果表.docx　照片＋說明（可直接編輯）' + (_libPack.postInDoc && _libPack.post ? '，最後附活動紀要' : ''), '　照片／　　　成果表裡的照片', '　拼貼.jpg　　校網／FB 一張搞定', '　海報_IG方形.png　活動海報（FB／IG 方形；A4 版請在成果包視窗下載）', '　照片說明.txt　每張照片的說明', _libPack.post ? '　FB貼文.txt　 貼文文字' : '', '',
       '發布前請再確認：沒有學生姓名、照片沒有家長不同意公開的孩子。', `校園拾光 ${APP_VERSION}　${new Date().toLocaleString()}`].filter(s => s !== null).join('\n') + '\n');
     libPackProg(95, '壓縮中…');
     out.forEach(o => { if (o.canvas) { o.canvas.width = 1; o.canvas.height = 1; } });
