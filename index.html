@@ -11866,7 +11866,7 @@ async function geminiFetch(url, init = {}) {
   const list = [...new Set([...chain.filter(x => !_gemDead.has(x)), asked])];
   let last = null;
   for (const model of list) {
-    const u = String(url).replace(m[1], encodeURIComponent(model));
+    const u = String(url).replace(`/models/${m[1]}:`, `/models/${encodeURIComponent(model)}:`);
     let body = geminiBodyFor(model, init.body), res = await fetch(u, { ...init, body });
     if (res.status === 400 || res.status === 404) {
       const t = await res.clone().text().catch(() => '');
