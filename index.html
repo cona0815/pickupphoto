@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v31 (2026-11-08)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v32 (2026-11-08)　（原名：AI 照片篩選器）
+  2026v32 (2026-11-08, build v188): 🎵 配樂換成 10 首快樂的 CC0（FreePD）；🖼 活動名稱只是分組時間時改用標語當標題；
+        ✨ 海報 AI 封面插圖（Gemini 生圖，只送文字），也當短片片頭
   2026v31 (2026-11-08, build v187): 🎵 回顧短片內建配樂 24 首（CC0，出自 Doory）：8 類、🔊 試聽、循環接縫；
         網站版從自己網站抓、單檔版從 jsDelivr（GitHub 固定 commit）抓，都比對 SHA-256
   2026v30 (2026-11-08, build v186): 🎬 成果包加「回顧短片」— 片頭 7 種標題動畫、照片緩慢推近／平移、8 種過場、片尾；16:9／9:16；
@@ -209,7 +211,7 @@
 <!-- 2026v25 資安：CSP — 這個網頁只准連到下面這些網站（其他網址一律被瀏覽器擋下）；不准 <object>、<base>、表單送出。
      'unsafe-inline'：單一 HTML 檔，程式寫在頁面裡；'unsafe-eval'：HEIC 轉檔函式庫 heic2any（libheif）在背景執行緒用到，拿掉 HEIC 就轉不了；
      blob:：AI 人臉引擎的 .mjs 先比對指紋再從記憶體載入。2026v27 起連線收緊到「路徑」（只准 Gemini 產生內容、雲端硬碟檔案 API…） -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net/npm/jszip@3.10.1/ https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/npm/heic2any@0.0.4/ https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/ https://accounts.google.com/gsi/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@a09a924bbb45b1abf0da9d5b40a12cee6f32c8d5/audio/bgm/ https://media.githubusercontent.com/media/opencv/opencv_zoo/ https://generativelanguage.googleapis.com/v1beta/models/ https://www.googleapis.com/drive/v3/files https://www.googleapis.com/upload/drive/v3/files https://www.googleapis.com/upload/drive/v3/files/ https://oauth2.googleapis.com/revoke https://accounts.google.com/gsi/ https://nominatim.openstreetmap.org/reverse; worker-src 'self' blob:; frame-src 'self' blob: https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net/npm/jszip@3.10.1/ https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/npm/heic2any@0.0.4/ https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/ https://accounts.google.com/gsi/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@05cc766e0ec903ab4a04936b371a599cf40edb2f/audio/bgm/ https://media.githubusercontent.com/media/opencv/opencv_zoo/ https://generativelanguage.googleapis.com/v1beta/models/ https://www.googleapis.com/drive/v3/files https://www.googleapis.com/upload/drive/v3/files https://www.googleapis.com/upload/drive/v3/files/ https://oauth2.googleapis.com/revoke https://accounts.google.com/gsi/ https://nominatim.openstreetmap.org/reverse; worker-src 'self' blob:; frame-src 'self' blob: https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- 2026v4: PWA（放在網站上時可以安裝成 App） -->
 <link rel="manifest" href="manifest.webmanifest">
@@ -217,7 +219,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v31 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v32 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2719,6 +2721,7 @@
   .lp-clip-pv.on { display: block; }
   .lp-clip-pv canvas { display: block; max-width: 100%; }
   .lp-clip-caps { font-size: 12px; margin-left: 4px; }
+  .lp-clip-more { margin-top: 6px; } .lp-clip-more summary { cursor: pointer; font-size: 13px; color: var(--accent, #ffb070); } .lp-clip-more a { color: var(--accent, #ffb070); }
   .lp-clip-caps.ok { color: #6cd49a; } .lp-clip-caps.warn { color: var(--yellow, #ffd166); } .lp-clip-caps.bad { color: #ff7a7a; }
   /* 2026v29 🖼 活動海報 */
   .lp-poster { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255,138,76,0.07); border: 1px solid rgba(255,138,76,0.35); }
@@ -3199,7 +3202,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v31 · 2026-11-08</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v32 · 2026-11-08</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3232,6 +3235,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="ok"><td>🤖 AI 人臉（YuNet）、🧬 128 維人臉特徵、HEIC 轉檔</td><td>不送照片，只下載程式與模型</td><td>只在本機執行</td><td>不會</td></tr>
         <tr class="warn"><td>🌐 相簿庫地點「查地標名稱」（按了才送）</td><td>照片位置的座標（約 500 公尺一格），不含照片、活動名稱</td><td>OpenStreetMap（nominatim.openstreetmap.org）</td><td>不會；地名本身（縣市、鄉鎮市區）用內建資料，不連網</td></tr>
         <tr class="warn"><td>✨ 成果包 AI 文案（Gemini，按 ✨ 才送）</td><td>你在相簿庫勾選、要寫說明的照片（長邊 768 px；FB 貼文最多 6 張）與活動名稱、類型，請它寫照片說明與貼文；不寫姓名、不點名、不描述外貌</td><td>Google Gemini</td><td><b>免費方案：可能</b>，且可能有人工審閱；付費方案：不會</td></tr>
+        <tr><td>✨ 海報 AI 封面插圖（Gemini 生圖，按了才送）</td><td><b>只送文字</b>：活動名稱與標語（最多 80 字），請它畫一張不含人臉、不含文字的插圖；<b>不送任何照片</b>。畫好的圖只放在記憶體</td><td>Google Gemini</td><td>生圖只有付費方案能用：不會</td></tr>
         <tr><td>☁️ 相簿庫放在 Google 雲端硬碟（電腦版）資料夾</td><td>存進相簿庫的照片與 index.json</td><td>由 Google 雲端硬碟電腦版自動上傳到你登入的帳號；本工具不連網。請用學校帳號</td></tr>
         <tr class="warn"><td>☁️ 同步到 Google Drive</td><td>相簿庫裡匯出的照片與 index.json（含照片 GPS 經緯度）</td><td>你自己登入的 Google 雲端硬碟</td><td>依你的 Google 帳號條款；建議用學校帳號</td></tr>
       </table>
@@ -3243,7 +3247,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><td>本工具的網站（例如 Netlify 上的網址）</td><td>用網站版開啟時</td><td>工具本身（約 0.3 MB）與圖示；網站主機會有一般的存取紀錄（IP、時間），不含照片。用 file:// 直接開檔案時沒有這一項</td></tr>
         <tr><td>fonts.googleapis.com</td><td>每次開啟網頁</td><td>中文字型（Google 會看到你的 IP，不含照片）</td></tr>
         <tr><td>cdn.jsdelivr.net</td><td>每次開啟網頁；開啟 AI 人臉／勾 128 維特徵／HEIC 轉檔／製作回顧短片時</td><td>JSZip（壓縮 ZIP 用，MIT）；onnxruntime-web（MIT）、face-api.js（MIT）、heic2any；mp4-muxer（MIT，只在製作 🎬 回顧短片時載入）。<b>都比對 SRI 雜湊</b>，被改過就不執行</td></tr>
-        <tr><td>網站本身 <code>audio/bgm/</code>；單檔版改用 cdn.jsdelivr.net/gh/…/pickupphoto@a09a924bbb45b1abf0da9d5b40a12cee6f32c8d5/audio/bgm/</td><td>回顧短片選了內建配樂，按 🔊 試聽或 🎬 製作時</td><td>只<b>下載</b>那一首配樂（約 450 KB，網址裡只有曲目代號），不送出任何資料。24 首都是 CC0 公眾領域音樂（出自開源專案 Doory）。抓回來比對 SHA-256，被改過就不用。沒網路時請用「自己選檔案」</td></tr>
+        <tr><td>網站本身 <code>audio/bgm/</code>；單檔版改用 cdn.jsdelivr.net/gh/…/pickupphoto@05cc766e0ec903ab4a04936b371a599cf40edb2f/audio/bgm/</td><td>回顧短片選了內建配樂，按 🔊 試聽或 🎬 製作時</td><td>只<b>下載</b>那一首配樂（約 1.2 MB，網址裡只有曲目代號），不送出任何資料。10 首都是 CC0 公眾領域音樂（出自 FreePD.com）。抓回來比對 SHA-256，被改過就不用。沒網路時請用「自己選檔案」</td></tr>
         <tr><td>media.githubusercontent.com</td><td>開啟 AI 人臉時</td><td>YuNet 人臉模型（MIT，比對 SHA-256 才使用）</td></tr>
         <tr><td>accounts.google.com、googleapis.com</td><td>按「同步到 Google Drive」時</td><td>Google 登入；權限只有 drive.file（只看得到本工具建立的檔案）</td></tr>
       </table>
@@ -3298,7 +3302,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v31 程式逐項清點（2026-11-08）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v32 程式逐項清點（2026-11-08）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3725,7 +3729,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v31（2026-11-08）。</span>
+        <span style="font-size:11px;">本說明對應 2026v32（2026-11-08）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4325,8 +4329,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v31';
-const APP_BUILD = 'v187';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v32';
+const APP_BUILD = 'v188';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -14783,6 +14787,10 @@ function posterHtml(busy) {
           ${_posterLogo ? `<button class="tip-link" onclick="posterClearLogo()">✕ 移除</button>` : ''}
           <input type="file" id="lpPosterLogoIn" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display:none" onchange="posterSetLogo(this.files[0]);this.value=''"></div>
         <div class="lp-note" style="margin-top:-2px;">校徽只存在這台電腦的瀏覽器裡，不會放進公開檔案。</div>
+        <div class="lp-poster-logo">✨ 封面插圖
+          <button class="tip-link" id="lpPosterArtBtn" onclick="posterArtMake()" ${busy || _libPack.artBusy ? 'disabled' : ''}>${_libPack.artBusy ? '⏳ 畫圖中…' : _libPack.posterArt ? '🔄 再畫一張' : 'AI 畫一張'}</button>
+          ${_libPack.posterArt ? `<button class="tip-link" onclick="posterArtClear()">✕ 不用插圖</button>` : ''}</div>
+        <div class="lp-note" style="margin-top:-2px;">用 Gemini 依活動名稱與標語畫一張插圖放在海報上方，也當短片片頭；<b>只送文字、不送照片</b>。需要 Gemini 付費方案的 Key（約每張 1–2 元台幣）。</div>
         <div class="lp-share-btns">
           <button class="modal-btn" id="lpPosterPng" onclick="posterDownload()" ${busy || !n ? 'disabled' : ''}>⬇ 下載 PNG</button>
           <button class="modal-btn" id="lpPosterPrint" onclick="posterPrint()" ${busy || !n ? 'disabled' : ''} title="在列印視窗選「另存為 PDF」">🖨 列印／PDF</button>
@@ -14790,10 +14798,59 @@ function posterHtml(busy) {
       </div>
     </div></div>`;
 }
+// 2026v32 ✨ AI 封面插圖：只送文字（活動名稱、標語），請 Gemini 畫一張 21:9 的插圖；結果只放在記憶體
+const POSTER_ART_MODELS = ['gemini-2.5-flash-image', 'gemini-3.1-flash-image'];
+function posterArtPrompt() {
+  const t = posterTitles();
+  const theme = [t.title, t.slogan].filter(Boolean).join('，').replace(/[\r\n<>{}]/g, ' ').slice(0, 80);
+  return `Create a wide banner illustration for a Taiwanese elementary school event poster. Event theme (Traditional Chinese): 「${theme}」.
+Style: bright, warm, cheerful flat vector illustration with soft gradients, festive decorations that fit the theme (e.g. balloons, flowers, ribbons, sports or music objects as appropriate), school campus feeling.
+Strict rules: absolutely NO text, letters, numbers, signs or logos anywhere; NO realistic people and NO faces (small cute silhouettes are OK); keep the lower third simple and calm so a title can be placed over it.`;
+}
+function posterArtErr(status, msg) {
+  msg = String(msg || '');
+  if (status === 401 || status === 403 || /API key|permission/i.test(msg)) return 'Gemini Key 不能用（Key 錯了、或沒開通生圖）';
+  if (status === 429 || /quota|free tier|billing|limit: 0/i.test(msg)) return '這把 Key 沒有生圖額度：Google 的生圖要「付費方案」的 Key（免費 Key 不能畫圖）';
+  if (/safety|blocked|prohibit/i.test(msg)) return 'Gemini 不肯畫這個主題，換個標語再試';
+  return msg || `API 錯誤 ${status}`;
+}
+async function posterArtMake() {
+  if (!_libPack || _libPack.artBusy) return;
+  const key = getGeminiKey();
+  if (!key) { showToast('⚠️ 先到「⚙️ 設定 → Gemini」填 Key（生圖要付費方案的 Key）'); return; }
+  _libPack.artBusy = true; libPackRender();
+  try {
+    const body = JSON.stringify({ contents: [{ parts: [{ text: posterArtPrompt() }] }], generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: '21:9' } } });
+    let img = null, err = '';
+    for (const model of POSTER_ART_MODELS) {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, body });
+      if (res.status === 404) { err = '找不到生圖模型'; continue; }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { err = posterArtErr(res.status, data.error?.message); if (res.status === 400 && /not found|not supported/i.test(data.error?.message || '')) continue; break; }
+      const part = (data.candidates?.[0]?.content?.parts || []).find(p => (p.inlineData || p.inline_data)?.data);
+      if (!part) { err = posterArtErr(200, data.candidates?.[0]?.finishReason === 'SAFETY' ? 'safety' : 'Gemini 沒有回圖片，再按一次試試'); break; }
+      const d = part.inlineData || part.inline_data, mime = /^image\/(png|jpeg|webp)$/.test(d.mimeType || d.mime_type) ? (d.mimeType || d.mime_type) : 'image/png';
+      const bin = atob(d.data), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+      img = await createImageBitmap(new Blob([u8], { type: mime })); break;
+    }
+    if (!img) throw new Error(err || '沒畫成');
+    if (_libPack) { try { _libPack.posterArt?.close?.(); } catch {} _libPack.posterArt = img; }
+    showToast('✨ 插圖畫好了（只在這次的成果包裡，關掉就沒了；要留請下載海報）');
+  } catch (e) { showToast(`❌ 插圖沒畫成：${e.message || e}`); }
+  finally { if (_libPack) _libPack.artBusy = false; libPackRender(); }
+}
+function posterArtClear() { if (!_libPack) return; try { _libPack.posterArt?.close?.(); } catch {} _libPack.posterArt = null; libPackRender(); }
 function posterOptSet(k, v) { const o = posterPref('opts'); o[k] = !!v; posterPref('opts', o); posterPreviewSoon(); }
+// 2026v32：活動名稱空著、或只是分組時間（6/16（五）上午、2017-06-16…）→ 標語升成大標題
+function posterIsTimeLabel(s) { s = String(s || '').trim(); return !s || /^[\d\s\/\-.:：~～（）()一二三四五六日上下午早晚第天場]+$/.test(s); }
+function posterTitles(slogan) {
+  const act = (_libPack?.act || '').trim(), sl = (slogan ?? posterSlogan()).trim();
+  if (!posterIsTimeLabel(act)) return { title: act, slogan: sl };
+  return sl ? { title: sl, slogan: '' } : { title: '活動紀錄', slogan: '' };
+}
 function posterInfo() {
-  const o = posterPref('opts');
-  return { act: (_libPack.act || '').trim() || '活動', date: o.date ? libPackDates() : '', unit: o.unit ? (libPackUnit() || '') : '', slogan: posterSlogan(), brand: o.brand };
+  const o = posterPref('opts'), t = posterTitles();
+  return { act: t.title, date: o.date ? libPackDates() : '', unit: o.unit ? (libPackUnit() || '') : '', slogan: t.slogan, brand: o.brand, art: _libPack?.posterArt || null };
 }
 // 把 n 張照片排進一個矩形；第一張放大（3、5、6 張時），其餘用「齊行」排滿不留空格
 function posterCells(n, x, y, w, h, gap) {
@@ -14866,7 +14923,28 @@ async function posterRender(layout, srcs, k = 1, info) {
   const imgs = srcs.filter(Boolean).slice(0, POSTER_MAX);
   const metaLine = [info.date, info.unit].filter(Boolean).join('　');
   const drawLogo = (x, y, h) => { if (!logo) return 0; const w = h * logo.width / logo.height; ctx.drawImage(logo, x, y, w, h); return w; };
-  if (layout === 'ig') {
+  if (info.art) {
+    // 2026v32：AI 插圖版 — 上方插圖（底部漸層融進主色）＋標題，中間照片，下方資訊帶
+    const artH = H * (layout === 'a4' ? 0.3 : layout === 'ig' ? 0.36 : 0.27), footH = metaLine ? S * (layout === 'a4' ? 0.09 : 0.11) : 0;
+    ctx.fillStyle = T.paper; ctx.fillRect(0, 0, W, H);
+    posterCover(ctx, info.art, { x: 0, y: 0, w: W, h: artH }, 0);
+    const g = ctx.createLinearGradient(0, artH * 0.35, 0, artH); g.addColorStop(0, T.bg + '00'); g.addColorStop(0.7, T.bg + 'cc'); g.addColorStop(1, T.bg);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, artH);
+    const bandH = S * (layout === 'a4' ? 0.05 : 0.04); ctx.fillStyle = T.bg; ctx.fillRect(0, artH, W, bandH);
+    const lsz = S * 0.1; let lw = 0;
+    const t = posterFitTitle(ctx, info.act, W - pad * 2 - (logo ? lsz + S * 0.03 : 0), S * (layout === 'ig' ? 0.08 : 0.09), S * 0.055, 2);
+    const sl = info.slogan ? posterWrap((ctx.font = `500 ${S * 0.036}px ${POSTER_FONT}`, ctx), info.slogan, W - pad * 2, 1) : [];
+    const bh = t.lines.length * t.size * 1.15 + (sl.length ? S * 0.036 * 1.35 + S * 0.01 : 0);
+    let y = artH + bandH - S * 0.025 - bh;
+    if (logo) lw = drawLogo(pad, artH + bandH - S * 0.025 - lsz, lsz) + S * 0.03;
+    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = S * 0.012;
+    y = posterText(ctx, t.lines, pad + lw, y, t.size, 1.15, T.fg);
+    if (sl.length) posterText(ctx, sl, pad + lw, y + S * 0.01, S * 0.036, 1.35, T.sub, 'left', 500);
+    ctx.restore();
+    const py = artH + bandH + pad * 0.6, ph = H - py - footH - pad * 0.6;
+    posterCells(imgs.length, pad, py, W - pad * 2, ph, gap).forEach((r, i) => posterCover(ctx, imgs[i], r, rad));
+    if (footH) { ctx.fillStyle = T.bg; ctx.fillRect(0, H - footH, W, footH); posterText(ctx, posterWrap((ctx.font = `700 ${S * 0.034}px ${POSTER_FONT}`, ctx), metaLine, W - pad * 2, 1), pad, H - footH + (footH - S * 0.034) / 2, S * 0.034, 1.2, T.fg, 'left', 700); }
+  } else if (layout === 'ig') {
     // 照片填滿，下方 38% 漸層壓主色，標題壓在上面
     ctx.fillStyle = T.paper; ctx.fillRect(0, 0, W, H);
     posterCells(imgs.length, 0, 0, W, H, gap).forEach((r, i) => posterCover(ctx, imgs[i], r, 0));
@@ -15006,49 +15084,33 @@ const CLIP_TITLES = { fadeup: '淡入上移', pop: '逐字彈出', type: '打字
 const CLIP_TRANS = { fade: '交叉淡化', push: '推移', wipe: '擦除', zoom: '縮放穿越', black: '黑場', page: '翻頁', random: '隨機', cut: '硬切' };
 const CLIP_MOTIONS = { alt: '交替', zoom: '緩慢推近', pan: '左右平移' };
 const CLIP_VOLS = { low: { label: '小', db: -12 }, mid: { label: '中', db: -6 }, high: { label: '大', db: 0 } };
-const CLIP_DEF = { ratio: '16:9', sec: 3, motion: 'alt', title: 'fadeup', trans: 'fade', vol: 'mid', intro: true, outro: true, caps: false, introPhoto: true, bgm: 'sunrise-run' };
+const CLIP_DEF = { ratio: '16:9', sec: 3, motion: 'alt', title: 'fadeup', trans: 'fade', vol: 'mid', intro: true, outro: true, caps: false, introPhoto: true, bgm: 'funshine' };
 function clipOpts(v) {
   try {
-    if (v === undefined) { const o = JSON.parse(localStorage.getItem('clipOpts') || '{}'); return { ...CLIP_DEF, ...o }; }
+    if (v === undefined) { const o = { ...CLIP_DEF, ...JSON.parse(localStorage.getItem('clipOpts') || '{}') }; if (o.bgm && o.bgm !== 'file' && typeof bgmInfo === 'function' && !bgmInfo(o.bgm)) o.bgm = CLIP_DEF.bgm; return o; }
     localStorage.setItem('clipOpts', JSON.stringify(v));
   } catch {}
   return v;
 }
 function clipSet(k, v) { const o = clipOpts(); o[k] = v; clipOpts(o); clipPvStop(); if (k !== 'bgm' && k !== 'vol') bgmStop(); libPackRender(); }
 let _clipMusic = null;   // { name, ab: ArrayBuffer } 自己選的音樂，只在記憶體
-// 2026v31 🎵 內建配樂：24 首 CC0（Doory contributors 用程式合成、宣告 CC0-1.0）。[代號, 分類, 曲名, 秒數, bpm, SHA-256]
+// 2026v32 🎵 內建配樂：10 首快樂的 CC0 音樂（FreePD.com，CC0-1.0 公眾領域；取前 100 秒、響度統一 -16 LUFS）。[代號, 中文名, 曲名, 秒數, SHA-256]
 const BGM_LIB = [
-  ['sunrise-run', 'upbeat', 'Sunrise Run', 31, 124, '051858db31af1c0b5959808aed74277731e330ea5ead25231ed850fc33e3e04b'],
-  ['good-morning-energy', 'upbeat', 'Good Morning Energy', 32, 120, '6b7d24db90b2952bed9ba4d258b6261413472c94bdccf2085ed1a2120b99f770'],
-  ['bright-side', 'upbeat', 'Bright Side', 30, 128, '3b5baf0657947ad3301828edced61233b397578f552007b2674692c79c2062b2'],
-  ['still-water', 'calm', 'Still Water', 42, 68, 'e2f7b5fe7bf7052664770f76359e666ba1e81ce2e49801c1e90cabe9d4414380'],
-  ['morning-mist', 'calm', 'Morning Mist', 40, 72, '101a5457a48967f773b80949c308cb0f436048fb57b60ffd0d0936c12d0792b7'],
-  ['gentle-tide', 'calm', 'Gentle Tide', 45, 64, '0b92b2f2f629fec6eb138c66ce2d1ac36b857371912ff5f34439a92665747725'],
-  ['rising-horizon', 'cinematic', 'Rising Horizon', 43, 90, 'ca1c1c10a380d22066126d72292ebcdeb740e4ce6cba4921bc857b228a28765b'],
-  ['epic-journey', 'cinematic', 'Epic Journey', 38, 100, 'cad5abf97374109c5d19cb890211e8c79341b50021d60a0c8150c63fa9a19adb'],
-  ['vast-skies', 'cinematic', 'Vast Skies', 48, 80, '39749cf1cacc30638aec3aca2b1a05be0df910440f5fce83e2e6db213324eb62'],
-  ['rainy-window', 'lofi', 'Rainy Window', 51, 76, '5e5fd1cce043918cd78585948580a8194c5d57979d58e34fc2d7bd2db88896f2'],
-  ['late-night-study', 'lofi', 'Late Night Study', 47, 82, 'c1a842887df2788fbe6feea8ac20854e1be040baeba6008b9679565a2eca215f'],
-  ['coffee-break', 'lofi', 'Coffee Break', 44, 88, '84160d4259a6438fce61bbb0ad059181743fca3c99d3f4c684ee78c1a9c6ab44'],
-  ['forward-motion', 'corporate', 'Forward Motion', 36, 108, 'd79be5f6c19d7953bce8f03b95d9356a63de32abed59716d4eddc42559bc2aa0'],
-  ['clear-vision', 'corporate', 'Clear Vision', 38, 100, 'cbff48bfc5f47b5ae5d12cd0e6a78f3cd9abc0420bda6885e7ccf4a6aae3ffec'],
-  ['team-spirit', 'corporate', 'Team Spirit', 34, 112, '319142028f7180767279dd931b834170d5024ee8805f084242f0b8e9ac085c30'],
-  ['jelly-bounce', 'playful', 'Jelly Bounce', 33, 116, 'cb9683ddaf839c3bd7bd3872c86887eac6c7aea2036b9399bf0f8476c0b803f2'],
-  ['pogo-parade', 'playful', 'Pogo Parade', 30, 126, 'ab81d183d21f16a68bd9737ecf1283b14381277017fc6326a0c56161d1beea6c'],
-  ['tiny-circus', 'playful', 'Tiny Circus', 36, 132, '124bad00edee1cc60d6664a7fecab13e2d2eafe6ebe1aeb6d9de3f067bfcc243'],
-  ['candlelight', 'romantic', 'Candlelight', 44, 66, 'b664109d7bc7e3056189a88ecb6d58c62ce0c047bedf566648603d7688ab7c9e'],
-  ['slow-dance', 'romantic', 'Slow Dance', 40, 72, 'c3702d0ffd5aa565809b4524a501bb0beeee17be87a427177e221402a4d025b3'],
-  ['first-kiss', 'romantic', 'First Kiss', 48, 60, 'a191c1d681b0295868060de934e96eaf78aff47618b975805980bfa433593ad1'],
-  ['tension-rising', 'dramatic', 'Tension Rising', 35, 110, '05529f3ce9ecc2f64b09c72ab92cf80304e35d18070bf505c082abaa6a6029b9'],
-  ['final-stand', 'dramatic', 'Final Stand', 32, 120, '1b95b8922d06787068e27847ee4dc4530881320c7a165f2abc33da3e2234395b'],
-  ['dark-pulse', 'dramatic', 'Dark Pulse', 38, 100, 'a5ecac85de1edd6387a9d4df3f630c7e68e6ec3a07197046eade80e21ec9fce6']
+  ['funshine', '陽光滿滿', 'Funshine', 100, 'a322cb86351805d6c5dc928070af24bcd6d26473cedb0fb219e814f4d3e2fce5'],
+  ['city-sunshine', '城市晴天', 'City Sunshine', 100, '4c3dbe85888430158cae12778e22c2ab630eb9f89f30bd00406a2f026d9503c0'],
+  ['whistling-ukulele', '口哨烏克麗麗', 'Happy Whistling Ukulele', 100, '9df8a10c32b9b27b52ce73ec1aedacafd6b058e51a842d9150503d406f539ff1'],
+  ['ukulele-song', '烏克麗麗之歌', 'Ukulele Song', 100, 'b30f51c3a3d907e0cbe7ce1d681e4d77f7213a1f620dd4d0c58ff446b783e0d0'],
+  ['inspiration', '靈感湧現', 'Inspiration', 100, 'b1f20fa0205cc8387227dd71ab943f481ddcb4ccb96aa6b816392799218dc984'],
+  ['motions', '動起來', 'Motions', 100, '33c21b2e9fa496d87ca8f6c1a8fce952857526ba5159a04c27e569b3ad4bca5d'],
+  ['spring-chicken', '春天小雞', 'Spring Chicken', 100, '94926cdabe27998075b6f2d333481f1509b793d6cdd22867803c9543f3bbc4bb'],
+  ['giant-bunny', '大兔子朋友', 'My Giant Bunny Friend', 100, 'e971dc9adc04294aa5ca0a03cb93aa23cc0e46c3e397b6d08e3af5cd89632c6b'],
+  ['sunny-rasta', '陽光雷鬼', 'Sunny Rasta', 100, '5c496db46e46a146ef07fe973c7c778f0f16acf62b90d56a5e9845ebfe0c6a9e'],
+  ['connecting-rainbows', '彩虹連線', 'Connecting Rainbows', 100, '065fe7aef882bc46bd9895fe17783b85d5acdebc7118594c363b749fecbc838e']
 ];
-const BGM_MOODS = {"upbeat": "輕快", "calm": "溫柔", "cinematic": "壯闊", "lofi": "悠閒", "corporate": "正式", "playful": "童趣", "romantic": "溫馨", "dramatic": "緊張"};
-const BGM_FIT = {"upbeat": "運動會、園遊會、戶外教學", "calm": "閱讀、晨光、低年級", "cinematic": "畢業典禮、學年回顧", "lofi": "社團、美術、科展", "corporate": "始業式、頒獎、成果發表", "playful": "幼兒園、低年級、萬聖節", "romantic": "母親節、感恩、畢業感言", "dramatic": "比賽、防災演練"};
-const BGM_CDN = 'https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@a09a924bbb45b1abf0da9d5b40a12cee6f32c8d5/audio/bgm/';
+const BGM_CDN = 'https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@05cc766e0ec903ab4a04936b371a599cf40edb2f/audio/bgm/';
 const _bgmCache = new Map();   // 代號 → ArrayBuffer（只在記憶體）
 let _bgmAudio = null;
-function bgmInfo(id) { const r = BGM_LIB.find(x => x[0] === id); return r ? { id: r[0], mood: r[1], title: r[2], sec: r[3], bpm: r[4], sha: r[5] } : null; }
+function bgmInfo(id) { const r = BGM_LIB.find(x => x[0] === id); return r ? { id: r[0], zh: r[1], title: r[2], sec: r[3], sha: r[4] } : null; }
 async function bgmFetch(id) {
   const b = bgmInfo(id); if (!b) throw new Error('沒有這首配樂');
   if (_bgmCache.has(id)) return _bgmCache.get(id);
@@ -15225,7 +15287,7 @@ function clipFrame(st, t) {
   } else { ctx.fillStyle = T.bg; ctx.fillRect(0, 0, W, H); }
   if (plan.I && t < plan.I) {
     const a = t < plan.I - 0.6 ? 1 : clamp01(1 - (t - (plan.I - 0.6)) / 0.6);
-    ctx.save(); ctx.globalAlpha = a; clipIntro(ctx, W, H, t, plan.I, o, info, T, srcs(0), logo); ctx.restore();
+    ctx.save(); ctx.globalAlpha = a; clipIntro(ctx, W, H, t, plan.I, info.art ? { ...o, introPhoto: true } : o, info, T, info.art || srcs(0), logo); ctx.restore();
   }
   if (plan.O && t >= plan.outroStart) {
     ctx.save(); ctx.globalAlpha = clipOut(clamp01((t - plan.outroStart) / 0.5)); clipOutro(ctx, W, H, t - plan.outroStart, plan.O, info, T, logo, plan.n); ctx.restore();
@@ -15317,13 +15379,17 @@ function clipHtml(busy) {
       <label class="lp-chk"><input type="checkbox" id="lpClipCaps2" ${o.caps ? 'checked' : ''} onchange="clipSet('caps',this.checked)"> 顯示照片說明</label></div>
     <div class="lp-note">預估：約 ${Math.round(plan.total)} 秒 · ${clipMobile() ? '720p' : '1080p'} · 轉檔約 ${Math.round(plan.total * 1.2)}–${Math.round(plan.total * 2.5)} 秒${long ? '　<b style="color:var(--yellow);">FB 限動最多 60 秒、LINE 建議 30 秒內</b>' : ''}${few ? `　<b style="color:var(--yellow);">至少要 ${CLIP_MIN} 張照片</b>` : ''}</div>
     <div class="lp-share-btns"><button class="modal-btn confirm" id="lpClipMake" onclick="clipMake()" ${busy || few ? 'disabled' : ''}>🎬 製作 MP4</button><span id="lpClipCaps" class="lp-clip-caps">檢查這個瀏覽器能不能轉檔…</span></div>
-    <div class="lp-note">影片裡有學生照片，發布前請再看一次：沒有學生姓名、照片沒有家長不同意公開的孩子。</div></div>`;
+    <div class="lp-note">影片裡有學生照片，發布前請再看一次：沒有學生姓名、照片沒有家長不同意公開的孩子。</div>
+    <details class="lp-clip-more"><summary>✂️ 想再精修（加字幕、旁白、更多特效）？</summary>
+      <div class="lp-note">把這支 MP4 和挑好的照片丟進免費剪輯軟體 <a href="https://github.com/jub0t/Concat/releases" target="_blank" rel="noopener noreferrer">Concat</a>（開源，Windows／Mac／Linux／Android，有繁體中文）：
+      全部在自己電腦處理、<b>影片不上傳</b>、不用帳號、沒有浮水印；可以自動上字幕（本機語音辨識）、文字轉語音旁白、去背、轉場與標題特效、多軌剪輯，輸出到 4K。
+      目前是 beta 版；Windows 第一次開若被 SmartScreen 擋，按「其他資訊 → 仍要執行」。它是另外安裝的軟體，跟校園拾光沒有連線。</div></details></div>`;
 }
 function clipMusicHtml(o) {
   const cur = o.bgm === 'file' && !_clipMusic ? '' : o.bgm, b = bgmInfo(cur);
-  const groups = Object.entries(BGM_MOODS).map(([m, lab]) => `<optgroup label="${lab}（${BGM_FIT[m]}）">${BGM_LIB.filter(r => r[1] === m).map(r => `<option value="${r[0]}"${r[0] === cur ? ' selected' : ''}>${lab} · ${r[2]}（${r[3]} 秒）</option>`).join('')}</optgroup>`).join('');
+  const groups = `<optgroup label="🎵 快樂的配樂（CC0，可自由使用）">${BGM_LIB.map(r => `<option value="${r[0]}"${r[0] === cur ? ' selected' : ''}>${r[1]} · ${r[2]}</option>`).join('')}</optgroup>`;
   return `<select id="lpClipBgm" onchange="clipMusicPick(this.value)"><option value=""${!cur ? ' selected' : ''}>不放音樂</option>${groups}<option value="file"${cur === 'file' ? ' selected' : ''}>📁 自己選檔案…</option></select>
-    ${b ? `<button class="tip-link" id="lpBgmTry" onclick="bgmTry()">${_bgmAudio?.id === cur ? '⏹ 停止' : '🔊 試聽'}</button><span class="lp-note" style="margin-left:6px">${b.sec} 秒 · ${b.bpm} bpm · CC0 公眾領域</span>` : ''}
+    ${b ? `<button class="tip-link" id="lpBgmTry" onclick="bgmTry()">${_bgmAudio?.id === cur ? '⏹ 停止' : '🔊 試聽'}</button><span class="lp-note" style="margin-left:6px">FreePD · CC0 公眾領域</span>` : ''}
     ${cur === 'file' ? `<span class="lp-note">🎵 ${escHtml(_clipMusic.name)}</span> <button class="tip-link" onclick="document.getElementById('lpClipMusicIn').click()">換一首</button>` : ''}
     <input type="file" id="lpClipMusicIn" accept="audio/*,.mp3,.m4a,.wav,.ogg" style="display:none" onchange="clipPickMusic(this.files[0]);this.value=''">
     ${cur === 'file' ? '<div class="lp-note">請用自己有授權的音樂（例如 Freesound、Free Music Archive、FreePD 上 CC0 的曲子）</div>' : ''}`;
@@ -15350,7 +15416,7 @@ async function clipAudio(ab, total, rate, db) {
   }
   return await oc.startRendering();
 }
-function clipInfo() { const o = posterPref('opts'); return { act: (_libPack.act || '').trim() || '活動', date: libPackDates(), unit: libPackUnit() || '' }; }
+function clipInfo() { return { act: posterTitles().title, date: libPackDates(), unit: libPackUnit() || '', art: _libPack?.posterArt || null }; }
 async function clipMake() {
   libPackSync(); if (!_libPack || _libPack.busy) return;
   const items = _libPack.items.slice(0, CLIP_MAX);
