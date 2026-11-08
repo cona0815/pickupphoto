@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v35 (2026-11-08)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v36 (2026-11-08)　（原名：AI 照片篩選器）
+  2026v36 (2026-11-08, build v193): 🎬 製作短片時在短片區塊直接顯示進度（百分比、第幾格、大約還要幾秒、目前畫面）；成果包總進度條黏在頂端
   2026v35 (2026-11-08, build v192): 📁 紀錄模式 — 學校活動／頒獎／畢業（含相簿一鍵整理）預設保留，只刪「拍壞的」與「明顯重複的」；
         分數只分 ⭐精選／📁保留；每組、每個活動至少留一張；頒獎畢業同組換睜眼那張；運動會不變
   2026v34 (2026-11-08, build v190): 🖼 有 AI 插圖時海報只放插圖（滿版、依版型比例畫）；成果包重畫不再跳回最上面；
@@ -225,7 +226,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v35 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v36 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2327,7 +2328,21 @@
   .lp-ai { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
   .lp-aibtn { background: linear-gradient(135deg, rgba(167,139,250,0.95), rgba(77,171,247,0.95)) !important; color: #fff !important; padding: 8px 14px; font-size: 13px; }
   .lp-aibtn:disabled { opacity: .45; }
-  .lp-prog { border: 1px solid rgba(167,139,250,0.55); background: rgba(167,139,250,0.12); border-radius: 12px; padding: 8px 12px; margin-bottom: 8px; }
+  .lp-prog { border: 1px solid rgba(167,139,250,0.55); background: linear-gradient(135deg, rgba(139,92,246,0.96), rgba(255,61,127,0.94)); border: 2px solid #ffd166; color: #fff; border-radius: 12px; padding: 8px 12px; margin-bottom: 8px; position: sticky; top: -20px; z-index: 6; backdrop-filter: blur(8px); }
+  /* 2026v36 回顧短片區塊內的進度 */
+  .lp-clip-prog { display: flex; gap: 14px; align-items: center; margin-top: 10px; padding: 14px 16px; border-radius: 16px; color: #fff;
+    background: linear-gradient(135deg, #ff6a3d 0%, #ff3d7f 55%, #8b5cf6 100%); border: 2px solid #ffd166;
+    box-shadow: 0 0 0 4px rgba(255,209,102,0.25), 0 10px 30px rgba(255,61,127,0.45); animation: lpClipGlow 1.6s ease-in-out infinite; }
+  @keyframes lpClipGlow { 50% { box-shadow: 0 0 0 7px rgba(255,209,102,0.15), 0 10px 36px rgba(255,61,127,0.65); } }
+  .lp-clip-prog canvas { width: 168px; border-radius: 10px; background: #000; flex: none; border: 2px solid rgba(255,255,255,0.85); }
+  .lp-clip-prog .lp-clip-prog-main { flex: 1; min-width: 0; }
+  .lp-clip-prog .lp-prog-h b { font-size: 16px; color: #fff; }
+  .lp-clip-prog .lp-prog-track { height: 14px; border-radius: 8px; background: rgba(0,0,0,0.30); }
+  .lp-clip-prog .lp-prog-bar { background: linear-gradient(90deg, #ffe08a, #ffffff, #ffe08a); background-size: 200% 100%; border-radius: 8px; }
+  .lp-clip-prog .lp-prog-sub, .lp-clip-prog .lp-note { color: rgba(255,255,255,0.92); }
+  .lp-clip-prog .tip-link { color: #fff; font-weight: 700; }
+  .lp-clip-prog-pct { font-size: 26px; font-weight: 900; font-family: var(--mono); color: #ffe08a; text-shadow: 0 2px 6px rgba(0,0,0,0.35); }
+  @media (prefers-reduced-motion: reduce) { .lp-clip-prog { animation: none; } }
   .lp-prog-h { display: flex; align-items: center; gap: 8px; font-size: 13px; }
   .lp-prog-t { font-size: 11px; color: var(--text-dim); font-family: var(--mono); }
   .lp-prog-track { height: 8px; border-radius: 5px; background: rgba(255,255,255,0.10); overflow: hidden; margin: 6px 0 4px; }
@@ -3208,7 +3223,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v35 · 2026-11-08</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v36 · 2026-11-08</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3308,7 +3323,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v35 程式逐項清點（2026-11-08）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v36 程式逐項清點（2026-11-08）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3735,7 +3750,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v35（2026-11-08）。</span>
+        <span style="font-size:11px;">本說明對應 2026v36（2026-11-08）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4335,8 +4350,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v35';
-const APP_BUILD = 'v192';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v36';
+const APP_BUILD = 'v193';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -14632,7 +14647,7 @@ function libPackStart(label) {
   _libPack.prog = { label, pct: 3, sub: '準備照片…', t0: Date.now() };
   libPackRender();
   clearInterval(_libPack.timer);
-  _libPack.timer = setInterval(() => { const el = document.getElementById('lpProgTime'); if (el && _libPack?.prog) el.textContent = `已等 ${Math.round((Date.now() - _libPack.prog.t0) / 1000)} 秒`; }, 1000);
+  _libPack.timer = setInterval(() => { const el = document.getElementById('lpProgTime'); if (el && _libPack?.prog) el.textContent = `已等 ${Math.round((Date.now() - _libPack.prog.t0) / 1000)} 秒`; clipProgPaint(); }, 1000);
 }
 function libPackProg(pct, sub, label) {
   if (!_libPack?.prog) return; const p = _libPack.prog;
@@ -14640,6 +14655,21 @@ function libPackProg(pct, sub, label) {
   const b = document.getElementById('lpProgBar'); if (b) b.style.width = `${Math.max(3, Math.min(100, p.pct))}%`;
   const s = document.getElementById('lpProgSub'); if (s) s.textContent = p.sub;
   const l = document.getElementById('lpProgLabel'); if (l) l.textContent = `${p.label}　${Math.round(p.pct)}%`;
+  clipProgPaint();
+}
+// 2026v36：回顧短片區塊裡的進度（百分比、已經過、大約還要、目前畫面）
+function clipProgEta(p) { const el = (Date.now() - p.t0) / 1000; if (p.pct < 8 || el < 3) return '估算中…'; const left = Math.max(0, el / ((p.pct - 5) / 95) - el); return left < 60 ? `大約還要 ${Math.ceil(left)} 秒` : `大約還要 ${Math.floor(left / 60)} 分 ${Math.round(left % 60)} 秒`; }
+function clipProgPaint() {
+  const p = _libPack?.prog; if (!p || !p.clip) return;
+  const b = document.getElementById('lpClipProgBar'); if (b) b.style.width = `${Math.max(3, Math.min(100, p.pct))}%`;
+  const n = document.getElementById('lpClipProgPct'); if (n) n.textContent = `${Math.round(p.pct)}%`;
+  const s = document.getElementById('lpClipProgSub'); if (s) s.textContent = p.sub;
+  const t = document.getElementById('lpClipProgTime'); if (t) t.textContent = `已經過 ${Math.round((Date.now() - p.t0) / 1000)} 秒 · ${clipProgEta(p)}`;
+}
+function clipProgFrame(src) {
+  const c = document.getElementById('lpClipLive'); if (!c || !src) return;
+  const w = 320, h = Math.round(320 * src.height / src.width); if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+  try { c.getContext('2d').drawImage(src, 0, 0, w, h); } catch {}
 }
 function libPackEnd() { clearInterval(_libPack.timer); _libPack.prog = null; _libPack.busy = false; _libPack.ctrl = null; _libPack.items.forEach(it => { it.working = false; }); libPackRender(); }
 function libPackCancel() { if (!_libPack) return; _libPack.cancel = true; try { _libPack.ctrl?.abort(); } catch {} libPackProg(null, '取消中…'); }
@@ -15511,7 +15541,13 @@ function clipHtml(busy) {
       <label class="lp-chk"><input type="checkbox" id="lpClipOutro" ${o.outro ? 'checked' : ''} onchange="clipSet('outro',this.checked)"> 片尾（學校＋張數）</label>
       <label class="lp-chk"><input type="checkbox" id="lpClipCaps2" ${o.caps ? 'checked' : ''} onchange="clipSet('caps',this.checked)"> 顯示照片說明</label></div>
     <div class="lp-note">預估：約 ${Math.round(plan.total)} 秒 · ${clipMobile() ? '720p' : '1080p'} · 轉檔約 ${Math.round(plan.total * 1.2)}–${Math.round(plan.total * 2.5)} 秒${long ? '　<b style="color:var(--yellow);">FB 限動最多 60 秒、LINE 建議 30 秒內</b>' : ''}${few ? `　<b style="color:var(--yellow);">至少要 ${CLIP_MIN} 張照片</b>` : ''}</div>
-    <div class="lp-share-btns"><button class="modal-btn confirm" id="lpClipMake" onclick="clipMake()" ${busy || few ? 'disabled' : ''}>🎬 製作 MP4</button><span id="lpClipCaps" class="lp-clip-caps">檢查這個瀏覽器能不能轉檔…</span></div>
+    ${_libPack.prog?.clip ? `<div class="lp-clip-prog" id="lpClipProg"><canvas id="lpClipLive" width="320" height="180"></canvas><div class="lp-clip-prog-main">
+        <div class="lp-prog-h"><span class="lp-spin"></span><b>🎬 製作中</b><span class="lp-clip-prog-pct" id="lpClipProgPct">${Math.round(_libPack.prog.pct)}%</span><span style="flex:1"></span><button class="tip-link" onclick="libPackCancel()">取消</button></div>
+        <div class="lp-prog-track"><div class="lp-prog-bar" id="lpClipProgBar" style="width:${Math.max(3, _libPack.prog.pct)}%"></div></div>
+        <div class="lp-prog-sub" id="lpClipProgSub">${escHtml(_libPack.prog.sub)}</div>
+        <div class="lp-prog-sub" id="lpClipProgTime">已經過 ${Math.round((Date.now() - _libPack.prog.t0) / 1000)} 秒 · ${clipProgEta(_libPack.prog)}</div>
+        <div class="lp-note">做好會自動下載；製作中請不要關掉這個視窗。</div></div></div>` : ''}
+    <div class="lp-share-btns"${_libPack.prog?.clip ? ' style="display:none"' : ''}><button class="modal-btn confirm" id="lpClipMake" onclick="clipMake()" ${busy || few ? 'disabled' : ''}>🎬 製作 MP4</button><span id="lpClipCaps" class="lp-clip-caps">檢查這個瀏覽器能不能轉檔…</span></div>
     <div class="lp-note">影片裡有學生照片，發布前請再看一次：沒有學生姓名、照片沒有家長不同意公開的孩子。</div>
     <details class="lp-clip-more"><summary>✂️ 想再精修（加字幕、旁白、更多特效）？</summary>
       <div class="lp-note">把這支 MP4 和挑好的照片丟進免費剪輯軟體 <a href="https://github.com/jub0t/Concat/releases" target="_blank" rel="noopener noreferrer">Concat</a>（開源，Windows／Mac／Linux／Android，有繁體中文）：
@@ -15556,13 +15592,14 @@ async function clipMake() {
   if (items.length < CLIP_MIN) { showToast(`⚠️ 回顧短片至少要 ${CLIP_MIN} 張照片`); return; }
   clipPvStop();
   const o = clipOpts(), small = clipMobile(), [W, H] = clipSize(o, small);
-  libPackStart('🎬 製作回顧短片');
+  libPackStart('🎬 製作回顧短片'); _libPack.prog.clip = true; libPackRender();
+  setTimeout(() => document.getElementById('lpClipProg')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 50);
   let loader = null;
   try {
     const caps = await clipCaps(W, H); _clipCaps = _clipCaps || caps;
     if (!caps.mode) throw new Error('這個瀏覽器不支援製作影片，請用電腦版 Chrome 或 Edge');
     if (caps.mode === 'wc' && !window.Mp4Muxer) {
-      libPackProg(2, '載入 mp4-muxer（MIT，比對 SRI 雜湊）…');
+      libPackProg(4, '載入 mp4-muxer（MIT，比對 SRI 雜湊）…');
       if (!(await loadScriptOnce(CLIP_MUX_URL)) || !window.Mp4Muxer) throw new Error('轉檔元件 mp4-muxer 載入失敗（網路不通，或檔案和 SRI 雜湊不符）');
     }
     const plan = clipPlan(o, items.length), info = clipInfo(), T = POSTER_THEMES[posterPref('theme')] || POSTER_THEMES.blue;
@@ -15607,7 +15644,7 @@ async function clipEncodeWC(st, cv, loader, caps, audio, small) {
     const vf = new VideoFrame(cv, { timestamp: Math.round(f * 1e6 / CLIP_FPS), duration: Math.round(1e6 / CLIP_FPS) });
     ve.encode(vf, { keyFrame: f % (CLIP_FPS * 2) === 0 }); vf.close();
     while (ve.encodeQueueSize > 6) await new Promise(r => setTimeout(r, 4));
-    if (f % 10 === 0) { libPackProg(6 + f / F * (audio ? 84 : 90), `畫面 ${f} / ${F} 格（${t.toFixed(1)} / ${plan.total.toFixed(1)} 秒）`); await new Promise(r => setTimeout(r)); }
+    if (f % 10 === 0) { libPackProg(6 + f / F * (audio ? 84 : 90), `畫面 ${f} / ${F} 格（影片 ${t.toFixed(1)} / ${plan.total.toFixed(1)} 秒）`); if (f % 30 === 0) clipProgFrame(cv); await new Promise(r => setTimeout(r)); }
   }
   await ve.flush(); ve.close(); if (err) throw err;
   if (audio) {
@@ -15645,7 +15682,7 @@ async function clipEncodeMR(st, cv, loader, audio, small) {
       if (_libPack?.cancel) throw new Error('已取消');
       const t = (performance.now() - t0) / 1000; if (t >= plan.total) break;
       await loader.ensure(plan, t); clipFrame(st, t);
-      libPackProg(5 + t / plan.total * 92, `錄製中 ${t.toFixed(1)} / ${plan.total.toFixed(1)} 秒（請不要切換分頁）`);
+      libPackProg(5 + t / plan.total * 92, `錄製中 ${t.toFixed(1)} / ${plan.total.toFixed(1)} 秒（請不要切換分頁）`); clipProgFrame(cv);
       await new Promise(r => setTimeout(r, 1000 / CLIP_FPS));
     }
   } finally { try { rec.stop(); } catch {} try { src?.stop(); } catch {} }
