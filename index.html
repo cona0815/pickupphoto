@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v33 (2026-11-08)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v34 (2026-11-08)　（原名：AI 照片篩選器）
+  2026v34 (2026-11-08, build v190): 🖼 有 AI 插圖時海報只放插圖（滿版、依版型比例畫）；成果包重畫不再跳回最上面；
+        「3/1（日）清晨」這類分組時間也改用標語當標題；🎬 短片文字特效 6 種（陰影／描邊／霓虹／金色／糖果）＋星光、說明滑入
   2026v33 (2026-11-08, build v189): 🛠 Gemini 換新模型 — 2.5 Flash 不給新用戶用了 → 預設 3.8 Flash，不能用就自動換下一個；
         思考設定改 thinkingLevel；生圖先試 3.1 Flash Image
   2026v32 (2026-11-08, build v188): 🎵 配樂換成 10 首快樂的 CC0（FreePD）；🖼 活動名稱只是分組時間時改用標語當標題；
@@ -221,7 +223,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v33 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v34 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3204,7 +3206,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v33 · 2026-11-08</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v34 · 2026-11-08</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3304,7 +3306,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v33 程式逐項清點（2026-11-08）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v34 程式逐項清點（2026-11-08）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3731,7 +3733,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v33（2026-11-08）。</span>
+        <span style="font-size:11px;">本說明對應 2026v34（2026-11-08）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4331,8 +4333,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v33';
-const APP_BUILD = 'v189';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v34';
+const APP_BUILD = 'v190';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -14543,6 +14545,16 @@ function libPackSync() {
   const u = document.getElementById('lpUnit'); if (u) libPackUnit(u.value.trim());
 }
 function libPackRender() {
+  // 2026v34：重畫成果包時保留捲動位置（不然按「再畫一張」、換配樂都會跳回最上面）
+  const m0 = document.getElementById('libPackModal'), keep = [];
+  if (m0) m0.querySelectorAll('.lp-modal, .lp-modal [id], .lp-list').forEach(el => { if (el.scrollTop) keep.push([el.id ? '#' + el.id : el.classList.contains('lp-modal') ? '.lp-modal' : '.lp-list', el.scrollTop]); });
+  const pv0 = document.getElementById('lpPosterCv'), pvW = pv0?.width, pvH = pv0?.height, pvStyle = pv0?.getAttribute('style');
+  libPackRender0();
+  const pv1 = document.getElementById('lpPosterCv');   // 先把舊的海報預覽貼回去，版面高度不變、捲動位置才不會被截掉
+  if (pv0 && pv1 && pvW > 10) { pv1.width = pvW; pv1.height = pvH; if (pvStyle) pv1.setAttribute('style', pvStyle); try { pv1.getContext('2d').drawImage(pv0, 0, 0); } catch {} }
+  if (m0 && keep.length) keep.forEach(([sel, top]) => { const el = m0.querySelector(sel); if (el) { el.style.scrollBehavior = 'auto'; el.scrollTop = top; el.style.scrollBehavior = ''; } });
+}
+function libPackRender0() {
   const m = document.getElementById('libPackModal'); if (!m || !_libPack) return;
   const key = !!getGeminiKey(), free = getGeminiTier() === 'free', n = _libPack.items.length, busy = _libPack.busy;
   const len = fbBodyLen(_libPack.post);
@@ -14822,9 +14834,9 @@ function posterHtml(busy) {
           <input type="file" id="lpPosterLogoIn" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display:none" onchange="posterSetLogo(this.files[0]);this.value=''"></div>
         <div class="lp-note" style="margin-top:-2px;">校徽只存在這台電腦的瀏覽器裡，不會放進公開檔案。</div>
         <div class="lp-poster-logo">✨ 封面插圖
-          <button class="tip-link" id="lpPosterArtBtn" onclick="posterArtMake()" ${busy || _libPack.artBusy ? 'disabled' : ''}>${_libPack.artBusy ? '⏳ 畫圖中…' : _libPack.posterArt ? '🔄 再畫一張' : 'AI 畫一張'}</button>
+          <button class="tip-link" id="lpPosterArtBtn" onclick="posterArtMake()" ${busy || _libPack.artBusy ? 'disabled' : ''}>${_libPack.artBusy ? '⏳ 畫圖中…' : !_libPack.posterArt ? 'AI 畫一張' : _libPack.posterArtRatio !== POSTER_ART_RATIO[lay] ? '🔄 依這個版型再畫' : '🔄 再畫一張'}</button>
           ${_libPack.posterArt ? `<button class="tip-link" onclick="posterArtClear()">✕ 不用插圖</button>` : ''}</div>
-        <div class="lp-note" style="margin-top:-2px;">用 Gemini 依活動名稱與標語畫一張插圖放在海報上方，也當短片片頭；<b>只送文字、不送照片</b>。需要 Gemini 付費方案的 Key（約每張 1–2 元台幣）。</div>
+        <div class="lp-note" style="margin-top:-2px;">用 Gemini 依活動名稱與標語畫一張插圖當整張海報（有插圖就不放照片），也當短片片頭；<b>只送文字、不送照片</b>。需要 Gemini 付費方案的 Key（約每張 1–2 元台幣）。</div>
         <div class="lp-share-btns">
           <button class="modal-btn" id="lpPosterPng" onclick="posterDownload()" ${busy || !n ? 'disabled' : ''}>⬇ 下載 PNG</button>
           <button class="modal-btn" id="lpPosterPrint" onclick="posterPrint()" ${busy || !n ? 'disabled' : ''} title="在列印視窗選「另存為 PDF」">🖨 列印／PDF</button>
@@ -14833,13 +14845,14 @@ function posterHtml(busy) {
     </div></div>`;
 }
 // 2026v32 ✨ AI 封面插圖：只送文字（活動名稱、標語），請 Gemini 畫一張 21:9 的插圖；結果只放在記憶體
+const POSTER_ART_RATIO = { a4: '2:3', ig: '1:1', story: '9:16' };
 const POSTER_ART_MODELS = ['gemini-3.1-flash-image', 'gemini-nano-banana-2.1', 'gemini-3-pro-image', 'gemini-2.5-flash-image'];   // 2026v33：新的放前面
 function posterArtPrompt() {
   const t = posterTitles();
   const theme = [t.title, t.slogan].filter(Boolean).join('，').replace(/[\r\n<>{}]/g, ' ').slice(0, 80);
-  return `Create a wide banner illustration for a Taiwanese elementary school event poster. Event theme (Traditional Chinese): 「${theme}」.
-Style: bright, warm, cheerful flat vector illustration with soft gradients, festive decorations that fit the theme (e.g. balloons, flowers, ribbons, sports or music objects as appropriate), school campus feeling.
-Strict rules: absolutely NO text, letters, numbers, signs or logos anywhere; NO realistic people and NO faces (small cute silhouettes are OK); keep the lower third simple and calm so a title can be placed over it.`;
+  return `Create a full-page poster illustration (it fills the whole poster) for a Taiwanese elementary school event. Event theme (Traditional Chinese): 「${theme}」.
+Style: bright, warm, cheerful flat vector illustration with soft gradients, a clear main scene that fits the theme (e.g. balloons, flowers, ribbons, sports or music objects as appropriate), school campus feeling, rich but tidy composition.
+Strict rules: absolutely NO text, letters, numbers, signs or logos anywhere; NO realistic people and NO faces (small cute silhouettes are OK); keep the bottom 35% calm and simple (soft ground or sky) so a big title can be placed over it.`;
 }
 function posterArtErr(status, msg) {
   msg = String(msg || '');
@@ -14854,7 +14867,8 @@ async function posterArtMake() {
   if (!key) { showToast('⚠️ 先到「⚙️ 設定 → Gemini」填 Key（生圖要付費方案的 Key）'); return; }
   _libPack.artBusy = true; libPackRender();
   try {
-    const body = JSON.stringify({ contents: [{ parts: [{ text: posterArtPrompt() }] }], generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: '21:9' } } });
+    const ratio = POSTER_ART_RATIO[posterPref('layout')] || '2:3';
+    const body = JSON.stringify({ contents: [{ parts: [{ text: posterArtPrompt() }] }], generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: ratio } } });
     let img = null, err = '';
     for (const model of POSTER_ART_MODELS) {
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, body });
@@ -14868,7 +14882,7 @@ async function posterArtMake() {
       img = await createImageBitmap(new Blob([u8], { type: mime })); break;
     }
     if (!img) throw new Error(err || '沒畫成');
-    if (_libPack) { try { _libPack.posterArt?.close?.(); } catch {} _libPack.posterArt = img; }
+    if (_libPack) { try { _libPack.posterArt?.close?.(); } catch {} _libPack.posterArt = img; _libPack.posterArtRatio = POSTER_ART_RATIO[posterPref('layout')] || '2:3'; }
     showToast('✨ 插圖畫好了（只在這次的成果包裡，關掉就沒了；要留請下載海報）');
   } catch (e) { showToast(`❌ 插圖沒畫成：${e.message || e}`); }
   finally { if (_libPack) _libPack.artBusy = false; libPackRender(); }
@@ -14876,7 +14890,12 @@ async function posterArtMake() {
 function posterArtClear() { if (!_libPack) return; try { _libPack.posterArt?.close?.(); } catch {} _libPack.posterArt = null; libPackRender(); }
 function posterOptSet(k, v) { const o = posterPref('opts'); o[k] = !!v; posterPref('opts', o); posterPreviewSoon(); }
 // 2026v32：活動名稱空著、或只是分組時間（6/16（五）上午、2017-06-16…）→ 標語升成大標題
-function posterIsTimeLabel(s) { s = String(s || '').trim(); return !s || /^[\d\s\/\-.:：~～（）()一二三四五六日上下午早晚第天場]+$/.test(s); }
+function posterIsTimeLabel(s) {
+  s = String(s || '').trim(); if (!s) return true;
+  // 2026v34：去掉開頭的日期（3/1、2026-03-01、3月1日）和星期，剩下只有時段字就算「分組時間」
+  const r = s.replace(/^(\d{4}[-\/.])?\d{1,2}[-\/.月]\d{1,2}日?/, '').replace(/^\s*[（(]\s*(週|星期)?[一二三四五六日天]\s*[)）]/, '').trim();
+  return r !== s && /^[\s\d:：~～\-–至到上下午早晚清晨中夜凌傍全整天第一二三四五六七八九十場次段時點分前後半]*$/.test(r) || /^[\d\s\/\-.:：~～（）()一二三四五六日上下午早晚第天場]+$/.test(s);
+}
 function posterTitles(slogan) {
   const act = (_libPack?.act || '').trim(), sl = (slogan ?? posterSlogan()).trim();
   if (!posterIsTimeLabel(act)) return { title: act, slogan: sl };
@@ -14958,26 +14977,24 @@ async function posterRender(layout, srcs, k = 1, info) {
   const metaLine = [info.date, info.unit].filter(Boolean).join('　');
   const drawLogo = (x, y, h) => { if (!logo) return 0; const w = h * logo.width / logo.height; ctx.drawImage(logo, x, y, w, h); return w; };
   if (info.art) {
-    // 2026v32：AI 插圖版 — 上方插圖（底部漸層融進主色）＋標題，中間照片，下方資訊帶
-    const artH = H * (layout === 'a4' ? 0.3 : layout === 'ig' ? 0.36 : 0.27), footH = metaLine ? S * (layout === 'a4' ? 0.09 : 0.11) : 0;
-    ctx.fillStyle = T.paper; ctx.fillRect(0, 0, W, H);
-    posterCover(ctx, info.art, { x: 0, y: 0, w: W, h: artH }, 0);
-    const g = ctx.createLinearGradient(0, artH * 0.35, 0, artH); g.addColorStop(0, T.bg + '00'); g.addColorStop(0.7, T.bg + 'cc'); g.addColorStop(1, T.bg);
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, artH);
-    const bandH = S * (layout === 'a4' ? 0.05 : 0.04); ctx.fillStyle = T.bg; ctx.fillRect(0, artH, W, bandH);
-    const lsz = S * 0.1; let lw = 0;
-    const t = posterFitTitle(ctx, info.act, W - pad * 2 - (logo ? lsz + S * 0.03 : 0), S * (layout === 'ig' ? 0.08 : 0.09), S * 0.055, 2);
-    const sl = info.slogan ? posterWrap((ctx.font = `500 ${S * 0.036}px ${POSTER_FONT}`, ctx), info.slogan, W - pad * 2, 1) : [];
-    const bh = t.lines.length * t.size * 1.15 + (sl.length ? S * 0.036 * 1.35 + S * 0.01 : 0);
-    let y = artH + bandH - S * 0.025 - bh;
-    if (logo) lw = drawLogo(pad, artH + bandH - S * 0.025 - lsz, lsz) + S * 0.03;
+    // 2026v34：AI 插圖版 — 插圖滿版（不放照片），下方漸層壓主色，放標題／標語／日期學校／校徽
+    posterCover(ctx, info.art, { x: 0, y: 0, w: W, h: H }, 0);
+    const big = layout === 'ig' ? 0.1 : 0.12, lsz = S * (layout === 'a4' ? 0.11 : 0.13);
+    const t = posterFitTitle(ctx, info.act, W - pad * 2, S * big, S * 0.06, 2);
+    const sl = info.slogan ? posterWrap((ctx.font = `600 ${S * 0.045}px ${POSTER_FONT}`, ctx), info.slogan, W - pad * 2, 2) : [];
+    const meta = metaLine ? posterWrap((ctx.font = `700 ${S * 0.036}px ${POSTER_FONT}`, ctx), metaLine, W - pad * 2, 1) : [];
+    const blockH = (logo ? lsz + S * 0.03 : 0) + t.lines.length * t.size * 1.15 + (sl.length ? S * 0.02 + sl.length * S * 0.045 * 1.35 : 0) + (meta.length ? S * 0.035 + S * 0.036 * 1.3 : 0);
+    const top = Math.max(H * 0.45, H - pad * 1.4 - blockH - S * 0.08);
+    const g = ctx.createLinearGradient(0, top - S * 0.12, 0, H);
+    g.addColorStop(0, T.bg + '00'); g.addColorStop(0.3, T.bg + 'b3'); g.addColorStop(1, T.bg + 'f2');
+    ctx.fillStyle = g; ctx.fillRect(0, top - S * 0.12, W, H - top + S * 0.12);
+    let y = H - pad * 1.4 - blockH;
+    if (logo) { drawLogo(pad, y, lsz); y += lsz + S * 0.03; }
     ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = S * 0.012;
-    y = posterText(ctx, t.lines, pad + lw, y, t.size, 1.15, T.fg);
-    if (sl.length) posterText(ctx, sl, pad + lw, y + S * 0.01, S * 0.036, 1.35, T.sub, 'left', 500);
+    y = posterText(ctx, t.lines, pad, y, t.size, 1.15, T.fg);
+    if (sl.length) y = posterText(ctx, sl, pad, y + S * 0.02, S * 0.045, 1.35, T.sub, 'left', 600);
     ctx.restore();
-    const py = artH + bandH + pad * 0.6, ph = H - py - footH - pad * 0.6;
-    posterCells(imgs.length, pad, py, W - pad * 2, ph, gap).forEach((r, i) => posterCover(ctx, imgs[i], r, rad));
-    if (footH) { ctx.fillStyle = T.bg; ctx.fillRect(0, H - footH, W, footH); posterText(ctx, posterWrap((ctx.font = `700 ${S * 0.034}px ${POSTER_FONT}`, ctx), metaLine, W - pad * 2, 1), pad, H - footH + (footH - S * 0.034) / 2, S * 0.034, 1.2, T.fg, 'left', 700); }
+    if (meta.length) { ctx.fillStyle = T.accent; ctx.fillRect(pad, y + S * 0.018, S * 0.12, Math.max(2, S * 0.005)); posterText(ctx, meta, pad, y + S * 0.035, S * 0.036, 1.3, T.fg, 'left', 700); }
   } else if (layout === 'ig') {
     // 照片填滿，下方 38% 漸層壓主色，標題壓在上面
     ctx.fillStyle = T.paper; ctx.fillRect(0, 0, W, H);
@@ -15116,9 +15133,51 @@ const CLIP_MIN = 3, CLIP_MAX = 20, CLIP_FPS = 30;
 const CLIP_MUX_URL = 'https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/build/mp4-muxer.js';
 const CLIP_TITLES = { fadeup: '淡入上移', pop: '逐字彈出', type: '打字機', slide: '左右滑入', focus: '聚焦放大', line: '線條揭開', none: '無動畫' };
 const CLIP_TRANS = { fade: '交叉淡化', push: '推移', wipe: '擦除', zoom: '縮放穿越', black: '黑場', page: '翻頁', random: '隨機', cut: '硬切' };
+const CLIP_TFX = { shadow: '立體陰影', stroke: '描邊', glow: '霓虹發光', gold: '金色漸層', candy: '彩色糖果', plain: '無特效' };
+const CLIP_CANDY = ['#ff5d8f', '#ffb703', '#3ec1d3', '#8bd346', '#a26bfa'];
+let _clipFx = { kind: 'shadow', big: 60, accent: '#ffd166' };
+function clipLum(c) { const m = String(c).match(/^#?([0-9a-f]{6})/i); if (!m) return 1; const v = parseInt(m[1], 16); return (0.299 * (v >> 16) + 0.587 * ((v >> 8) & 255) + 0.114 * (v & 255)) / 255; }
+// 2026v34：影片裡所有字都經過這裡；大字（標題、片尾學校名）套特效，小字只加柔和陰影
+function clipTxt(ctx, s, x, y) {
+  s = String(s); const k = _clipFx.kind, px = parseFloat((ctx.font.match(/([\d.]+)px/) || [])[1]) || 20, big = px >= _clipFx.big;
+  ctx.save(); ctx.lineJoin = 'round';
+  if (k === 'plain') ctx.fillText(s, x, y);
+  else if (!big || k === 'shadow') { ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowOffsetY = px * (big ? 0.06 : 0.04); ctx.shadowBlur = px * (big ? 0.14 : 0.1); ctx.fillText(s, x, y); }
+  else if (k === 'stroke') { ctx.lineWidth = px * 0.14; ctx.strokeStyle = clipLum(ctx.fillStyle) > 0.5 ? 'rgba(15,20,35,0.92)' : '#ffffff'; ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = px * 0.15; ctx.strokeText(s, x, y); ctx.shadowColor = 'transparent'; ctx.fillText(s, x, y); }
+  else if (k === 'glow') { ctx.fillStyle = '#ffffff'; ctx.shadowColor = _clipFx.accent; ctx.shadowBlur = px * 0.55; ctx.fillText(s, x, y); ctx.shadowBlur = px * 0.18; ctx.fillText(s, x, y); }
+  else if (k === 'gold') {
+    const top = ctx.textBaseline === 'top' ? y : ctx.textBaseline === 'middle' ? y - px / 2 : y - px * 0.85;
+    const g = ctx.createLinearGradient(0, top, 0, top + px); g.addColorStop(0, '#fff8d6'); g.addColorStop(0.45, '#ffd35a'); g.addColorStop(0.55, '#f0a92a'); g.addColorStop(1, '#ffe9a0');
+    ctx.lineWidth = px * 0.09; ctx.strokeStyle = '#6b3a00'; ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = px * 0.12; ctx.shadowOffsetY = px * 0.04; ctx.strokeText(s, x, y);
+    ctx.shadowColor = 'transparent'; ctx.fillStyle = g; ctx.fillText(s, x, y);
+  } else if (k === 'candy') {
+    const w = ctx.measureText(s).width, al = ctx.textAlign; let sx = al === 'center' ? x - w / 2 : al === 'right' || al === 'end' ? x - w : x;
+    ctx.textAlign = 'left'; ctx.lineWidth = px * 0.13; ctx.strokeStyle = '#ffffff';
+    for (const ch of s) { const cw = ctx.measureText(ch).width, code = ch.codePointAt(0);
+      ctx.save(); ctx.translate(sx, y); ctx.rotate(((code % 3) - 1) * 0.06);
+      ctx.shadowColor = 'rgba(0,0,0,0.3)'; ctx.shadowBlur = px * 0.1; ctx.shadowOffsetY = px * 0.04; ctx.strokeText(ch, 0, 0);
+      ctx.shadowColor = 'transparent'; ctx.fillStyle = CLIP_CANDY[code % CLIP_CANDY.length]; ctx.fillText(ch, 0, 0); ctx.restore(); sx += cw; }
+  } else ctx.fillText(s, x, y);
+  ctx.restore();
+}
+// 閃爍星光（霓虹、金色、糖果才有）
+function clipSparkles(ctx, W, H, t, n = 18) {
+  if (!['glow', 'gold', 'candy'].includes(_clipFx.kind)) return;
+  const S = Math.min(W, H), rnd = clipRng(7), ga = ctx.globalAlpha; ctx.save();
+  for (let i = 0; i < n; i++) {
+    const x = W * (0.08 + 0.84 * rnd()), y = H * (0.15 + 0.7 * rnd()), ph = rnd() * 6.283, sp = 2 + rnd() * 3, r = S * (0.008 + 0.014 * rnd());
+    const a = Math.sin(t * sp + ph); if (a < 0.08) continue;
+    const c = _clipFx.kind === 'candy' ? CLIP_CANDY[i % CLIP_CANDY.length] : _clipFx.kind === 'gold' ? '#fff3c4' : '#ffffff';
+    ctx.globalAlpha = ga * a * 0.9; ctx.fillStyle = c; ctx.shadowColor = _clipFx.kind === 'glow' ? _clipFx.accent : c; ctx.shadowBlur = r * 2.5;
+    const rr = r * (0.6 + 0.5 * a); ctx.beginPath();
+    for (let j = 0; j < 8; j++) { const ang = j * Math.PI / 4, rad = j % 2 ? rr * 0.28 : rr; ctx.lineTo(x + Math.cos(ang) * rad, y + Math.sin(ang) * rad); }
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+}
 const CLIP_MOTIONS = { alt: '交替', zoom: '緩慢推近', pan: '左右平移' };
 const CLIP_VOLS = { low: { label: '小', db: -12 }, mid: { label: '中', db: -6 }, high: { label: '大', db: 0 } };
-const CLIP_DEF = { ratio: '16:9', sec: 3, motion: 'alt', title: 'fadeup', trans: 'fade', vol: 'mid', intro: true, outro: true, caps: false, introPhoto: true, bgm: 'funshine' };
+const CLIP_DEF = { ratio: '16:9', sec: 3, motion: 'alt', title: 'fadeup', trans: 'fade', vol: 'mid', intro: true, outro: true, caps: false, introPhoto: true, bgm: 'funshine', tfx: 'shadow' };
 function clipOpts(v) {
   try {
     if (v === undefined) { const o = { ...CLIP_DEF, ...JSON.parse(localStorage.getItem('clipOpts') || '{}') }; if (o.bgm && o.bgm !== 'file' && typeof bgmInfo === 'function' && !bgmInfo(o.bgm)) o.bgm = CLIP_DEF.bgm; return o; }
@@ -15210,8 +15269,10 @@ function clipPhoto(ctx, src, W, H, v, motion, cap, S) {
     const a = clamp01((v * 1) * 6 - 0.4); if (a <= 0) return;
     ctx.save(); ctx.globalAlpha = a; ctx.font = `600 ${Math.round(S * 0.042)}px ${POSTER_FONT}`;
     const t = posterWrap(ctx, cap.slice(0, 40), W * 0.8, 1)[0] || '', tw = ctx.measureText(t).width, ph = S * 0.075;
+    ctx.translate(-(1 - clipOut(a)) * S * 0.08, 0);
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(S * 0.04, H - S * 0.06 - ph, tw + S * 0.05, ph);
-    ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left'; ctx.fillText(t, S * 0.065, H - S * 0.06 - ph / 2); ctx.restore();
+    ctx.fillStyle = _clipFx.accent; ctx.fillRect(S * 0.04, H - S * 0.06 - ph, Math.max(3, S * 0.007), ph);
+    ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left'; clipTxt(ctx, t, S * 0.065, H - S * 0.06 - ph / 2); ctx.restore();
   }
 }
 // 片頭：主色底（可疊模糊的第一張照片）＋標題動畫
@@ -15223,10 +15284,10 @@ function clipIntro(ctx, W, H, tau, I, o, info, T, bg, logo) {
   const subSize = S * 0.042, lines = ft.lines, blockH = lines.length * lh + (info.date ? subSize * 1.6 : 0) + (logo ? S * 0.14 : 0);
   let y0 = (H - blockH) / 2;
   if (logo) { const lhh = S * 0.11, lw = lhh * logo.width / logo.height; ctx.save(); ctx.globalAlpha = clamp01(tau / 0.5); ctx.drawImage(logo, (W - lw) / 2, y0, lw, lhh); ctx.restore(); y0 += S * 0.14; }
-  const cx = W / 2;
+  const cx = W / 2; _clipFx.big = size * 0.7;
   ctx.textBaseline = 'top'; ctx.textAlign = 'center'; ctx.font = `800 ${size}px ${POSTER_FONT}`;
-  const sub = (a, dy = 0) => { if (!info.date || a <= 0) return; ctx.save(); ctx.globalAlpha = a; ctx.font = `500 ${subSize}px ${POSTER_FONT}`; ctx.fillStyle = T.sub; ctx.textAlign = 'center'; ctx.fillText(info.date, cx, y0 + lines.length * lh + subSize * 0.5 + dy); ctx.restore(); };
-  const line = (str, y, a = 1, dx = 0, sc = 1) => { ctx.save(); ctx.globalAlpha = a; ctx.translate(cx + dx, y + size / 2); ctx.scale(sc, sc); ctx.fillStyle = T.fg; ctx.font = `800 ${size}px ${POSTER_FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(str, 0, 0); ctx.restore(); };
+  const sub = (a, dy = 0) => { if (!info.date || a <= 0) return; ctx.save(); ctx.globalAlpha = a; ctx.font = `500 ${subSize}px ${POSTER_FONT}`; ctx.fillStyle = T.sub; ctx.textAlign = 'center'; clipTxt(ctx, info.date, cx, y0 + lines.length * lh + subSize * 0.5 + dy); ctx.restore(); };
+  const line = (str, y, a = 1, dx = 0, sc = 1) => { ctx.save(); ctx.globalAlpha = a; ctx.translate(cx + dx, y + size / 2); ctx.scale(sc, sc); ctx.fillStyle = T.fg; ctx.font = `800 ${size}px ${POSTER_FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; clipTxt(ctx, str, 0, 0); ctx.restore(); };
   const kind = o.title;
   if (kind === 'none') { lines.forEach((l, i) => line(l, y0 + i * lh)); sub(1); }
   else if (kind === 'fadeup') { const a = clipOut(clamp01(tau / 0.6)); lines.forEach((l, i) => line(l, y0 + i * lh + 24 * (S / 1080) * (1 - a), a)); const b = clipOut(clamp01((tau - 0.3) / 0.6)); sub(b, 18 * (S / 1080) * (1 - b)); }
@@ -15234,13 +15295,13 @@ function clipIntro(ctx, W, H, tau, I, o, info, T, bg, logo) {
     let k = 0;
     lines.forEach((l, li) => { ctx.font = `800 ${size}px ${POSTER_FONT}`; const tw = ctx.measureText(l).width; let x = cx - tw / 2;
       for (const ch of l) { const cw = ctx.measureText(ch).width, u = clamp01((tau - k * 0.08) / 0.35), sc = 1.4 - 0.4 * clipSpring(u);
-        if (u > 0) { ctx.save(); ctx.globalAlpha = clamp01(u * 3); ctx.translate(x + cw / 2, y0 + li * lh + size / 2); ctx.scale(sc, sc); ctx.fillStyle = T.fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ch, 0, 0); ctx.restore(); }
+        if (u > 0) { ctx.save(); ctx.globalAlpha = clamp01(u * 3); ctx.translate(x + cw / 2, y0 + li * lh + size / 2); ctx.scale(sc, sc); ctx.fillStyle = T.fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; clipTxt(ctx, ch, 0, 0); ctx.restore(); }
         x += cw; k++; } });
     sub(clipOut(clamp01((tau - k * 0.08 - 0.1) / 0.4)));
   } else if (kind === 'type') {
     const all = lines.join(''), shown = Math.min(all.length, Math.floor(tau / 0.07)); let used = 0, lastX = cx, lastY = y0;
     lines.forEach((l, li) => { const part = l.slice(0, Math.max(0, shown - used)); used += l.length; ctx.font = `800 ${size}px ${POSTER_FONT}`; const fullW = ctx.measureText(l).width, x0 = cx - fullW / 2;
-      ctx.fillStyle = T.fg; ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.fillText(part, x0, y0 + li * lh); if (part.length) { lastX = x0 + ctx.measureText(part).width; lastY = y0 + li * lh; } else if (li === 0) { lastX = x0; } });
+      ctx.fillStyle = T.fg; ctx.textAlign = 'left'; ctx.textBaseline = 'top'; clipTxt(ctx, part, x0, y0 + li * lh); if (part.length) { lastX = x0 + ctx.measureText(part).width; lastY = y0 + li * lh; } else if (li === 0) { lastX = x0; } });
     if (Math.floor(tau / 0.35) % 2 === 0 || shown < all.length) { ctx.fillStyle = T.accent; ctx.fillRect(lastX + size * 0.06, lastY + size * 0.08, Math.max(3, size * 0.06), size * 0.9); }
     sub(clipOut(clamp01((tau - all.length * 0.07 - 0.1) / 0.4)));
   } else if (kind === 'slide') {
@@ -15265,15 +15326,15 @@ function clipOutro(ctx, W, H, tau, O, info, T, logo, n) {
   const a = clipOut(clamp01(tau / 0.6)); ctx.save(); ctx.globalAlpha = a;
   let y = H * 0.38;
   if (logo) { const lh = S * 0.12, lw = lh * logo.width / logo.height; ctx.drawImage(logo, (W - lw) / 2, y - lh - S * 0.04, lw, lh); }
-  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top'; _clipFx.big = S * 0.06;
   const unit = info.unit || info.act;
   ctx.font = `800 ${S * 0.075}px ${POSTER_FONT}`; ctx.fillStyle = T.fg;
-  posterWrap(ctx, unit, W * 0.84, 2).forEach((l, i) => ctx.fillText(l, W / 2, y + i * S * 0.09));
+  posterWrap(ctx, unit, W * 0.84, 2).forEach((l, i) => clipTxt(ctx, l, W / 2, y + i * S * 0.09));
   y += S * 0.2;
   ctx.fillStyle = T.accent; ctx.fillRect(W / 2 - S * 0.06, y - S * 0.04, S * 0.12, Math.max(3, S * 0.005));
   ctx.font = `500 ${S * 0.036}px ${POSTER_FONT}`; ctx.fillStyle = T.sub;
-  ctx.fillText(`${info.act}・${n} 張精選`, W / 2, y);
-  ctx.font = `500 ${S * 0.026}px ${POSTER_FONT}`; ctx.fillText('校園拾光', W / 2, y + S * 0.07);
+  clipTxt(ctx, `${info.act}・${n} 張精選`, W / 2, y);
+  ctx.font = `500 ${S * 0.026}px ${POSTER_FONT}`; clipTxt(ctx, '校園拾光', W / 2, y + S * 0.07);
   ctx.restore();
   const f = clamp01((tau - (O - 0.8)) / 0.8); if (f > 0) { ctx.fillStyle = `rgba(0,0,0,${f})`; ctx.fillRect(0, 0, W, H); }
 }
@@ -15309,6 +15370,7 @@ function clipTrans(ctx, kind, u, A, B, W, H, tmp) {
 // 一格畫面
 function clipFrame(st, t) {
   const { ctx, W, H, plan, o, info, T, logo, srcs, caps, A, B, tmp } = st, S = Math.min(W, H);
+  _clipFx.kind = CLIP_TFX[o.tfx] ? o.tfx : 'shadow'; _clipFx.accent = T.accent;
   const act = [];
   for (let i = 0; i < plan.n; i++) if (t >= plan.starts[i] && t < plan.starts[i] + plan.D) act.push(i);
   if (!act.length && plan.n) act.push(t < plan.starts[0] ? 0 : plan.n - 1);
@@ -15321,10 +15383,10 @@ function clipFrame(st, t) {
   } else { ctx.fillStyle = T.bg; ctx.fillRect(0, 0, W, H); }
   if (plan.I && t < plan.I) {
     const a = t < plan.I - 0.6 ? 1 : clamp01(1 - (t - (plan.I - 0.6)) / 0.6);
-    ctx.save(); ctx.globalAlpha = a; clipIntro(ctx, W, H, t, plan.I, info.art ? { ...o, introPhoto: true } : o, info, T, info.art || srcs(0), logo); ctx.restore();
+    ctx.save(); ctx.globalAlpha = a; clipIntro(ctx, W, H, t, plan.I, info.art ? { ...o, introPhoto: true } : o, info, T, info.art || srcs(0), logo); clipSparkles(ctx, W, H, t); ctx.restore();
   }
   if (plan.O && t >= plan.outroStart) {
-    ctx.save(); ctx.globalAlpha = clipOut(clamp01((t - plan.outroStart) / 0.5)); clipOutro(ctx, W, H, t - plan.outroStart, plan.O, info, T, logo, plan.n); ctx.restore();
+    ctx.save(); ctx.globalAlpha = clipOut(clamp01((t - plan.outroStart) / 0.5)); clipOutro(ctx, W, H, t - plan.outroStart, plan.O, info, T, logo, plan.n); if (t - plan.outroStart < plan.O - 0.8) clipSparkles(ctx, W, H, t, 12); ctx.restore();
   }
 }
 function clipCanvas(W, H) { const c = document.createElement('canvas'); c.width = W; c.height = H; return c; }
@@ -15402,6 +15464,7 @@ function clipHtml(busy) {
       照片動態 ${sel('lpClipMotion', CLIP_MOTIONS, o.motion, 'motion')}</div>
     <div class="lp-poster-row">標題動畫 ${sel('lpClipTitle', CLIP_TITLES, o.title, 'title')}
       過場動畫 ${sel('lpClipTrans', CLIP_TRANS, o.trans, 'trans')}
+      文字特效 ${sel('lpClipTfx', CLIP_TFX, o.tfx, 'tfx')}
       <button class="tip-link" id="lpClipPvBtn" onclick="clipPreview()" ${few ? 'disabled' : ''}>▶ 預覽 3 秒</button></div>
     <div class="lp-clip-pv" id="lpClipPvBox"><canvas id="lpClipPv" width="10" height="10"></canvas></div>
     <div class="lp-poster-row">配樂 <span id="lpClipMusicSlot">${clipMusicHtml(o)}</span>
