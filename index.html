@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v34 (2026-11-08)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v35 (2026-11-08)　（原名：AI 照片篩選器）
+  2026v35 (2026-11-08, build v192): 📁 紀錄模式 — 學校活動／頒獎／畢業（含相簿一鍵整理）預設保留，只刪「拍壞的」與「明顯重複的」；
+        分數只分 ⭐精選／📁保留；每組、每個活動至少留一張；頒獎畢業同組換睜眼那張；運動會不變
   2026v34 (2026-11-08, build v190): 🖼 有 AI 插圖時海報只放插圖（滿版、依版型比例畫）；成果包重畫不再跳回最上面；
         「3/1（日）清晨」這類分組時間也改用標語當標題；🎬 短片文字特效 6 種（陰影／描邊／霓虹／金色／糖果）＋星光、說明滑入
   2026v33 (2026-11-08, build v189): 🛠 Gemini 換新模型 — 2.5 Flash 不給新用戶用了 → 預設 3.8 Flash，不能用就自動換下一個；
@@ -223,7 +225,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v34 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v35 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3206,7 +3208,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v34 · 2026-11-08</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v35 · 2026-11-08</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3306,7 +3308,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v34 程式逐項清點（2026-11-08）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v35 程式逐項清點（2026-11-08）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3733,7 +3735,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v34（2026-11-08）。</span>
+        <span style="font-size:11px;">本說明對應 2026v35（2026-11-08）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4333,8 +4335,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v34';
-const APP_BUILD = 'v190';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v35';
+const APP_BUILD = 'v192';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -5099,38 +5101,40 @@ const SCENARIO_PRESETS = {
   school_event: {
     label: '🏫 學校活動',
     sharpCheck: true, closedEyeCheck: false, burstDetect: true,
-    burstKeep: 3, simThreshold: 85, sharpThreshold: 18, cull: 100,
-    sceneDedup: true, sceneWindowSec: 60, sceneSim: 90, sceneKeep: 1,    // v149: 台上表演同角度一直拍 → 60 秒內太相似只留 1 張
-    burstWindowMs: 2000,                 // 活動場景變化慢，2 秒內同人同角度視為連拍
+    burstKeep: 1, simThreshold: 92, sharpThreshold: 18, cull: 100,     // 2026v35：紀錄模式 — 只有「明顯重複」才合併，合併後留最好的 1 張
+    sceneDedup: false, sceneWindowSec: 15, sceneSim: 96, sceneKeep: 1,   // 2026v35：預設關（台上不同班同背景會被誤當重複）；要開的話 15 秒內 96% 才算
+    burstWindowMs: 3000,                 // 2026v35：手機連按兩三下常隔 2–3 秒
     faceScore: 0.6,
     passScore: 38, rescuePassScore: 32, severePenalty: 35,
-    notes: '室內常見模糊 → 開銳利檢查但門檻放低；每組留 3 張保多樣性；表情自然不強制睜眼',
+    notes: '紀錄模式：只刪拍壞的與明顯重複的，其餘都留（分數高的進 ⭐精選、其餘 📁保留）',
   },
   award: {
     label: '🏆 頒獎典禮',
     sharpCheck: false, closedEyeCheck: true, burstDetect: true,
-    burstKeep: 2, simThreshold: 92, sharpThreshold: 25, cull: 100,
+    burstKeep: 1, simThreshold: 92, sharpThreshold: 25, cull: 100,     // 2026v35：紀錄模式
     sceneDedup: false, sceneWindowSec: 20, sceneSim: 95, sceneKeep: 1,   // v149: 不同得獎者畫面很像，預設不合併
     burstWindowMs: 3000,                 // 站定握手拍 3-5 張常橫跨 2-3 秒
     faceScore: 0.6,
     passScore: 42, rescuePassScore: 35, severePenalty: 30,
-    notes: '獎狀/獎盃入鏡優先；閉眼直接淘汰；同組相似度門檻拉高避免把不同得獎者併組',
+    notes: '紀錄模式：只刪拍壞的與明顯重複的；同組連拍挑睜眼那張；不同得獎者不會被併組',
   },
   yearbook: {
     label: '🎓 畢業典禮',
     sharpCheck: false, closedEyeCheck: true, burstDetect: true,
-    burstKeep: 1, simThreshold: 85, sharpThreshold: 25, cull: 100,
+    burstKeep: 1, simThreshold: 92, sharpThreshold: 25, cull: 100,     // 2026v35：紀錄模式
     sceneDedup: false, sceneWindowSec: 30, sceneSim: 93, sceneKeep: 1,   // v149
     burstWindowMs: 2000,
     faceScore: 0.6,
     passScore: 42, rescuePassScore: 35, severePenalty: 30,
-    notes: '閉眼直接淘汰；每組只留 1 張讓版面多樣',
+    notes: '紀錄模式：只刪拍壞的與明顯重複的；同組連拍挑睜眼那張',
   },
 };
 
 // v149: 每個情境自己的進階設定（只記在這台電腦；只存跟預設不同的值）
 const SCEN_KEYS = { sharpCheck: 't', burstDetect: 't', closedEyeCheck: 't', keepSingles: 't', sceneDedup: 't', cull: 'cullPercentage', sharpThreshold: 'sharpThreshold', burstKeep: 'burstKeep', simThreshold: 'simThreshold', sceneWindowSec: 'sceneWindowSec', sceneSim: 'sceneSim', sceneKeep: 'sceneKeep' };
 const SCEN_DEFAULT_EXTRA = { keepSingles: true };
+// 2026v35：這些情境用「紀錄模式」— 預設保留，只刪拍壞的與明顯重複的；分數只拿來分 ⭐精選／📁保留 與排序
+const RECORD_SCENES = ['school_event', 'award', 'yearbook'];
 function scenOverrides() { try { const o = JSON.parse(localStorage.getItem('scenOverrides') || '{}'); return o && typeof o === 'object' ? o : {}; } catch { return {}; } }
 function scenSaveOverrides(o) { try { if (Object.keys(o).length) localStorage.setItem('scenOverrides', JSON.stringify(o)); else localStorage.removeItem('scenOverrides'); } catch {} }
 function scenBase(s) { return { ...SCEN_DEFAULT_EXTRA, ...(SCENARIO_PRESETS[s] || {}) }; }
@@ -8780,6 +8784,16 @@ function scoreAndSelect() {
     // ═══ PASS/FAIL ═══
     let pass = true;
     let reason = '';
+    if (RECORD_SCENES.includes(scenario)) {   // 2026v35 紀錄模式
+      const tp = (p.obstructionPenalty || 0) + (p.faceTruncationPenalty || 0) + (p.focusMismatchPenalty || 0) + (p.blurrySubjectPenalty || 0) + (p.prominenceClarityPenalty || 0) + (p.fgFocusFailPenalty || 0) + (p.shutterBlurPenalty || 0);
+      const hard = singleHardDefect(p, sharpT), eyes = settings.closedEyeCheck && p.closedEyeCount > 0 && p.eyeOpenScore < 50;
+      if (burstEnabled && (p.isBurstDup || p.isDuplicate) && !p.burstBest) { pass = false; p.tier = 'drop'; reason = '📸 明顯重複（同一組連拍，已留了最好的那張）'; }
+      else if (hard) { pass = false; p.tier = 'drop'; reason = `🗑 拍壞了（${hard}）`; }
+      else if (p.score >= calibration.passScore && tp < calibration.severePenalty && !eyes) { p.tier = 'pick'; reason = `⭐ 精選（分數 ${p.score}）`; }
+      else { p.tier = 'record'; reason = `📁 保留（${eyes ? '有人閉眼' : tp >= calibration.severePenalty ? '有遮擋／切臉等小問題' : `分數 ${p.score}，排在後面`}；不刪）`; }
+      p.selected = pass; p.selectReason = reason;
+      continue;
+    }
 
     // Check if photo has severe quality issues (obstruction, focus mismatch, truncation)
     const totalPenalty = (p.obstructionPenalty || 0) + (p.faceTruncationPenalty || 0) + (p.focusMismatchPenalty || 0) + (p.blurrySubjectPenalty || 0) + (p.prominenceClarityPenalty || 0) + (p.fgFocusFailPenalty || 0) + (p.shutterBlurPenalty || 0);
@@ -8861,6 +8875,7 @@ function scoreAndSelect() {
     p.selectReason = reason;
   }
 
+  if (RECORD_SCENES.includes(scenario)) recordModeFixups(sharpT);   // 2026v35
   // ═══ CULL PERCENTAGE: after all pass/fail, trim to top N% by score ═══
   const cullPct = parseInt(document.getElementById('cullPercentage')?.value) || 100;
   if (cullPct < 100) {
@@ -8879,6 +8894,27 @@ function scoreAndSelect() {
     }
   }
   try { dedupSimilarScenes(); } catch (e) { console.warn('scene dedup', e); }   // v149
+}
+// 2026v35 紀錄模式的收尾：連拍組換成睜眼那張、每組／每個活動至少留一張
+function recordModeFixups(sharpT) {
+  const auto = p => !p.manualOverride, ok = p => !singleHardDefect(p, sharpT);
+  const eyesBad = p => settings.closedEyeCheck && p.closedEyeCount > 0 && p.eyeOpenScore < 50;
+  const keep = (p, why) => { p.selected = true; p.tier = 'record'; p.isBurstDup = false; p.isDuplicate = false; p.selectReason = why; };
+  const byGroup = new Map(); photos.forEach(p => { if (p.burstGroupId >= 0) { if (!byGroup.has(p.burstGroupId)) byGroup.set(p.burstGroupId, []); byGroup.get(p.burstGroupId).push(p); } });
+  for (const g of byGroup.values()) {
+    if (g.some(p => !auto(p))) continue;
+    // 頒獎／畢業：留下來的那張有人閉眼，組裡有睜眼又沒拍壞的 → 換人
+    if (settings.closedEyeCheck) for (const best of g.filter(p => p.selected && eyesBad(p))) {
+      const alt = g.filter(p => !p.selected && !eyesBad(p) && ok(p)).sort((a, b) => b.score - a.score)[0];
+      if (alt) { best.selected = false; best.tier = 'drop'; best.burstBest = false; best.isBurstDup = true; best.selectReason = '📸 明顯重複（同組有睜眼的，換成那張）';
+        alt.burstBest = true; alt.isBurstDup = false; alt.isDuplicate = false; alt.selected = true; alt.tier = alt.score >= calibration.passScore ? 'pick' : 'record'; alt.selectReason = `${alt.tier === 'pick' ? '⭐ 精選' : '📁 保留'}（同組睜眼的這張，分數 ${alt.score}）`; }
+    }
+    if (!g.some(p => p.selected)) { const b = g.filter(ok).sort((a, b) => b.score - a.score)[0]; if (b) keep(b, `📁 保留（這組連拍至少留一張，分數 ${b.score}）`); }
+  }
+  for (const gr of (typeof groups !== 'undefined' ? groups : [])) {
+    const ps = (gr.photos || []).filter(auto); if (!ps.length || gr.photos.some(p => p.selected)) continue;
+    const b = ps.filter(ok).sort((a, b) => b.score - a.score)[0]; if (b) keep(b, `📁 保留（這個活動至少留一張，分數 ${b.score}）`);
+  }
 }
 // v149: 太相似只留 1 張 — 同一組、N 秒內、畫面相似度達標（亮度不敏感的 sig64；沒有就用 pHash）→ 留分數最高的
 function photoSimilar(a, b, pct) {
