@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v43 (2026-11-09)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v44 (2026-11-09)　（原名：AI 照片篩選器）
+  2026v44 (2026-11-09, build v201): 🎬 文字特效加到 14 種（立體浮雕、貼紙、漫畫、銀色、彩虹、火焰、冰霜、復古錯位）；介面拿掉照片說明／轉檔方式／預估
   2026v43 (2026-11-09, build v200): Gemini 429 分三種處理（免費沒這個模型→換模型；今天用完→說明；每分鐘太多→照 Google 說的秒數等）；遇過 429 改一批一批送
   2026v42 (2026-11-09, build v199): 🎬 轉檔畫面改用 CPU 畫、不經過顯示卡（Intel 顯示卡編碼器卡死會拖垮全部）；軟體編碼器優先；連兩種卡死直接改即時錄製
   2026v41 (2026-11-09, build v198): ✨ AI 寫照片說明：一批 4 張、兩批同時送；思考設定被拒先試 low；等候上限 120 秒
@@ -234,7 +235,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v43 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v44 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3231,7 +3232,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v43 · 2026-11-09</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v44 · 2026-11-09</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3331,7 +3332,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v43 程式逐項清點（2026-11-09）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v44 程式逐項清點（2026-11-09）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3758,7 +3759,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v43（2026-11-09）。</span>
+        <span style="font-size:11px;">本說明對應 2026v44（2026-11-09）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4358,8 +4359,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v43';
-const APP_BUILD = 'v200';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v44';
+const APP_BUILD = 'v201';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -15242,7 +15243,15 @@ const CLIP_MIN = 3, CLIP_MAX = 20, CLIP_FPS = 30;
 const CLIP_MUX_URL = 'https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/build/mp4-muxer.js';
 const CLIP_TITLES = { fadeup: '淡入上移', pop: '逐字彈出', type: '打字機', slide: '左右滑入', focus: '聚焦放大', line: '線條揭開', none: '無動畫' };
 const CLIP_TRANS = { fade: '交叉淡化', push: '推移', wipe: '擦除', zoom: '縮放穿越', black: '黑場', page: '翻頁', random: '隨機', cut: '硬切' };
-const CLIP_TFX = { shadow: '立體陰影', stroke: '描邊', glow: '霓虹發光', gold: '金色漸層', candy: '彩色糖果', plain: '無特效' };
+const CLIP_TFX = { shadow: '立體陰影', stroke: '描邊', extrude: '立體浮雕', sticker: '貼紙', comic: '漫畫', glow: '霓虹發光', gold: '金色漸層', silver: '銀色金屬', rainbow: '彩虹漸層', fire: '火焰', ice: '冰霜', candy: '彩色糖果', retro: '復古錯位', plain: '無特效' };
+// 2026v44：漸層文字共用（stops：[位置, 顏色]；stroke：描邊色）
+function clipGradText(ctx, s, x, y, px, stops, stroke, strokeW = 0.09, horizontal = false) {
+  const top = ctx.textBaseline === 'top' ? y : ctx.textBaseline === 'middle' ? y - px / 2 : y - px * 0.85;
+  let g; if (horizontal) { const w = ctx.measureText(s).width, al = ctx.textAlign, x0 = al === 'center' ? x - w / 2 : al === 'right' || al === 'end' ? x - w : x; g = ctx.createLinearGradient(x0, 0, x0 + w, 0); } else g = ctx.createLinearGradient(0, top, 0, top + px);
+  stops.forEach(([p, c]) => g.addColorStop(p, c));
+  if (stroke) { ctx.lineWidth = px * strokeW; ctx.strokeStyle = stroke; ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = px * 0.12; ctx.shadowOffsetY = px * 0.04; ctx.strokeText(s, x, y); ctx.shadowColor = 'transparent'; }
+  ctx.fillStyle = g; ctx.fillText(s, x, y);
+}
 const CLIP_CANDY = ['#ff5d8f', '#ffb703', '#3ec1d3', '#8bd346', '#a26bfa'];
 let _clipFx = { kind: 'shadow', big: 60, accent: '#ffd166' };
 function clipLum(c) { const m = String(c).match(/^#?([0-9a-f]{6})/i); if (!m) return 1; const v = parseInt(m[1], 16); return (0.299 * (v >> 16) + 0.587 * ((v >> 8) & 255) + 0.114 * (v & 255)) / 255; }
@@ -15266,17 +15275,34 @@ function clipTxt(ctx, s, x, y) {
       ctx.save(); ctx.translate(sx, y); ctx.rotate(((code % 3) - 1) * 0.06);
       ctx.shadowColor = 'rgba(0,0,0,0.3)'; ctx.shadowBlur = px * 0.1; ctx.shadowOffsetY = px * 0.04; ctx.strokeText(ch, 0, 0);
       ctx.shadowColor = 'transparent'; ctx.fillStyle = CLIP_CANDY[code % CLIP_CANDY.length]; ctx.fillText(ch, 0, 0); ctx.restore(); sx += cw; }
+  } else if (k === 'extrude') {   // 立體浮雕：往右下疊很多層深色，再放亮面
+    const d = Math.max(2, px * 0.012), n = Math.round(px * 0.09 / d), base = ctx.fillStyle;
+    for (let i = n; i >= 1; i--) { ctx.fillStyle = i === n ? 'rgba(0,0,0,0.35)' : `rgba(${30 + i * 2},${30 + i * 2},${50 + i * 2},1)`; ctx.fillText(s, x + i * d, y + i * d); }
+    ctx.fillStyle = base; ctx.fillText(s, x, y);
+  } else if (k === 'sticker') {   // 貼紙：厚白邊＋柔和陰影
+    ctx.lineWidth = px * 0.26; ctx.strokeStyle = '#ffffff'; ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = px * 0.18; ctx.shadowOffsetY = px * 0.06; ctx.strokeText(s, x, y);
+    ctx.shadowColor = 'transparent'; ctx.lineWidth = px * 0.12; ctx.strokeStyle = _clipFx.accent; ctx.strokeText(s, x, y); ctx.fillStyle = clipLum(_clipFx.accent) > 0.6 ? '#1d1d1f' : '#ffffff'; ctx.fillText(s, x, y);
+  } else if (k === 'comic') {   // 漫畫：黑粗邊＋黃底＋硬陰影
+    ctx.fillStyle = '#111'; ctx.fillText(s, x + px * 0.07, y + px * 0.07);
+    ctx.lineWidth = px * 0.16; ctx.strokeStyle = '#111'; ctx.strokeText(s, x, y);
+    clipGradText(ctx, s, x, y, px, [[0, '#fff27a'], [0.5, '#ffd600'], [1, '#ffab00']], null);
+  } else if (k === 'silver') { clipGradText(ctx, s, x, y, px, [[0, '#ffffff'], [0.4, '#d9dde3'], [0.5, '#9aa3ad'], [0.6, '#e8ecf0'], [1, '#b8c0c8']], '#2b3440');
+  } else if (k === 'rainbow') { clipGradText(ctx, s, x, y, px, [[0, '#ff5d5d'], [0.2, '#ffb347'], [0.4, '#ffe34d'], [0.6, '#5ad66f'], [0.8, '#4fa8ff'], [1, '#b36bff']], 'rgba(255,255,255,0.95)', 0.1, true);
+  } else if (k === 'fire') { ctx.shadowColor = 'rgba(255,120,0,0.8)'; ctx.shadowBlur = px * 0.3; ctx.fillStyle = '#ff6a00'; ctx.fillText(s, x, y); ctx.shadowColor = 'transparent'; clipGradText(ctx, s, x, y, px, [[0, '#fff3a0'], [0.45, '#ffb300'], [0.75, '#ff5a00'], [1, '#b3160b']], '#4a0a00', 0.07);
+  } else if (k === 'ice') { ctx.shadowColor = 'rgba(120,200,255,0.9)'; ctx.shadowBlur = px * 0.3; ctx.fillStyle = '#bfe9ff'; ctx.fillText(s, x, y); ctx.shadowColor = 'transparent'; clipGradText(ctx, s, x, y, px, [[0, '#ffffff'], [0.5, '#bfe9ff'], [1, '#5bb8ff']], '#0d4b7a', 0.07);
+  } else if (k === 'retro') {   // 復古錯位：青、紅兩色偏移
+    ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = '#00e5ff'; ctx.fillText(s, x - px * 0.045, y); ctx.fillStyle = '#ff2d75'; ctx.fillText(s, x + px * 0.045, y); ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = '#ffffff'; ctx.fillText(s, x, y);
   } else ctx.fillText(s, x, y);
   ctx.restore();
 }
-// 閃爍星光（霓虹、金色、糖果才有）
+// 閃爍星光（霓虹、金色、糖果、彩虹、火焰、冰霜才有）
 function clipSparkles(ctx, W, H, t, n = 18) {
-  if (_clipFx.fast || !['glow', 'gold', 'candy'].includes(_clipFx.kind)) return;
+  if (_clipFx.fast || !['glow', 'gold', 'candy', 'rainbow', 'fire', 'ice'].includes(_clipFx.kind)) return;
   const S = Math.min(W, H), rnd = clipRng(7), ga = ctx.globalAlpha; ctx.save();
   for (let i = 0; i < n; i++) {
     const x = W * (0.08 + 0.84 * rnd()), y = H * (0.15 + 0.7 * rnd()), ph = rnd() * 6.283, sp = 2 + rnd() * 3, r = S * (0.008 + 0.014 * rnd());
     const a = Math.sin(t * sp + ph); if (a < 0.08) continue;
-    const c = _clipFx.kind === 'candy' ? CLIP_CANDY[i % CLIP_CANDY.length] : _clipFx.kind === 'gold' ? '#fff3c4' : '#ffffff';
+    const c = _clipFx.kind === 'candy' || _clipFx.kind === 'rainbow' ? CLIP_CANDY[i % CLIP_CANDY.length] : _clipFx.kind === 'gold' ? '#fff3c4' : _clipFx.kind === 'fire' ? '#ffb347' : _clipFx.kind === 'ice' ? '#bfe9ff' : '#ffffff';
     ctx.globalAlpha = ga * a * 0.9; ctx.fillStyle = c; ctx.shadowColor = _clipFx.kind === 'glow' ? _clipFx.accent : c; ctx.shadowBlur = r * 2.5;
     const rr = r * (0.6 + 0.5 * a); ctx.beginPath();
     for (let j = 0; j < 8; j++) { const ang = j * Math.PI / 4, rad = j % 2 ? rr * 0.28 : rr; ctx.lineTo(x + Math.cos(ang) * rad, y + Math.sin(ang) * rad); }
@@ -15336,7 +15362,7 @@ function clipDiagText() {
 async function clipDiagCopy() { try { await navigator.clipboard.writeText(clipDiagText()); showToast('📋 已複製診斷，貼給 Claude 就可以'); } catch { prompt('複製下面的文字：', clipDiagText()); } }
 function clipOpts(v) {
   try {
-    if (v === undefined) { const o = { ...CLIP_DEF, ...JSON.parse(localStorage.getItem('clipOpts') || '{}') }; if (o.bgm && o.bgm !== 'file' && typeof bgmInfo === 'function' && !bgmInfo(o.bgm)) o.bgm = CLIP_DEF.bgm; return o; }
+    if (v === undefined) { const o = { ...CLIP_DEF, ...JSON.parse(localStorage.getItem('clipOpts') || '{}') }; if (o.bgm && o.bgm !== 'file' && typeof bgmInfo === 'function' && !bgmInfo(o.bgm)) o.bgm = CLIP_DEF.bgm; o.caps = false; o.enc = 'auto'; if (!CLIP_TFX[o.tfx]) o.tfx = 'shadow'; return o; }   // 2026v44：拿掉照片說明與轉檔方式選項
     localStorage.setItem('clipOpts', JSON.stringify(v));
   } catch {}
   return v;
@@ -15643,11 +15669,7 @@ function clipHtml(busy) {
       <label class="lp-chk"><input type="checkbox" id="lpClipIntro" ${o.intro ? 'checked' : ''} onchange="clipSet('intro',this.checked)"> 片頭（活動名稱＋日期）</label>
       <label class="lp-chk"><input type="checkbox" id="lpClipIntroPhoto" ${o.introPhoto ? 'checked' : ''} onchange="clipSet('introPhoto',this.checked)"> 片頭用照片當底</label>
       <label class="lp-chk"><input type="checkbox" id="lpClipOutro" ${o.outro ? 'checked' : ''} onchange="clipSet('outro',this.checked)"> 片尾（學校＋張數）</label>
-      <label class="lp-chk"><input type="checkbox" id="lpClipCaps2" ${o.caps ? 'checked' : ''} onchange="clipSet('caps',this.checked)"> 顯示照片說明</label></div>
-    <div class="lp-poster-row"${o.caps ? '' : ' style="opacity:.5"'}>照片說明 版型 ${sel('lpClipClay', CLIP_CLAYS, o.clay, 'clay')} 動畫 ${sel('lpClipCanim', CLIP_CANIMS, o.canim, 'canim')}
-      <span class="lp-note">${o.caps ? '說明文字用上面成果包每張照片的說明' : '先勾「顯示照片說明」才會出現'}</span></div>
-    <div class="lp-poster-row">轉檔方式 ${sel('lpClipEnc', CLIP_ENCS, o.enc, 'enc')} <span class="lp-note">自動：先快速轉檔，太慢就改即時錄製</span></div>
-    <div class="lp-note">預估：約 ${Math.round(plan.total)} 秒 · ${clipMobile() ? '720p' : '1080p'} · 轉檔約 ${Math.round(plan.total * 1.2)}–${Math.round(plan.total * 2.5)} 秒${long ? '　<b style="color:var(--yellow);">FB 限動最多 60 秒、LINE 建議 30 秒內</b>' : ''}${few ? `　<b style="color:var(--yellow);">至少要 ${CLIP_MIN} 張照片</b>` : ''}</div>
+      <span class="lp-note">約 ${Math.round(plan.total)} 秒${long ? '　<b style="color:var(--yellow);">FB 限動最多 60 秒、LINE 建議 30 秒內</b>' : ''}${few ? `　<b style="color:var(--yellow);">至少要 ${CLIP_MIN} 張照片</b>` : ''}</span></div>
     ${_libPack.prog?.clip ? `<div class="lp-clip-prog" id="lpClipProg"><canvas id="lpClipLive" width="320" height="180"></canvas><div class="lp-clip-prog-main">
         <div class="lp-prog-h"><span class="lp-spin"></span><b>🎬 製作中</b><span class="lp-clip-prog-pct" id="lpClipProgPct">${Math.round(_libPack.prog.pct)}%</span><span style="flex:1"></span><button class="tip-link" onclick="libPackCancel()">取消</button></div>
         <div class="lp-prog-track"><div class="lp-prog-bar" id="lpClipProgBar" style="width:${Math.max(3, _libPack.prog.pct)}%"></div></div>
