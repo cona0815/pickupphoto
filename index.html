@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v37 (2026-11-09)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v38 (2026-11-09)　（原名：AI 照片篩選器）
+  2026v38 (2026-11-09, build v195): 🐢→🐇 製作短片切到別的分頁也不再變超慢（不用 setTimeout，改 MessageChannel＋dequeue 事件）；背景時分頁標題顯示進度
   2026v37 (2026-11-09, build v194): 🎬 短片標題版型 5 種、照片說明版型 5 種＋動畫 6 種
   2026v36 (2026-11-08, build v193): 🎬 製作短片時在短片區塊直接顯示進度（百分比、第幾格、大約還要幾秒、目前畫面）；成果包總進度條黏在頂端
   2026v35 (2026-11-08, build v192): 📁 紀錄模式 — 學校活動／頒獎／畢業（含相簿一鍵整理）預設保留，只刪「拍壞的」與「明顯重複的」；
@@ -227,7 +228,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v37 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v38 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3224,7 +3225,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v37 · 2026-11-09</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v38 · 2026-11-09</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3324,7 +3325,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v37 程式逐項清點（2026-11-09）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v38 程式逐項清點（2026-11-09）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3751,7 +3752,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v37（2026-11-09）。</span>
+        <span style="font-size:11px;">本說明對應 2026v38（2026-11-09）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4351,8 +4352,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v37';
-const APP_BUILD = 'v194';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v38';
+const APP_BUILD = 'v195';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -14662,6 +14663,8 @@ function libPackProg(pct, sub, label) {
 function clipProgEta(p) { const el = (Date.now() - p.t0) / 1000; if (p.pct < 8 || el < 3) return '估算中…'; const left = Math.max(0, el / ((p.pct - 5) / 95) - el); return left < 60 ? `大約還要 ${Math.ceil(left)} 秒` : `大約還要 ${Math.floor(left / 60)} 分 ${Math.round(left % 60)} 秒`; }
 function clipProgPaint() {
   const p = _libPack?.prog; if (!p || !p.clip) return;
+  const h = document.getElementById('lpClipProgHid'); if (h) h.style.display = document.hidden ? '' : 'none';
+  if (document.hidden) document.title = `🎬 ${Math.round(p.pct)}% — 校園拾光`;
   const b = document.getElementById('lpClipProgBar'); if (b) b.style.width = `${Math.max(3, Math.min(100, p.pct))}%`;
   const n = document.getElementById('lpClipProgPct'); if (n) n.textContent = `${Math.round(p.pct)}%`;
   const s = document.getElementById('lpClipProgSub'); if (s) s.textContent = p.sub;
@@ -15587,7 +15590,8 @@ function clipHtml(busy) {
         <div class="lp-prog-track"><div class="lp-prog-bar" id="lpClipProgBar" style="width:${Math.max(3, _libPack.prog.pct)}%"></div></div>
         <div class="lp-prog-sub" id="lpClipProgSub">${escHtml(_libPack.prog.sub)}</div>
         <div class="lp-prog-sub" id="lpClipProgTime">已經過 ${Math.round((Date.now() - _libPack.prog.t0) / 1000)} 秒 · ${clipProgEta(_libPack.prog)}</div>
-        <div class="lp-note">做好會自動下載；製作中請不要關掉這個視窗。</div></div></div>` : ''}
+        <div class="lp-note">做好會自動下載；製作中請不要關掉這個視窗。可以切到別的分頁，但筆電請接電源、不要闔上螢幕。</div>
+        <div class="lp-note" id="lpClipProgHid" style="display:none">🌙 這個分頁在背景，仍在製作中（分頁標題會顯示進度）</div></div></div>` : ''}
     <div class="lp-share-btns"${_libPack.prog?.clip ? ' style="display:none"' : ''}><button class="modal-btn confirm" id="lpClipMake" onclick="clipMake()" ${busy || few ? 'disabled' : ''}>🎬 製作 MP4</button><span id="lpClipCaps" class="lp-clip-caps">檢查這個瀏覽器能不能轉檔…</span></div>
     <div class="lp-note">影片裡有學生照片，發布前請再看一次：沒有學生姓名、照片沒有家長不同意公開的孩子。</div>
     <details class="lp-clip-more"><summary>✂️ 想再精修（加字幕、旁白、更多特效）？</summary>
@@ -15633,6 +15637,7 @@ async function clipMake() {
   if (items.length < CLIP_MIN) { showToast(`⚠️ 回顧短片至少要 ${CLIP_MIN} 張照片`); return; }
   clipPvStop();
   const o = clipOpts(), small = clipMobile(), [W, H] = clipSize(o, small);
+  _clipTitle0 = document.title.replace(/^(🎬 \d+% — |✅ 短片做好了 — )校園拾光$/, '') || document.title;
   libPackStart('🎬 製作回顧短片'); _libPack.prog.clip = true; libPackRender();
   setTimeout(() => document.getElementById('lpClipProg')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 50);
   let loader = null;
@@ -15660,14 +15665,23 @@ async function clipMake() {
     const name = `${safeName(_libPack.act) || '活動'}_回顧短片.${caps.ext}`;
     libPackDl(blob, name);
     showToast(`🎬 已下載（${Math.round(plan.total)} 秒，${(blob.size / 1048576).toFixed(1)} MB）`);
+    if (document.hidden) { document.title = '✅ 短片做好了 — 校園拾光'; const back = () => { document.title = _clipTitle0; document.removeEventListener('visibilitychange', back); }; document.addEventListener('visibilitychange', back); }
   } catch (e) { showToast(`❌ 短片沒做成：${e.message || e}`); }
-  finally { try { loader?.close(); } catch {} libPackEnd(); }
+  finally { try { loader?.close(); } catch {} if (/^🎬 \d+% — /.test(document.title)) document.title = _clipTitle0; libPackEnd(); }
 }
+let _clipTitle0 = document.title;
 async function clipMusicData(o) {
   if (o.bgm === 'file') return _clipMusic ? _clipMusic.ab : null;
   if (!bgmInfo(o.bgm)) return null;
   libPackProg(3, '下載內建配樂（比對 SHA-256）…');
   return await bgmFetch(o.bgm);
+}
+// 2026v38：不用 setTimeout（背景分頁會被節流到每秒、甚至每分鐘一次）
+function clipYield() { return new Promise(r => { const ch = new MessageChannel(); ch.port1.onmessage = () => { ch.port1.close(); r(); }; ch.port2.postMessage(0); }); }
+function clipWaitQueue(enc, max) {
+  if (enc.encodeQueueSize <= max) return Promise.resolve();
+  if (!('ondequeue' in enc)) return clipYield();
+  return new Promise(r => { const f = () => { if (enc.encodeQueueSize <= max || enc.state !== 'configured') { enc.removeEventListener('dequeue', f); r(); } }; enc.addEventListener('dequeue', f); });
 }
 async function clipEncodeWC(st, cv, loader, caps, audio, small) {
   const { W, H, plan } = st, M = window.Mp4Muxer, target = new M.ArrayBufferTarget();
@@ -15684,8 +15698,8 @@ async function clipEncodeWC(st, cv, loader, caps, audio, small) {
     clipFrame(st, t);
     const vf = new VideoFrame(cv, { timestamp: Math.round(f * 1e6 / CLIP_FPS), duration: Math.round(1e6 / CLIP_FPS) });
     ve.encode(vf, { keyFrame: f % (CLIP_FPS * 2) === 0 }); vf.close();
-    while (ve.encodeQueueSize > 6) await new Promise(r => setTimeout(r, 4));
-    if (f % 10 === 0) { libPackProg(6 + f / F * (audio ? 84 : 90), `畫面 ${f} / ${F} 格（影片 ${t.toFixed(1)} / ${plan.total.toFixed(1)} 秒）`); if (f % 30 === 0) clipProgFrame(cv); await new Promise(r => setTimeout(r)); }
+    await clipWaitQueue(ve, 6);
+    if (f % 10 === 0) { libPackProg(6 + f / F * (audio ? 84 : 90), `畫面 ${f} / ${F} 格（影片 ${t.toFixed(1)} / ${plan.total.toFixed(1)} 秒）`); if (f % 30 === 0) clipProgFrame(cv); await clipYield(); }
   }
   await ve.flush(); ve.close(); if (err) throw err;
   if (audio) {
@@ -15698,7 +15712,7 @@ async function clipEncodeWC(st, cv, loader, caps, audio, small) {
       const n = Math.min(1024, L - i), data = new Float32Array(n * 2); data.set(c0.subarray(i, i + n), 0); data.set(c1.subarray(i, i + n), n);
       const ad = new AudioData({ format: 'f32-planar', sampleRate: rate, numberOfFrames: n, numberOfChannels: 2, timestamp: Math.round(i * 1e6 / rate), data });
       ae.encode(ad); ad.close();
-      if (ae.encodeQueueSize > 20) await new Promise(r => setTimeout(r, 2));
+      await clipWaitQueue(ae, 20);
     }
     await ae.flush(); ae.close(); if (err) throw err;
   }
