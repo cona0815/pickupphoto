@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v41 (2026-11-09)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v42 (2026-11-09)　（原名：AI 照片篩選器）
+  2026v42 (2026-11-09, build v199): 🎬 轉檔畫面改用 CPU 畫、不經過顯示卡（Intel 顯示卡編碼器卡死會拖垮全部）；軟體編碼器優先；連兩種卡死直接改即時錄製
   2026v41 (2026-11-09, build v198): ✨ AI 寫照片說明：一批 4 張、兩批同時送；思考設定被拒先試 low；等候上限 120 秒
   2026v40 (2026-11-09, build v197): 🎬 轉檔每格量時間並顯示、第 10 格就換方式；畫面太慢關特效降 720p；都太慢改「即時錄製」（MP4）；
         轉檔方式可手選；📋 複製診斷
@@ -232,7 +233,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v41 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v42 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3229,7 +3230,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v41 · 2026-11-09</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v42 · 2026-11-09</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3329,7 +3330,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v41 程式逐項清點（2026-11-09）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v42 程式逐項清點（2026-11-09）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3756,7 +3757,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v41（2026-11-09）。</span>
+        <span style="font-size:11px;">本說明對應 2026v42（2026-11-09）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4356,8 +4357,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v41';
-const APP_BUILD = 'v198';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v42';
+const APP_BUILD = 'v199';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -15525,7 +15526,9 @@ function clipFrame(st, t) {
     ctx.save(); ctx.globalAlpha = clipOut(clamp01((t - plan.outroStart) / 0.5)); clipOutro(ctx, W, H, t - plan.outroStart, plan.O, info, T, logo, plan.n); if (t - plan.outroStart < plan.O - 0.8) clipSparkles(ctx, W, H, t, 12); ctx.restore();
   }
 }
-function clipCanvas(W, H) { const c = document.createElement('canvas'); c.width = W; c.height = H; return c; }
+function clipCanvas(W, H, cpu) { const c = document.createElement('canvas'); c.width = W; c.height = H; if (cpu) { c.getContext('2d', { willReadFrequently: true }); c._cpu = true; } return c; }
+// 2026v42：轉檔用 CPU 畫（不經過顯示卡）；畫面太慢（> 150 ms/格）才退回顯示卡
+function clipCpuCanvas(W, H) { return clipCanvas(W, H, true); }
 // 照片載入：只留現在和下一張（20 張全像素會吃光記憶體）
 function clipLoader(items, long) {
   const cache = new Map(), pend = new Map();
@@ -15569,6 +15572,7 @@ async function clipCaps(W = 1920, H = 1080) {
           if (await sup({ codec, width: W, height: H, bitrate: 8e6, framerate: CLIP_FPS, hardwareAcceleration: hw })) r.videoList.push({ codec, mux, hw, label: `${mux === 'avc' ? 'H.264' : 'VP9'}${hw === 'prefer-software' ? '（軟體編碼）' : hw === 'prefer-hardware' ? '（顯示卡編碼）' : ''}` });
         }
       }
+      r.videoList.sort((a, b) => (a.hw === 'prefer-software' ? 0 : a.hw === 'prefer-hardware' ? 1 : 2) - (b.hw === 'prefer-software' ? 0 : b.hw === 'prefer-hardware' ? 1 : 2));   // 2026v42：軟體的先（顯示卡編碼器卡死會拖垮全部）
       r.video = r.videoList[0] || null;
       if (r.video) {
         r.mode = 'wc';
@@ -15703,19 +15707,26 @@ async function clipMake() {
     }
     try { await document.fonts.ready; } catch {}
     loader = clipLoader(items, Math.round(Math.max(W, H) * 1.15));
-    const st = { ctx: null, W, H, plan, o, info, T, logo: await posterLogoGet(), srcs: i => loader.get(i), caps: items.map(it => (it.caption || '').trim()), A: clipCanvas(W, H), B: clipCanvas(W, H), tmp: clipCanvas(W, H) };
-    const cv = clipCanvas(W, H); st.ctx = cv.getContext('2d');
+    const cpu = o.enc !== 'mr';   // 快速轉檔：CPU 畫；即時錄製：顯示卡畫（captureStream 走顯示卡比較順）
+    const mk = (w, h) => cpu ? clipCpuCanvas(w, h) : clipCanvas(w, h);
+    const st = { ctx: null, W, H, plan, o, info, T, logo: await posterLogoGet(), srcs: i => loader.get(i), caps: items.map(it => (it.caption || '').trim()), A: mk(W, H), B: mk(W, H), tmp: mk(W, H), cpu };
+    let cv = mk(W, H); st.ctx = cv.getContext('2d'); clipDiagLog(`畫面用 ${cpu ? 'CPU' : '顯示卡'}`);
     let blob = null;
     if (caps.mode === 'wc') {
       // 2026v39/v40：卡住或太慢就換下一種編碼方式；畫面太慢就關特效降 720p；全部不行改即時錄製
+      let stalls = 0;
       for (let k = 0; k < caps.videoList.length && !blob; k++) {
         caps.video = caps.videoList[k];
         try { blob = await clipEncodeWC(st, cv, loader, caps, audio, small); }
         catch (e) {
           if (_libPack?.cancel || !(e?.stall || e?.slowDraw)) throw e;
           clipDiagLog(`${caps.video.label}：${e.message}${e.ms ? `（每格 ${e.ms} ms）` : ''}`);
+          if (/沒有回應/.test(e.message)) stalls++; else stalls = 0;
+          if (stalls >= 2 && caps.mrType) {   // 2026v42：連兩種都卡死 → 顯示卡程序八成掛了，不要再一個個試
+            caps.mode = 'mr'; caps.ext = caps.mr4 ? 'mp4' : 'webm'; caps.note = '編碼器連續卡住，已改用即時錄製'; clipDiagLog('連續卡住 → 改用即時錄製');
+            libPackProg(6, '編碼器連續沒有回應，改用「即時錄製」重來（片長多久就等多久）…'); await clipYield(); break; }
           if (e.slowDraw && !st.fast) { st.fast = true; k--;   // 畫面太慢：同一種編碼、關特效＋720p 再來一次
-            const [w2, h2] = clipSize(o, true); if (w2 !== st.W) { st.W = w2; st.H = h2; cv.width = w2; cv.height = h2; st.A = clipCanvas(w2, h2); st.B = clipCanvas(w2, h2); st.tmp = clipCanvas(w2, h2); st.ctx = cv.getContext('2d'); }
+            const [w2, h2] = clipSize(o, true); if (w2 !== st.W) { st.W = w2; st.H = h2; cv.width = w2; cv.height = h2; st.A = mk(w2, h2); st.B = mk(w2, h2); st.tmp = mk(w2, h2); st.ctx = cv.getContext('2d'); }
             caps.note = '畫面太慢，已自動關掉特效並降到 720p'; libPackProg(6, '畫畫面太慢，關掉特效、降到 720p 重來…'); await clipYield(); continue; }
           if (k === caps.videoList.length - 1) {
             if (!caps.mrType) throw new Error(`編碼器沒有回應或太慢（試過 ${caps.videoList.map(v => v.label).join('、')}）；請改用電腦版 Chrome／Edge 最新版，或關掉其他大型程式再試`);
@@ -15742,7 +15753,7 @@ async function clipMusicData(o) {
 }
 // 2026v38：不用 setTimeout（背景分頁會被節流到每秒、甚至每分鐘一次）
 function clipYield() { return new Promise(r => { const ch = new MessageChannel(); ch.port1.onmessage = () => { ch.port1.close(); r(); }; ch.port2.postMessage(0); }); }
-async function clipWaitQueue(enc, max, stallMs = 15000) {
+async function clipWaitQueue(enc, max, stallMs = 8000) {
   const t0 = performance.now();
   while (enc.encodeQueueSize > max && enc.state === 'configured') {
     if (_libPack?.cancel) return;
@@ -15786,7 +15797,7 @@ async function clipEncodeWC(st, cv, loader, caps, audio, small) {
     if (f % 10 === 0) { libPackProg(6 + f / F * (audio ? 84 : 90), `畫面 ${f} / ${F} 格（影片 ${t.toFixed(1)} / ${plan.total.toFixed(1)} 秒）· ${caps.video.label || ''}${caps.note ? `（${caps.note}）` : ''}`); if (f % 30 === 0) clipProgFrame(cv); await clipYield(); }
   }
   clipDiagLog(`完成：${_clipDiag.frame}`);
-  await Promise.race([ve.flush(), new Promise((_, rej) => setTimeout(() => rej(Object.assign(new Error('編碼器沒有回應'), { stall: true })), 30000))]);
+  await Promise.race([ve.flush(), new Promise((_, rej) => setTimeout(() => rej(Object.assign(new Error('編碼器沒有回應'), { stall: true })), 20000))]);
   } catch (e) { try { ve.close(); } catch {} throw e; }
   ve.close(); if (err) throw err;
   if (audio) {
