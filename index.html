@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v44 (2026-11-09)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v45 (2026-11-09)　（原名：AI 照片篩選器）
+  2026v45 (2026-11-09, build v202): 免費方案的 Gemini 先用 3.5 Flash-Lite（一天 500 次，3.8 Flash 免費只有 20 次）；免費方案不送生圖
   2026v44 (2026-11-09, build v201): 🎬 文字特效加到 14 種（立體浮雕、貼紙、漫畫、銀色、彩虹、火焰、冰霜、復古錯位）；介面拿掉照片說明／轉檔方式／預估
   2026v43 (2026-11-09, build v200): Gemini 429 分三種處理（免費沒這個模型→換模型；今天用完→說明；每分鐘太多→照 Google 說的秒數等）；遇過 429 改一批一批送
   2026v42 (2026-11-09, build v199): 🎬 轉檔畫面改用 CPU 畫、不經過顯示卡（Intel 顯示卡編碼器卡死會拖垮全部）；軟體編碼器優先；連兩種卡死直接改即時錄製
@@ -235,7 +236,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v44 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v45 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3232,7 +3233,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v44 · 2026-11-09</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v45 · 2026-11-09</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3332,7 +3333,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v44 程式逐項清點（2026-11-09）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v45 程式逐項清點（2026-11-09）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3759,7 +3760,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v44（2026-11-09）。</span>
+        <span style="font-size:11px;">本說明對應 2026v45（2026-11-09）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4359,8 +4360,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v44';
-const APP_BUILD = 'v201';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v45';
+const APP_BUILD = 'v202';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -11924,7 +11925,8 @@ function geminiNoThinking(body) { try { const b = JSON.parse(body); if (b.genera
 async function geminiFetch(url, init = {}) {
   const m = String(url).match(/\/models\/([^/:]+):generateContent/);
   if (!m) return fetch(url, init);
-  const asked = decodeURIComponent(m[1]), chain = /lite/.test(asked) ? GEMINI_LITE_CHAIN : GEMINI_TEXT_CHAIN;
+  const free = typeof getGeminiTier === 'function' && getGeminiTier() === 'free';   // 2026v45：免費方案 3.8 Flash 一天只有 20 次 → 先用 Flash-Lite（一天 500 次）
+  const asked = decodeURIComponent(m[1]), chain = /lite/.test(asked) || free ? GEMINI_LITE_CHAIN : GEMINI_TEXT_CHAIN;
   const list = [...new Set([...chain.filter(x => !_gemDead.has(x)), asked])];
   let last = null;
   for (const model of list) {
@@ -14743,7 +14745,7 @@ async function libPackAiCaptions() {
         const g = groups[next++];
         if (Date.now() - _gem429 < 10 * 60 * 1000) { chain = chain.then(() => one(g)); await chain; }   // 2026v43：10 分鐘內遇過 429 → 一批一批送
         else await one(g); } };
-      await Promise.all(Array.from({ length: Math.min(PACK_CAP_PAR, groups.length) }, worker));
+      await Promise.all(Array.from({ length: Math.min(getGeminiTier() === 'free' ? 1 : PACK_CAP_PAR, groups.length) }, worker));
     } finally { clearInterval(tick); }
   } finally { libPackEnd(); }
   if (_libPack.cancel) showToast(`⏹ 已取消；寫好的 ${done} 張保留`);
@@ -14975,6 +14977,7 @@ async function posterArtMake() {
   if (!_libPack || _libPack.artBusy) return;
   const key = getGeminiKey();
   if (!key) { showToast('⚠️ 先到「⚙️ 設定 → Gemini」填 Key（生圖要付費方案的 Key）'); return; }
+  if (getGeminiTier() === 'free') { showToast('⚠️ Google 的免費方案不能畫圖（生圖額度是 0）。開了付費帳單後，到「⚙️ 設定 → Gemini」把方案改成「付費方案」再按'); return; }
   _libPack.artBusy = true; libPackRender();
   try {
     const ratio = POSTER_ART_RATIO[posterPref('layout')] || '2:3';
