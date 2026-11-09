@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v36 (2026-11-08)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v37 (2026-11-09)　（原名：AI 照片篩選器）
+  2026v37 (2026-11-09, build v194): 🎬 短片標題版型 5 種、照片說明版型 5 種＋動畫 6 種
   2026v36 (2026-11-08, build v193): 🎬 製作短片時在短片區塊直接顯示進度（百分比、第幾格、大約還要幾秒、目前畫面）；成果包總進度條黏在頂端
   2026v35 (2026-11-08, build v192): 📁 紀錄模式 — 學校活動／頒獎／畢業（含相簿一鍵整理）預設保留，只刪「拍壞的」與「明顯重複的」；
         分數只分 ⭐精選／📁保留；每組、每個活動至少留一張；頒獎畢業同組換睜眼那張；運動會不變
@@ -226,7 +227,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v36 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v37 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3223,7 +3224,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v36 · 2026-11-08</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v37 · 2026-11-09</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3323,7 +3324,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v36 程式逐項清點（2026-11-08）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v37 程式逐項清點（2026-11-09）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3750,7 +3751,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v36（2026-11-08）。</span>
+        <span style="font-size:11px;">本說明對應 2026v37（2026-11-09）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4350,8 +4351,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v36';
-const APP_BUILD = 'v193';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v37';
+const APP_BUILD = 'v194';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -15241,9 +15242,44 @@ function clipSparkles(ctx, W, H, t, n = 18) {
   }
   ctx.restore();
 }
+const CLIP_TLAYS = { center: '置中大字', lower: '下方橫幅', card: '中央卡片', left: '左下雜誌風', top: '上方標題' };
+const CLIP_CANIMS = { slide: '滑入', fade: '淡入', rise: '由下升起', pop: '彈出', type: '打字機', none: '無動畫' };
+const CLIP_CLAYS = { pill: '左下標籤', subtitle: '電影字幕條', top: '左上色塊', bubble: '對話框', big: '中央大字' };
+function clipRRect(ctx, x, y, w, h, r) { ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x, y, w, h, r); else ctx.rect(x, y, w, h); }
+// 2026v37：照片說明（動畫 × 版型）
+function clipCaption(ctx, cap, W, H, S, v) {
+  const an = CLIP_CANIMS[_clipFx.canim] ? _clipFx.canim : 'slide', lay = CLIP_CLAYS[_clipFx.clay] ? _clipFx.clay : 'pill';
+  const u = an === 'none' ? 1 : clamp01(v * 6 - 0.4); if (u <= 0) return; const e = clipOut(u);
+  const big = lay === 'big', fs = Math.round(S * (big ? 0.075 : lay === 'subtitle' ? 0.048 : 0.042));
+  ctx.save(); ctx.font = `${big ? 800 : 700} ${fs}px ${POSTER_FONT}`;
+  const full = posterWrap(ctx, cap.slice(0, 40), W * (big ? 0.86 : 0.8), 1)[0] || ''; let t = full;
+  if (an === 'type') { t = full.slice(0, Math.ceil(full.length * clamp01((v - 0.05) * 4))); if (!t) { ctx.restore(); return; } }
+  const tw = ctx.measureText(full).width, padH = fs * 0.6, bar = lay === 'pill' ? Math.max(3, S * 0.007) : 0;
+  let bw = tw + padH * 2 + bar, bh = fs * 1.8, bx = S * 0.04, by = H - S * 0.06 - bh;
+  if (lay === 'subtitle') { bw = W; bx = 0; bh = fs * 2.4; by = H - bh; }
+  else if (lay === 'top') { by = S * 0.05; }
+  else if (lay === 'big') { bx = (W - bw) / 2; by = (H - bh) / 2; }
+  else if (lay === 'bubble') { by = H - S * 0.11 - bh; }
+  if (an !== 'type' && an !== 'none') ctx.globalAlpha *= e;
+  if (an === 'slide') ctx.translate(-(1 - e) * S * 0.08, 0);
+  else if (an === 'rise') ctx.translate(0, (1 - e) * S * 0.07);
+  else if (an === 'pop') { const sc = 0.55 + 0.45 * clipSpring(u), px = bx + bw / 2, py = by + bh / 2; ctx.translate(px, py); ctx.scale(sc, sc); ctx.translate(-px, -py); }
+  let color = '#ffffff';
+  if (lay === 'subtitle') { const g = ctx.createLinearGradient(0, by, 0, H); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.4, 'rgba(0,0,0,0.55)'); g.addColorStop(1, 'rgba(0,0,0,0.75)'); ctx.fillStyle = g; ctx.fillRect(bx, by, bw, bh); }
+  else if (lay === 'top') { ctx.fillStyle = _clipFx.accent; clipRRect(ctx, bx, by, bw, bh, S * 0.012); ctx.fill(); color = clipLum(_clipFx.accent) > 0.55 ? '#1d1d1f' : '#ffffff'; }
+  else if (lay === 'bubble') { ctx.fillStyle = 'rgba(255,255,255,0.94)'; ctx.shadowColor = 'rgba(0,0,0,0.3)'; ctx.shadowBlur = S * 0.02; clipRRect(ctx, bx, by, bw, bh, bh / 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(bx + bh * 0.7, by + bh - 1); ctx.lineTo(bx + bh * 0.55, by + bh + S * 0.035); ctx.lineTo(bx + bh * 1.25, by + bh - 1); ctx.closePath(); ctx.fill(); ctx.shadowColor = 'transparent'; color = '#1d1d1f'; }
+  else if (big) { const g = ctx.createLinearGradient(0, by - bh * 0.4, 0, by + bh * 1.4); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.5, 'rgba(0,0,0,0.45)'); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fillRect(0, by - bh * 0.4, W, bh * 1.8); }
+  else if (lay === 'pill') { ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(bx, by, bw, bh); ctx.fillStyle = _clipFx.accent; ctx.fillRect(bx, by, bar, bh); }
+  const oldBig = _clipFx.big; _clipFx.big = big ? fs * 0.9 : 1e9;
+  ctx.fillStyle = color; ctx.textBaseline = 'middle';
+  if (lay === 'subtitle' || big) { ctx.textAlign = 'left'; clipTxt(ctx, t, W / 2 - tw / 2, by + bh / 2 + (lay === 'subtitle' ? fs * 0.15 : 0)); }
+  else { ctx.textAlign = 'left'; clipTxt(ctx, t, bx + bar + padH, by + bh / 2); }
+  _clipFx.big = oldBig; ctx.restore();
+}
 const CLIP_MOTIONS = { alt: '交替', zoom: '緩慢推近', pan: '左右平移' };
 const CLIP_VOLS = { low: { label: '小', db: -12 }, mid: { label: '中', db: -6 }, high: { label: '大', db: 0 } };
-const CLIP_DEF = { ratio: '16:9', sec: 3, motion: 'alt', title: 'fadeup', trans: 'fade', vol: 'mid', intro: true, outro: true, caps: false, introPhoto: true, bgm: 'funshine', tfx: 'shadow' };
+const CLIP_DEF = { ratio: '16:9', sec: 3, motion: 'alt', title: 'fadeup', trans: 'fade', vol: 'mid', intro: true, outro: true, caps: false, introPhoto: true, bgm: 'funshine', tfx: 'shadow', tlay: 'center', canim: 'slide', clay: 'pill' };
 function clipOpts(v) {
   try {
     if (v === undefined) { const o = { ...CLIP_DEF, ...JSON.parse(localStorage.getItem('clipOpts') || '{}') }; if (o.bgm && o.bgm !== 'file' && typeof bgmInfo === 'function' && !bgmInfo(o.bgm)) o.bgm = CLIP_DEF.bgm; return o; }
@@ -15331,15 +15367,7 @@ function clipPhoto(ctx, src, W, H, v, motion, cap, S) {
   } else s = s0 * (1 + 0.08 * v);
   const dw = sw * s, dh = sh * s;
   ctx.drawImage(src, (W - dw) / 2 + dx, (H - dh) / 2 + dy, dw, dh);
-  if (cap) {
-    const a = clamp01((v * 1) * 6 - 0.4); if (a <= 0) return;
-    ctx.save(); ctx.globalAlpha = a; ctx.font = `600 ${Math.round(S * 0.042)}px ${POSTER_FONT}`;
-    const t = posterWrap(ctx, cap.slice(0, 40), W * 0.8, 1)[0] || '', tw = ctx.measureText(t).width, ph = S * 0.075;
-    ctx.translate(-(1 - clipOut(a)) * S * 0.08, 0);
-    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(S * 0.04, H - S * 0.06 - ph, tw + S * 0.05, ph);
-    ctx.fillStyle = _clipFx.accent; ctx.fillRect(S * 0.04, H - S * 0.06 - ph, Math.max(3, S * 0.007), ph);
-    ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left'; clipTxt(ctx, t, S * 0.065, H - S * 0.06 - ph / 2); ctx.restore();
-  }
+  if (cap) clipCaption(ctx, cap, W, H, S, v);   // 2026v37
 }
 // 片頭：主色底（可疊模糊的第一張照片）＋標題動畫
 function clipIntro(ctx, W, H, tau, I, o, info, T, bg, logo) {
@@ -15348,25 +15376,35 @@ function clipIntro(ctx, W, H, tau, I, o, info, T, bg, logo) {
   if (bg && o.introPhoto) { ctx.save(); ctx.globalAlpha = 0.55; ctx.imageSmoothingQuality = 'high'; const sw = bg.width, sh = bg.height, s = Math.max(W / sw, H / sh) * (1.15 + 0.05 * tau / Math.max(I, 0.1)); ctx.drawImage(bg, (W - sw * s) / 2, (H - sh * s) / 2, sw * s, sh * s); ctx.restore(); ctx.fillStyle = T.bg + 'a6'; ctx.fillRect(0, 0, W, H); }
   const ft = posterFitTitle(ctx, info.act, W * 0.82, S * 0.1, S * 0.06, 2), size = ft.size, lh = size * 1.18;
   const subSize = S * 0.042, lines = ft.lines, blockH = lines.length * lh + (info.date ? subSize * 1.6 : 0) + (logo ? S * 0.14 : 0);
-  let y0 = (H - blockH) / 2;
-  if (logo) { const lhh = S * 0.11, lw = lhh * logo.width / logo.height; ctx.save(); ctx.globalAlpha = clamp01(tau / 0.5); ctx.drawImage(logo, (W - lw) / 2, y0, lw, lhh); ctx.restore(); y0 += S * 0.14; }
+  // 2026v37：標題版型
+  const tl = CLIP_TLAYS[o.tlay] ? o.tlay : 'center', padX = W * 0.08, pa = clipOut(clamp01(tau / 0.45));
+  let y0 = tl === 'lower' || tl === 'left' ? H - blockH - S * 0.12 : tl === 'top' ? S * 0.1 : (H - blockH) / 2;
+  ctx.font = `800 ${size}px ${POSTER_FONT}`; const maxW = Math.max(...lines.map(l => ctx.measureText(l).width));
+  if (tl === 'lower' || tl === 'left') { const g = ctx.createLinearGradient(0, y0 - S * 0.12, 0, H); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.35, `rgba(0,0,0,${0.5 * pa})`); g.addColorStop(1, `rgba(0,0,0,${0.7 * pa})`); ctx.fillStyle = g; ctx.fillRect(0, y0 - S * 0.12, W, H - y0 + S * 0.12);
+    if (tl === 'left') { ctx.fillStyle = T.accent; ctx.fillRect(padX - S * 0.035, y0, Math.max(4, S * 0.01), blockH * pa); } }
+  else if (tl === 'top') { const g = ctx.createLinearGradient(0, 0, 0, y0 + blockH + S * 0.1); g.addColorStop(0, `rgba(0,0,0,${0.7 * pa})`); g.addColorStop(0.7, `rgba(0,0,0,${0.45 * pa})`); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, y0 + blockH + S * 0.1); }
+  else if (tl === 'card') { const cw = Math.min(W * 0.92, maxW + S * 0.14), ch = blockH + S * 0.09, sc = 0.85 + 0.15 * clipSpring(clamp01(tau / 0.5));
+    ctx.save(); ctx.globalAlpha = pa; ctx.translate(W / 2, y0 + blockH / 2); ctx.scale(sc, sc);
+    ctx.fillStyle = 'rgba(0,0,0,0.45)'; clipRRect(ctx, -cw / 2, -ch / 2, cw, ch, S * 0.03); ctx.fill(); ctx.lineWidth = Math.max(3, S * 0.006); ctx.strokeStyle = T.accent; ctx.stroke(); ctx.restore(); }
+  if (logo) { const lhh = S * 0.11, lw = lhh * logo.width / logo.height; ctx.save(); ctx.globalAlpha = clamp01(tau / 0.5); ctx.drawImage(logo, tl === 'left' ? padX : (W - lw) / 2, y0, lw, lhh); ctx.restore(); y0 += S * 0.14; }
   const cx = W / 2; _clipFx.big = size * 0.7;
+  const cxOf = (s, f) => { if (tl !== 'left') return cx; const f0 = ctx.font; if (f) ctx.font = f; const w = ctx.measureText(s).width; ctx.font = f0; return padX + w / 2; };
   ctx.textBaseline = 'top'; ctx.textAlign = 'center'; ctx.font = `800 ${size}px ${POSTER_FONT}`;
-  const sub = (a, dy = 0) => { if (!info.date || a <= 0) return; ctx.save(); ctx.globalAlpha = a; ctx.font = `500 ${subSize}px ${POSTER_FONT}`; ctx.fillStyle = T.sub; ctx.textAlign = 'center'; clipTxt(ctx, info.date, cx, y0 + lines.length * lh + subSize * 0.5 + dy); ctx.restore(); };
-  const line = (str, y, a = 1, dx = 0, sc = 1) => { ctx.save(); ctx.globalAlpha = a; ctx.translate(cx + dx, y + size / 2); ctx.scale(sc, sc); ctx.fillStyle = T.fg; ctx.font = `800 ${size}px ${POSTER_FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; clipTxt(ctx, str, 0, 0); ctx.restore(); };
+  const sub = (a, dy = 0) => { if (!info.date || a <= 0) return; ctx.save(); ctx.globalAlpha = a; ctx.font = `500 ${subSize}px ${POSTER_FONT}`; ctx.fillStyle = T.sub; ctx.textAlign = 'center'; clipTxt(ctx, info.date, cxOf(info.date), y0 + lines.length * lh + subSize * 0.5 + dy); ctx.restore(); };
+  const line = (str, y, a = 1, dx = 0, sc = 1) => { ctx.save(); ctx.globalAlpha = a; ctx.translate(cxOf(str, `800 ${size}px ${POSTER_FONT}`) + dx, y + size / 2); ctx.scale(sc, sc); ctx.fillStyle = T.fg; ctx.font = `800 ${size}px ${POSTER_FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; clipTxt(ctx, str, 0, 0); ctx.restore(); };
   const kind = o.title;
   if (kind === 'none') { lines.forEach((l, i) => line(l, y0 + i * lh)); sub(1); }
   else if (kind === 'fadeup') { const a = clipOut(clamp01(tau / 0.6)); lines.forEach((l, i) => line(l, y0 + i * lh + 24 * (S / 1080) * (1 - a), a)); const b = clipOut(clamp01((tau - 0.3) / 0.6)); sub(b, 18 * (S / 1080) * (1 - b)); }
   else if (kind === 'pop') {
     let k = 0;
-    lines.forEach((l, li) => { ctx.font = `800 ${size}px ${POSTER_FONT}`; const tw = ctx.measureText(l).width; let x = cx - tw / 2;
+    lines.forEach((l, li) => { ctx.font = `800 ${size}px ${POSTER_FONT}`; const tw = ctx.measureText(l).width; let x = cxOf(l) - tw / 2;
       for (const ch of l) { const cw = ctx.measureText(ch).width, u = clamp01((tau - k * 0.08) / 0.35), sc = 1.4 - 0.4 * clipSpring(u);
         if (u > 0) { ctx.save(); ctx.globalAlpha = clamp01(u * 3); ctx.translate(x + cw / 2, y0 + li * lh + size / 2); ctx.scale(sc, sc); ctx.fillStyle = T.fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; clipTxt(ctx, ch, 0, 0); ctx.restore(); }
         x += cw; k++; } });
     sub(clipOut(clamp01((tau - k * 0.08 - 0.1) / 0.4)));
   } else if (kind === 'type') {
     const all = lines.join(''), shown = Math.min(all.length, Math.floor(tau / 0.07)); let used = 0, lastX = cx, lastY = y0;
-    lines.forEach((l, li) => { const part = l.slice(0, Math.max(0, shown - used)); used += l.length; ctx.font = `800 ${size}px ${POSTER_FONT}`; const fullW = ctx.measureText(l).width, x0 = cx - fullW / 2;
+    lines.forEach((l, li) => { const part = l.slice(0, Math.max(0, shown - used)); used += l.length; ctx.font = `800 ${size}px ${POSTER_FONT}`; const fullW = ctx.measureText(l).width, x0 = cxOf(l) - fullW / 2;
       ctx.fillStyle = T.fg; ctx.textAlign = 'left'; ctx.textBaseline = 'top'; clipTxt(ctx, part, x0, y0 + li * lh); if (part.length) { lastX = x0 + ctx.measureText(part).width; lastY = y0 + li * lh; } else if (li === 0) { lastX = x0; } });
     if (Math.floor(tau / 0.35) % 2 === 0 || shown < all.length) { ctx.fillStyle = T.accent; ctx.fillRect(lastX + size * 0.06, lastY + size * 0.08, Math.max(3, size * 0.06), size * 0.9); }
     sub(clipOut(clamp01((tau - all.length * 0.07 - 0.1) / 0.4)));
@@ -15380,7 +15418,7 @@ function clipIntro(ctx, W, H, tau, I, o, info, T, bg, logo) {
     sub(clipOut(clamp01((tau - 0.5) / 0.5)));
   } else if (kind === 'line') {
     const u = clipOut(clamp01(tau / 0.5)), ly = y0 + lines.length * lh + S * 0.005, lw = W * 0.5 * u;
-    ctx.fillStyle = T.accent; ctx.fillRect(cx - lw / 2, ly, lw, Math.max(3, S * 0.006));
+    ctx.fillStyle = T.accent; ctx.fillRect(tl === 'left' ? padX : cx - lw / 2, ly, lw, Math.max(3, S * 0.006));
     const r = clipOut(clamp01((tau - 0.3) / 0.6));
     ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, ly); ctx.clip(); lines.forEach((l, i) => line(l, y0 + i * lh + (1 - r) * lh * lines.length, r)); ctx.restore();
     sub(clipOut(clamp01((tau - 0.7) / 0.5)), S * 0.02);
@@ -15436,7 +15474,7 @@ function clipTrans(ctx, kind, u, A, B, W, H, tmp) {
 // 一格畫面
 function clipFrame(st, t) {
   const { ctx, W, H, plan, o, info, T, logo, srcs, caps, A, B, tmp } = st, S = Math.min(W, H);
-  _clipFx.kind = CLIP_TFX[o.tfx] ? o.tfx : 'shadow'; _clipFx.accent = T.accent;
+  _clipFx.kind = CLIP_TFX[o.tfx] ? o.tfx : 'shadow'; _clipFx.accent = T.accent; _clipFx.canim = o.canim; _clipFx.clay = o.clay;
   const act = [];
   for (let i = 0; i < plan.n; i++) if (t >= plan.starts[i] && t < plan.starts[i] + plan.D) act.push(i);
   if (!act.length && plan.n) act.push(t < plan.starts[0] ? 0 : plan.n - 1);
@@ -15528,7 +15566,8 @@ function clipHtml(busy) {
     <div class="lp-poster-row">比例 ${sel('lpClipRatio', { '16:9': '16:9 橫式', '9:16': '9:16 直式' }, o.ratio, 'ratio')}
       每張 ${sel('lpClipSec', { 2: '2 秒', 3: '3 秒', 4: '4 秒' }, o.sec, 'sec', '+this.value')}
       照片動態 ${sel('lpClipMotion', CLIP_MOTIONS, o.motion, 'motion')}</div>
-    <div class="lp-poster-row">標題動畫 ${sel('lpClipTitle', CLIP_TITLES, o.title, 'title')}
+    <div class="lp-poster-row">標題版型 ${sel('lpClipTlay', CLIP_TLAYS, o.tlay, 'tlay')}
+      標題動畫 ${sel('lpClipTitle', CLIP_TITLES, o.title, 'title')}
       過場動畫 ${sel('lpClipTrans', CLIP_TRANS, o.trans, 'trans')}
       文字特效 ${sel('lpClipTfx', CLIP_TFX, o.tfx, 'tfx')}
       <button class="tip-link" id="lpClipPvBtn" onclick="clipPreview()" ${few ? 'disabled' : ''}>▶ 預覽 3 秒</button></div>
@@ -15540,6 +15579,8 @@ function clipHtml(busy) {
       <label class="lp-chk"><input type="checkbox" id="lpClipIntroPhoto" ${o.introPhoto ? 'checked' : ''} onchange="clipSet('introPhoto',this.checked)"> 片頭用照片當底</label>
       <label class="lp-chk"><input type="checkbox" id="lpClipOutro" ${o.outro ? 'checked' : ''} onchange="clipSet('outro',this.checked)"> 片尾（學校＋張數）</label>
       <label class="lp-chk"><input type="checkbox" id="lpClipCaps2" ${o.caps ? 'checked' : ''} onchange="clipSet('caps',this.checked)"> 顯示照片說明</label></div>
+    <div class="lp-poster-row"${o.caps ? '' : ' style="opacity:.5"'}>照片說明 版型 ${sel('lpClipClay', CLIP_CLAYS, o.clay, 'clay')} 動畫 ${sel('lpClipCanim', CLIP_CANIMS, o.canim, 'canim')}
+      <span class="lp-note">${o.caps ? '說明文字用上面成果包每張照片的說明' : '先勾「顯示照片說明」才會出現'}</span></div>
     <div class="lp-note">預估：約 ${Math.round(plan.total)} 秒 · ${clipMobile() ? '720p' : '1080p'} · 轉檔約 ${Math.round(plan.total * 1.2)}–${Math.round(plan.total * 2.5)} 秒${long ? '　<b style="color:var(--yellow);">FB 限動最多 60 秒、LINE 建議 30 秒內</b>' : ''}${few ? `　<b style="color:var(--yellow);">至少要 ${CLIP_MIN} 張照片</b>` : ''}</div>
     ${_libPack.prog?.clip ? `<div class="lp-clip-prog" id="lpClipProg"><canvas id="lpClipLive" width="320" height="180"></canvas><div class="lp-clip-prog-main">
         <div class="lp-prog-h"><span class="lp-spin"></span><b>🎬 製作中</b><span class="lp-clip-prog-pct" id="lpClipProgPct">${Math.round(_libPack.prog.pct)}%</span><span style="flex:1"></span><button class="tip-link" onclick="libPackCancel()">取消</button></div>
