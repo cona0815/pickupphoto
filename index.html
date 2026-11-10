@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v48 (2026-11-10)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v49 (2026-11-10)　（原名：AI 照片篩選器）
+  2026v49 (2026-11-10, build v206): Gemini 設定加「模型」選單與「✔ 確認」鈕；某模型今天用完自動換下一個；免費 Key 設成付費時自動改用 Flash-Lite
   2026v48 (2026-11-10, build v205): Gemini 每個模型都沒免費額度時不再一直「忙線重試」，直接顯示 Google 的原因；沒額度只記 10 分鐘
   2026v47 (2026-11-10, build v204): Gemini 讀布條命名／賽程表辨識：補「少思考」設定與輸出上限（新模型想太久、沒字數寫答案）；
         記住每個模型吃哪種思考設定；賽程表年份用今年
@@ -241,7 +242,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v48 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v49 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3238,7 +3239,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v48 · 2026-11-10</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v49 · 2026-11-10</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3306,7 +3307,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><td>📲 直接分享（手機）</td><td>你在成果包按「直接分享」時，縮好的照片（最多 9 張）與群組訊息交給你在手機上選的 App（LINE、FB…），由那個 App 送出</td><td>看你選的 App</td></tr>
         <tr><td>瀏覽器 IndexedDB（設定）</td><td>相簿庫、備份資料夾的位置；活動海報的<b>校徽</b>（你自己選的圖，轉成 PNG 存在這裡）；<b>最近整理記錄</b>（每批照片的檔名、分組、活動名稱、標籤、入選／淘汰，不含照片，最多 20 批，匯出後 7 天自動清）</td><td>設定 → 儲存 →「清除整理記錄」；或清除瀏覽器網站資料</td></tr>
         <tr><td>瀏覽器 Cache Storage（網站版／安裝成 App）</td><td>工具本身、圖示，以及公開程式庫與人臉模型（離線用）。<b>不含照片、不含分析結果</b></td><td>解除安裝 App，或清除瀏覽器網站資料</td></tr>
-        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關、整理動畫的開關、分享浮水印的開關、活動海報的版型／配色／勾選、回顧短片的設定（比例、秒數、動畫、過場、音量、選的內建配樂代號）、相簿庫最近 5 次搜尋、⏱ 時間記錄器的賽程與按下的時間（都不含照片；「📲 傳到手機」的連結把賽程放在網址 # 後面，只在兩台裝置之間傳，不經過伺服器）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
+        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、指定的 Gemini 模型代號、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關、整理動畫的開關、分享浮水印的開關、活動海報的版型／配色／勾選、回顧短片的設定（比例、秒數、動畫、過場、音量、選的內建配樂代號）、相簿庫最近 5 次搜尋、⏱ 時間記錄器的賽程與按下的時間（都不含照片；「📲 傳到手機」的連結把賽程放在網址 # 後面，只在兩台裝置之間傳，不經過伺服器）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
         <tr><td>你選的相簿庫資料夾</td><td>匯出的照片、index.json（檔名、日期、活動、分數、人數、拍攝者名字、最愛、自建相簿名稱、照片本身帶的 <b>GPS 經緯度</b>、你設定的學校位置、自己取的地點名稱與查到的地標名稱）、索引歷史（_index_history）與每天的記錄備份（_相簿庫記錄備份，保留 30 天）。設為最愛的照片檔內會寫入「5 顆星」。在相簿庫刪除的照片先放進「_回收桶」資料夾，按「永久刪除」才真的刪掉</td><td>自行管理資料夾</td></tr>
       </table>
       <div class="pv-note">共用電腦用完請清除分析快取；離職或交接時一併刪除相簿庫與 Gemini Key。</div>
@@ -3338,7 +3339,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v48 程式逐項清點（2026-11-10）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v49 程式逐項清點（2026-11-10）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3765,7 +3766,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v48（2026-11-10）。</span>
+        <span style="font-size:11px;">本說明對應 2026v49（2026-11-10）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4182,6 +4183,10 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <button class="sd-mini" onclick="const i=document.getElementById('geminiKeyGlobal');i.type=i.type==='password'?'text':'password'" title="顯示／隱藏">👁</button>
         <button class="sd-mini" onclick="saveGeminiKey('');document.getElementById('geminiKeyGlobal').value=''" title="清除">🗑</button></div>
       <div class="sd-note" id="geminiKeyStatus"></div>
+      <div class="sd-row"><span>模型<small>不知道選哪個就用「自動」：免費方案先用 Flash-Lite（一天約 500 次），付費方案先用 3.8 Flash；用完或停用會自動換下一個</small></span>
+        <select id="geminiModelGlobal" class="resize-select" style="width:auto;" onchange="setGeminiModel(this.value)"><option value="">自動（建議）</option><option value="gemini-3.5-flash-lite">3.5 Flash-Lite（快；免費額度多）</option><option value="gemini-3.8-flash">3.8 Flash（較聰明；免費一天約 20 次）</option><option value="gemini-3.6-flash">3.6 Flash</option><option value="gemini-3.1-flash-lite">3.1 Flash-Lite</option><option value="gemini-2.5-flash-lite">2.5 Flash-Lite</option></select></div>
+      <div class="sd-row"><span>確認 Key 能不能用<small>送一句「請回答 OK」給 Gemini（不送照片），算 1 次額度</small></span><button class="btn-export-report" id="geminiTestBtn" onclick="geminiKeyTest()" style="width:auto;padding:6px 14px;">✔ 確認</button></div>
+      <div class="sd-note" id="geminiTestOut"></div>
       <div class="sd-row"><span>成果包文字風格<small>AI 寫照片說明與 FB 貼文的預設風格；成果包視窗裡也能換</small></span><select id="sdCapStyle" class="resize-select" style="width:auto;" onchange="capStylePref(this.value)"></select></div>
       <div class="sd-row"><span>學校／單位<small>寫在成果表副標題，也是 FB 貼文的第一個 hashtag</small></span><input type="text" id="sdPackUnit" class="keyword-input" style="width:160px;" onchange="libPackUnit(this.value.trim()||'大橋國小')"></div>
       <input type="checkbox" id="geminiNamingToggle" hidden>
@@ -4365,8 +4370,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v48';
-const APP_BUILD = 'v205';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v49';
+const APP_BUILD = 'v206';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -11925,10 +11930,11 @@ function gem429Why(res) { try { return decodeURIComponent(res.headers.get('x-gem
 function gem429Stop(res) {   // 不用重試的 429 → 回傳要顯示的訊息；可以重試的回傳 ''
   const k = res.headers.get('x-gem-kind'), why = gem429Why(res);
   if (k === 'daily') return `${gem429Text(res, 0)}。台灣時間下午三、四點會重新計算；或到 ⚙️ 設定改成付費方案的 Key${why ? `（Google：${why}）` : ''}`;
-  if (k === 'nofree') return `這把 Key 目前沒有可用的免費額度（試過 ${res.headers.get('x-gem-model')}）。可能是今天用完了、或這個 Google 專案沒開免費方案；請到 Google AI Studio 的「用量」看一下，或換一把 Key${why ? `（Google：${why}）` : ''}`;
+  if (k === 'nofree') return `這把 Key 今天沒有可用的額度了（試過 ${res.headers.get('x-gem-model')}）。免費額度在台灣時間下午三、四點重新計算；也可以到 Google AI Studio 看「用量」，或換一把 Key${why ? `（Google：${why}）` : ''}`;
   return '';
 }
 function gem429Text(res, w) { const k = res.headers.get('x-gem-kind'), m = res.headers.get('x-gem-model') || '?'; return k === 'daily' ? `Gemini 今天的免費額度用完了（${m}）` : k === 'minute' ? `Gemini 每分鐘次數到了（${m}），${w} 秒後自動重試` : `Gemini 忙線（${m}），${w} 秒後自動重試${gem429Why(res) ? `｜Google：${gem429Why(res).slice(0, 60)}` : ''}`; }
+let _gemFreeSeen = false, _gemLastModel = '';   // 2026v49
 const _gemThink = new Map();   // 2026v47：模型 → 'low'｜'none'（被拒絕過 minimal／thinking 的記下來）
 function geminiBodyFor(model, body) {
   if (typeof body !== 'string') return body;
@@ -11947,9 +11953,10 @@ function geminiNoThinking(body) { try { const b = JSON.parse(body); if (b.genera
 async function geminiFetch(url, init = {}) {
   const m = String(url).match(/\/models\/([^/:]+):generateContent/);
   if (!m) return fetch(url, init);
-  const free = typeof getGeminiTier === 'function' && getGeminiTier() === 'free';   // 2026v45：免費方案 3.8 Flash 一天只有 20 次 → 先用 Flash-Lite（一天 500 次）
+  const free = (typeof getGeminiTier === 'function' && getGeminiTier() === 'free') || _gemFreeSeen;   // 2026v45：免費方案 3.8 Flash 一天只有 20 次 → 先用 Flash-Lite（一天 500 次）
   const asked = decodeURIComponent(m[1]), chain = /lite/.test(asked) || free ? GEMINI_LITE_CHAIN : GEMINI_TEXT_CHAIN;
-  const list = [...new Set([...chain.filter(x => !_gemDead.has(x)), asked])];
+  const pick = typeof getGeminiModel === 'function' ? getGeminiModel() : '';   // 2026v49：老師指定的模型排第一個
+  let list = [...new Set([...(pick ? [pick] : []), ...chain, asked])].filter(x => !_gemDead.has(x)); if (!list.length) list = [pick || chain[0]];
   let last = null, lastZero = null;
   for (const model of list) {
     const u = String(url).replace(`/models/${m[1]}:`, `/models/${encodeURIComponent(model)}:`);
@@ -11962,7 +11969,9 @@ async function geminiFetch(url, init = {}) {
       const zero = /limit:\s*0\b/.test(msg) || viol.some(v => /limit.*0|quotaValue.*\b0\b/.test(JSON.stringify(v)) && /"quotaValue":"0"/.test(JSON.stringify(v)));
       const daily = /per_day|PerDay|daily/i.test(qid + ' ' + msg);
       _gem429 = Date.now();
-      if (zero) { _gemDead.add(model, false); last = res; lastZero = { model, msg }; continue; }   // 免費方案沒有這個模型的額度 → 換下一個
+      if (/free_tier|FreeTier/i.test(qid + ' ' + msg + ' ' + JSON.stringify(viol)) && !_gemFreeSeen) { _gemFreeSeen = true;
+        if (typeof getGeminiTier === 'function' && getGeminiTier() === 'paid') { try { showToast('ℹ️ 這把 Key 用的是 Google「免費額度」（不是付費方案）。已自動改用額度比較多的 Flash-Lite；請到 ⚙️ 設定把方案改回「免費方案」'); } catch {} } }
+      if (zero || daily) { _gemDead.add(model, false); last = res; lastZero = { model, msg, daily }; continue; }   // 這個模型沒額度／今天用完 → 換下一個
       return new Response(t, { status: 429, headers: { 'content-type': 'application/json', 'x-gem-why': encodeURIComponent(String(msg).replace(/\s+/g, ' ').slice(0, 120)), 'x-gem-retry': String(secs || 0), 'x-gem-kind': daily ? 'daily' : /per_minute|PerMinute|minute/i.test(qid + ' ' + msg) ? 'minute' : 'other', 'x-gem-model': model } });
     }
     if (res.status === 400 || res.status === 404) {
@@ -11975,6 +11984,7 @@ async function geminiFetch(url, init = {}) {
       else if (!GEMINI_GONE.test(t)) return res;
       _gemDead.add(model); last = res; continue;
     }
+    if (res.ok) _gemLastModel = model;
     return res;
   }
   // 2026v48：每個模型都說沒額度 → 標成 nofree，讓外面直接說明、不要重試
@@ -16489,6 +16499,30 @@ function refreshGeminiKeyUi() {
   const st = document.getElementById('geminiKeyStatus');
   if (st) st.innerHTML = k ? `✅ 已設定（${k.slice(0, 4)}…${k.slice(-4)}）` : '尚未設定 — 不用 Gemini 功能可以留空';
   document.querySelectorAll('.gemini-key-state').forEach(a => { a.textContent = k ? '（已設定）' : '→ 尚未設定，點此設定'; a.style.color = k ? 'var(--green)' : 'var(--accent)'; });
+}
+// 2026v49：指定模型（空白＝自動）；只存模型代號
+const GEMINI_PICKS = ['gemini-3.5-flash-lite', 'gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.1-flash-lite', 'gemini-2.5-flash-lite'];
+function getGeminiModel() { try { const v = localStorage.getItem('geminiModel') || ''; return GEMINI_PICKS.includes(v) ? v : ''; } catch { return ''; } }
+function setGeminiModel(v) { try { GEMINI_PICKS.includes(v) ? localStorage.setItem('geminiModel', v) : localStorage.removeItem('geminiModel'); } catch {} const g = document.getElementById('geminiModelGlobal'); if (g) g.value = getGeminiModel(); _gemDead.clear(); }
+document.addEventListener('DOMContentLoaded', () => { const g = document.getElementById('geminiModelGlobal'); if (g) g.value = getGeminiModel(); });
+async function geminiKeyTest() {
+  const out = document.getElementById('geminiTestOut'), btn = document.getElementById('geminiTestBtn'), key = getGeminiKey();
+  const say = (t, c) => { if (out) { out.textContent = t; out.style.color = c || ''; } };
+  if (!key) { say('還沒填 Key', 'var(--yellow)'); return; }
+  if (btn) btn.disabled = true; say('⏳ 測試中…'); _gemDead.clear();
+  try {
+    const model = getGeminiModel() || (getGeminiTier() === 'free' ? 'gemini-3.5-flash-lite' : 'gemini-3.8-flash');
+    const res = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+      body: JSON.stringify({ contents: [{ parts: [{ text: '請只回答兩個字母：OK' }] }], generationConfig: { temperature: 0, maxOutputTokens: 64 } }) });
+    if (res.ok) { await res.json().catch(() => ({}));
+      say(`✅ Key 可以用。這次用的模型：${_gemLastModel || model}${_gemLastModel && _gemLastModel !== model ? `（${model} 目前不能用，已自動換）` : ''}${_gemFreeSeen ? '｜這把 Key 是免費額度' : ''}`, 'var(--green)'); return; }
+    const stop = res.status === 429 ? gem429Stop(res) : '';
+    if (stop) { say('⚠️ ' + stop, 'var(--yellow)'); return; }
+    if (res.status === 429) { say(`⚠️ Key 是對的，但現在${gem429Text(res, +(res.headers.get('x-gem-retry') || 0) || 30).replace(/^Gemini /, '')}`, 'var(--yellow)'); return; }
+    const e = await res.json().catch(() => ({})), msg = e.error?.message || `錯誤 ${res.status}`;
+    say(/API key not valid|API_KEY_INVALID/i.test(msg) ? '❌ 這把 Key 不對（Google 說 API key not valid）。請重新複製貼上，前後不要有空白' : res.status === 403 ? `❌ 這把 Key 沒有權限：${msg.slice(0, 120)}` : `❌ ${msg.slice(0, 160)}`, '#ff7a7a');
+  } catch (e) { say(`❌ 連不到 Google（${e.message || e}）。請檢查網路`, '#ff7a7a'); }
+  finally { if (btn) btn.disabled = false; }
 }
 // v119: Gemini plan (free / paid) — decides the privacy warnings; stored locally
 function getGeminiTier() { try { return localStorage.getItem('geminiTier') === 'paid' ? 'paid' : 'free'; } catch (e) { return 'free'; } }
