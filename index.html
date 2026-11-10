@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v49 (2026-11-10)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v50 (2026-11-10)　（原名：AI 照片篩選器）
+  2026v50 (2026-11-10, build v207): 授權檢查 — 配樂只留作者寫明公眾領域／CC0 的 10 首（換掉 5 首）；補 OpenStreetMap 出處標示
   2026v49 (2026-11-10, build v206): Gemini 設定加「模型」選單與「✔ 確認」鈕；某模型今天用完自動換下一個；免費 Key 設成付費時自動改用 Flash-Lite
   2026v48 (2026-11-10, build v205): Gemini 每個模型都沒免費額度時不再一直「忙線重試」，直接顯示 Google 的原因；沒額度只記 10 分鐘
   2026v47 (2026-11-10, build v204): Gemini 讀布條命名／賽程表辨識：補「少思考」設定與輸出上限（新模型想太久、沒字數寫答案）；
@@ -234,7 +235,7 @@
 <!-- 2026v25 資安：CSP — 這個網頁只准連到下面這些網站（其他網址一律被瀏覽器擋下）；不准 <object>、<base>、表單送出。
      'unsafe-inline'：單一 HTML 檔，程式寫在頁面裡；'unsafe-eval'：HEIC 轉檔函式庫 heic2any（libheif）在背景執行緒用到，拿掉 HEIC 就轉不了；
      blob:：AI 人臉引擎的 .mjs 先比對指紋再從記憶體載入。2026v27 起連線收緊到「路徑」（只准 Gemini 產生內容、雲端硬碟檔案 API…） -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net/npm/jszip@3.10.1/ https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/npm/heic2any@0.0.4/ https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/ https://accounts.google.com/gsi/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@05cc766e0ec903ab4a04936b371a599cf40edb2f/audio/bgm/ https://media.githubusercontent.com/media/opencv/opencv_zoo/ https://generativelanguage.googleapis.com/v1beta/models/ https://www.googleapis.com/drive/v3/files https://www.googleapis.com/upload/drive/v3/files https://www.googleapis.com/upload/drive/v3/files/ https://oauth2.googleapis.com/revoke https://accounts.google.com/gsi/ https://nominatim.openstreetmap.org/reverse; worker-src 'self' blob:; frame-src 'self' blob: https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net/npm/jszip@3.10.1/ https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/npm/heic2any@0.0.4/ https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/ https://accounts.google.com/gsi/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@ea45f37a10a080d4fd8854200ebb08a33d84d9e4/audio/bgm/ https://media.githubusercontent.com/media/opencv/opencv_zoo/ https://generativelanguage.googleapis.com/v1beta/models/ https://www.googleapis.com/drive/v3/files https://www.googleapis.com/upload/drive/v3/files https://www.googleapis.com/upload/drive/v3/files/ https://oauth2.googleapis.com/revoke https://accounts.google.com/gsi/ https://nominatim.openstreetmap.org/reverse; worker-src 'self' blob:; frame-src 'self' blob: https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- 2026v4: PWA（放在網站上時可以安裝成 App） -->
 <link rel="manifest" href="manifest.webmanifest">
@@ -242,7 +243,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v49 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v50 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3239,7 +3240,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v49 · 2026-11-10</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v50 · 2026-11-10</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3284,7 +3285,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><td>本工具的網站（例如 Netlify 上的網址）</td><td>用網站版開啟時</td><td>工具本身（約 0.3 MB）與圖示；網站主機會有一般的存取紀錄（IP、時間），不含照片。用 file:// 直接開檔案時沒有這一項</td></tr>
         <tr><td>fonts.googleapis.com</td><td>每次開啟網頁</td><td>中文字型（Google 會看到你的 IP，不含照片）</td></tr>
         <tr><td>cdn.jsdelivr.net</td><td>每次開啟網頁；開啟 AI 人臉／勾 128 維特徵／HEIC 轉檔／製作回顧短片時</td><td>JSZip（壓縮 ZIP 用，MIT）；onnxruntime-web（MIT）、face-api.js（MIT）、heic2any；mp4-muxer（MIT，只在製作 🎬 回顧短片時載入）。<b>都比對 SRI 雜湊</b>，被改過就不執行</td></tr>
-        <tr><td>網站本身 <code>audio/bgm/</code>；單檔版改用 cdn.jsdelivr.net/gh/…/pickupphoto@05cc766e0ec903ab4a04936b371a599cf40edb2f/audio/bgm/</td><td>回顧短片選了內建配樂，按 🔊 試聽或 🎬 製作時</td><td>只<b>下載</b>那一首配樂（約 1.2 MB，網址裡只有曲目代號），不送出任何資料。10 首都是 CC0 公眾領域音樂（出自 FreePD.com）。抓回來比對 SHA-256，被改過就不用。沒網路時請用「自己選檔案」</td></tr>
+        <tr><td>網站本身 <code>audio/bgm/</code>；單檔版改用 cdn.jsdelivr.net/gh/…/pickupphoto@ea45f37a10a080d4fd8854200ebb08a33d84d9e4/audio/bgm/</td><td>回顧短片選了內建配樂，按 🔊 試聽或 🎬 製作時</td><td>只<b>下載</b>那一首配樂（約 1.2 MB，網址裡只有曲目代號），不送出任何資料。10 首都是作者自己聲明公眾領域／CC0 的音樂（Kevin MacLeod、Bryan Teoh，出自 FreePD.com）。抓回來比對 SHA-256，被改過就不用。沒網路時請用「自己選檔案」</td></tr>
         <tr><td>media.githubusercontent.com</td><td>開啟 AI 人臉時</td><td>YuNet 人臉模型（MIT，比對 SHA-256 才使用）</td></tr>
         <tr><td>accounts.google.com、googleapis.com</td><td>按「同步到 Google Drive」時</td><td>Google 登入；權限只有 drive.file（只看得到本工具建立的檔案）</td></tr>
       </table>
@@ -3339,7 +3340,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v49 程式逐項清點（2026-11-10）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v50 程式逐項清點（2026-11-10）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3766,7 +3767,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v49（2026-11-10）。</span>
+        <span style="font-size:11px;">本說明對應 2026v50（2026-11-10）。</span>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4370,8 +4371,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v49';
-const APP_BUILD = 'v206';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v50';
+const APP_BUILD = 'v207';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -14200,7 +14201,7 @@ function libViewHtml(rows) {
     const setting = `<div class="lib-note">🏫 學校位置：${s ? `<b>${s.lat.toFixed(5)}, ${s.lon.toFixed(5)}</b>，半徑 <input type="number" min="50" max="5000" step="50" value="${s.r || 300}" style="width:70px;font-size:11px;" onchange="libSchoolRadius(this.value)"> 公尺內算「校內」　<button class="tip-link" onclick="libSchoolManual()">修改</button> <button class="tip-link" onclick="libSchoolClear()">清除</button>`
       : `<b>還沒設定</b>　<button class="tip-link" onclick="libSchoolManual()">輸入經緯度</button>，或勾選一張在學校拍的照片後按上方「🏫 用這張當學校位置」`}<br>
       地點依序看：<b>你設的地點</b> → 命名時選的<b>地點標籤</b>（操場、禮堂…）→ 照片的 <b>GPS</b> → 同一個活動裡別張照片的 GPS。<b>相機（單眼）拍的照片沒有 GPS</b>：勾選照片後按下方「📍 設地點」。
-      地名（臺南市 永康區…）用內建的<b>全台鄉鎮市區界線</b>在這台電腦判斷，<b>不連網</b>；想看地標名稱可在地點裡按「🌐 查地標名稱」（只送座標到 OpenStreetMap）。</div>`;
+      地名（臺南市 永康區…）用內建的<b>全台鄉鎮市區界線</b>在這台電腦判斷，<b>不連網</b>；想看地標名稱可在地點裡按「🌐 查地標名稱」（只送座標到 OpenStreetMap）。查到的地標名稱 © OpenStreetMap 貢獻者（ODbL）。</div>`;
     const meta = l => `${l.length} 張${libRange(l) ? ' · ' + libRange(l) : ''}`;
     const jsq = s => String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     if (_libPlace) {
@@ -15426,19 +15427,19 @@ function clipOpts(v) {
 function clipSet(k, v) { const o = clipOpts(); o[k] = v; clipOpts(o); clipPvStop(); if (k !== 'bgm' && k !== 'vol') bgmStop(); libPackRender(); }
 let _clipMusic = null;   // { name, ab: ArrayBuffer } 自己選的音樂，只在記憶體
 // 2026v32 🎵 內建配樂：10 首快樂的 CC0 音樂（FreePD.com，CC0-1.0 公眾領域；取前 100 秒、響度統一 -16 LUFS）。[代號, 中文名, 曲名, 秒數, SHA-256]
-const BGM_LIB = [
+const BGM_LIB = [   // 2026v50：只收檔案標籤上作者寫明公眾領域／CC0 的（Kevin MacLeod、Bryan Teoh）；明細在 audio/bgm/SOURCES.md
   ['funshine', '陽光滿滿', 'Funshine', 100, 'a322cb86351805d6c5dc928070af24bcd6d26473cedb0fb219e814f4d3e2fce5'],
+  ['pickled-pink', '粉紅泡泡', 'Pickled Pink', 100, 'e07ad523ef82311929cdf494696f18b59b2dc82c2a990a334cb829804a3511f3'],
   ['city-sunshine', '城市晴天', 'City Sunshine', 100, '4c3dbe85888430158cae12778e22c2ab630eb9f89f30bd00406a2f026d9503c0'],
-  ['whistling-ukulele', '口哨烏克麗麗', 'Happy Whistling Ukulele', 100, '9df8a10c32b9b27b52ce73ec1aedacafd6b058e51a842d9150503d406f539ff1'],
-  ['ukulele-song', '烏克麗麗之歌', 'Ukulele Song', 100, 'b30f51c3a3d907e0cbe7ce1d681e4d77f7213a1f620dd4d0c58ff446b783e0d0'],
-  ['inspiration', '靈感湧現', 'Inspiration', 100, 'b1f20fa0205cc8387227dd71ab943f481ddcb4ccb96aa6b816392799218dc984'],
-  ['motions', '動起來', 'Motions', 100, '33c21b2e9fa496d87ca8f6c1a8fce952857526ba5159a04c27e569b3ad4bca5d'],
+  ['connecting-rainbows', '彩虹連線', 'Connecting Rainbows', 100, '065fe7aef882bc46bd9895fe17783b85d5acdebc7118594c363b749fecbc838e'],
   ['spring-chicken', '春天小雞', 'Spring Chicken', 100, '94926cdabe27998075b6f2d333481f1509b793d6cdd22867803c9543f3bbc4bb'],
   ['giant-bunny', '大兔子朋友', 'My Giant Bunny Friend', 100, 'e971dc9adc04294aa5ca0a03cb93aa23cc0e46c3e397b6d08e3af5cd89632c6b'],
-  ['sunny-rasta', '陽光雷鬼', 'Sunny Rasta', 100, '5c496db46e46a146ef07fe973c7c778f0f16acf62b90d56a5e9845ebfe0c6a9e'],
-  ['connecting-rainbows', '彩虹連線', 'Connecting Rainbows', 100, '065fe7aef882bc46bd9895fe17783b85d5acdebc7118594c363b749fecbc838e']
+  ['inventing-flight', '想飛', 'Inventing Flight', 100, '59d361540470d5f2c8d39dd944a4ca56b532e2901bbd2b6fe9a07a09f2104bef'],
+  ['going-bananas', '樂翻天', 'Going Bananas', 100, '8d4a2a0a444877a5951cdf55f6f8368943e5d28f2112874cf261020d632b07e0'],
+  ['wakka-wakka', '哇卡哇卡', 'Wakka Wakka', 100, '1cb50bdaf08f3907d9524c0394b392204554a4e901f61b8ccc11b96be25a27b4'],
+  ['and-just-like-that', '就這樣出發', 'And Just Like That', 100, 'e40f168ecfafcdbcef179204e8aa3ac2cd9e7f5754b1dc9acfc14550e4f98db8']
 ];
-const BGM_CDN = 'https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@05cc766e0ec903ab4a04936b371a599cf40edb2f/audio/bgm/';
+const BGM_CDN = 'https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@ea45f37a10a080d4fd8854200ebb08a33d84d9e4/audio/bgm/';
 const _bgmCache = new Map();   // 代號 → ArrayBuffer（只在記憶體）
 let _bgmAudio = null;
 function bgmInfo(id) { const r = BGM_LIB.find(x => x[0] === id); return r ? { id: r[0], zh: r[1], title: r[2], sec: r[3], sha: r[4] } : null; }
@@ -15747,7 +15748,7 @@ function clipMusicHtml(o) {
   const cur = o.bgm === 'file' && !_clipMusic ? '' : o.bgm, b = bgmInfo(cur);
   const groups = `<optgroup label="🎵 快樂的配樂（CC0，可自由使用）">${BGM_LIB.map(r => `<option value="${r[0]}"${r[0] === cur ? ' selected' : ''}>${r[1]} · ${r[2]}</option>`).join('')}</optgroup>`;
   return `<select id="lpClipBgm" onchange="clipMusicPick(this.value)"><option value=""${!cur ? ' selected' : ''}>不放音樂</option>${groups}<option value="file"${cur === 'file' ? ' selected' : ''}>📁 自己選檔案…</option></select>
-    ${b ? `<button class="tip-link" id="lpBgmTry" onclick="bgmTry()">${_bgmAudio?.id === cur ? '⏹ 停止' : '🔊 試聽'}</button><span class="lp-note" style="margin-left:6px">FreePD · CC0 公眾領域</span>` : ''}
+    ${b ? `<button class="tip-link" id="lpBgmTry" onclick="bgmTry()">${_bgmAudio?.id === cur ? '⏹ 停止' : '🔊 試聽'}</button><span class="lp-note" style="margin-left:6px">FreePD · 公眾領域（CC0）</span>` : ''}
     ${cur === 'file' ? `<span class="lp-note">🎵 ${escHtml(_clipMusic.name)}</span> <button class="tip-link" onclick="document.getElementById('lpClipMusicIn').click()">換一首</button>` : ''}
     <input type="file" id="lpClipMusicIn" accept="audio/*,.mp3,.m4a,.wav,.ogg" style="display:none" onchange="clipPickMusic(this.files[0]);this.value=''">
     ${cur === 'file' ? '<div class="lp-note">請用自己有授權的音樂（例如 Freesound、Free Music Archive、FreePD 上 CC0 的曲子）</div>' : ''}`;
