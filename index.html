@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v51 (2026-11-11)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v52 (2026-11-11)　（原名：AI 照片篩選器）
+  2026v52 (2026-11-11, build v209): 運動會預設改成老師調好的設定 — 太相似：幾秒內 30 → 2 秒（欄位最小值 5 → 1 秒）
   2026v51 (2026-11-11, build v208): 實機與資安測試修正 — 日期改台灣時間（早上 8 點前不再算成前一天）；沒拍攝時間的照片多時紅色提醒改用原始檔；
                                    記錄器分享連結型別檢查（壞連結不再讓記錄器打不開）；整理記錄標籤格式容錯；ZIP 檔名去掉 Windows 不能用的字元；加圖文操作說明連結
   2026v50 (2026-11-10, build v207): 授權檢查 — 配樂只留作者寫明公眾領域／CC0 的 10 首（換掉 5 首）；補 OpenStreetMap 出處標示
@@ -245,7 +246,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v51 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v52 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3242,7 +3243,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v51 · 2026-11-11</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v52 · 2026-11-11</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3342,7 +3343,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v51 程式逐項清點（2026-11-11）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v52 程式逐項清點（2026-11-11）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3547,7 +3548,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
                 </div>
                 <div class="control-row">
                   <span class="control-label"><span class="emoji">⏲️</span> 太相似：幾秒內</span>
-                  <input type="number" class="num-input" id="sceneWindowSec" value="60" min="5" max="900">
+                  <input type="number" class="num-input" id="sceneWindowSec" value="60" min="1" max="900">
                   <span style="font-size:11px;color:var(--text-dim);margin-left:4px;">秒</span>
                 </div>
                 <div class="control-row">
@@ -3769,7 +3770,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v51（2026-11-11）。</span><br>
+        <span style="font-size:11px;">本說明對應 2026v52（2026-11-11）。</span><br>
         <a href="guide.html" target="_blank" rel="noopener" onclick="if (!/^https?:$/.test(location.protocol)) { event.preventDefault(); showToast('📖 圖文操作說明在校園拾光網站上：網址後面加 /guide.html'); }" style="display:inline-block;margin-top:6px;font-weight:700;color:var(--accent);">📖 看圖文操作說明（每一步都有畫面）→</a>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
@@ -4374,11 +4375,11 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v51';
+const APP_VERSION = '2026v52';
 // 2026v51：本機時間的日期／時間字串（toISOString 是世界標準時間，台灣早上 8 點前會變成前一天）
 function localYmd(d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
 function localStamp(len = 19, d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${localYmd(d)} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`.slice(0, len); }
-const APP_BUILD = 'v208';   // 內部建置號（補丁與測試用）
+const APP_BUILD = 'v209';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -5134,7 +5135,7 @@ const SCENARIO_PRESETS = {
     label: '🏃 運動會',
     sharpCheck: false, closedEyeCheck: false, burstDetect: true,
     burstKeep: 2, simThreshold: 90, sharpThreshold: 25, cull: 100,
-    sceneDedup: false, sceneWindowSec: 30, sceneSim: 92, sceneKeep: 1,   // v149
+    sceneDedup: false, sceneWindowSec: 2, sceneSim: 92, sceneKeep: 1,    // 2026v52：老師調好的運動會設定（2 秒內、92%、留 1 張；預設不開）
     burstWindowMs: 1000,                 // 跑動主體每秒都在變，1 秒內才算同組
     faceScore: 0.5,                      // v116 YuNet 信心門檻：側臉、跑動多，放寬一點
     passScore: 40, rescuePassScore: 35, severePenalty: 35,
@@ -5177,7 +5178,10 @@ const SCEN_KEYS = { sharpCheck: 't', burstDetect: 't', closedEyeCheck: 't', keep
 const SCEN_DEFAULT_EXTRA = { keepSingles: true };
 // 2026v35：這些情境用「紀錄模式」— 預設保留，只刪拍壞的與明顯重複的；分數只拿來分 ⭐精選／📁保留 與排序
 const RECORD_SCENES = ['school_event', 'award', 'yearbook'];
-function scenOverrides() { try { const o = JSON.parse(localStorage.getItem('scenOverrides') || '{}'); return o && typeof o === 'object' ? o : {}; } catch { return {}; } }
+function scenOverrides() { try { const o = JSON.parse(localStorage.getItem('scenOverrides') || '{}'); if (!o || typeof o !== 'object') return {};
+    // 2026v52：預設改成跟老師自訂一樣時，那幾項就不算「已自訂」
+    for (const sc of Object.keys(o)) { const b = scenBase(sc), d = o[sc]; if (!d || typeof d !== 'object') { delete o[sc]; continue; } for (const k of Object.keys(d)) if (d[k] === b[k]) delete d[k]; if (!Object.keys(d).length) delete o[sc]; }
+    return o; } catch { return {}; } }
 function scenSaveOverrides(o) { try { if (Object.keys(o).length) localStorage.setItem('scenOverrides', JSON.stringify(o)); else localStorage.removeItem('scenOverrides'); } catch {} }
 function scenBase(s) { return { ...SCEN_DEFAULT_EXTRA, ...(SCENARIO_PRESETS[s] || {}) }; }
 function scenEffective(s) { return { ...scenBase(s), ...(scenOverrides()[s] || {}) }; }
