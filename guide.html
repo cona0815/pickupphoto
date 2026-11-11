@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>校園拾光｜圖文操作說明（2026v51）</title>
+<meta name="description" content="校園拾光圖文操作說明：匯入、分析、命名、審核、匯出、相簿庫、成果包、海報、回顧短片、AI 設定與資安。">
+<style>
+:root{--bg:#fbf7f1;--card:#fff;--ink:#2b2433;--dim:#6b6275;--line:#e9dfd2;--acc:#e8742c;--acc2:#5b3fa6;--accbg:#fff1e4;--tip:#eef7f0;--tipl:#3c9a5f;--warn:#fff4f2;--warnl:#d9483b;--shot:#1d1630}
+@media (prefers-color-scheme:dark){:root{--bg:#17131f;--card:#211b2c;--ink:#f1ecf7;--dim:#a79fb5;--line:#352c45;--acc:#ff9a52;--acc2:#b79cff;--accbg:#33241a;--tip:#1b2a22;--tipl:#5fc487;--warn:#33201f;--warnl:#ff7b6e;--shot:#0f0b18}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.8 "Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif}
+a{color:var(--acc)}
+.wrap{display:grid;grid-template-columns:250px minmax(0,1fr);gap:36px;max-width:1220px;margin:0 auto;padding:0 20px 80px}
+header.top{max-width:1220px;margin:0 auto;padding:44px 20px 26px}
+.ver{display:inline-block;font:600 13px/1 ui-monospace,Consolas,monospace;color:var(--acc2);border:1px solid var(--line);border-radius:99px;padding:6px 12px;background:var(--card)}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.25;margin:14px 0 10px;letter-spacing:.02em}
+h1 em{font-style:normal;color:var(--acc)}
+.lead{color:var(--dim);max-width:46em;margin:0}
+.flow{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0;padding:0;list-style:none}
+.flow li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 12px;font-weight:700;font-size:14px}
+.flow li b{color:var(--acc);margin-right:6px}
+nav{position:sticky;top:16px;align-self:start;max-height:calc(100vh - 32px);overflow:auto;font-size:14.5px;border-right:1px solid var(--line);padding-right:14px}
+nav p{margin:14px 0 4px;font-size:12px;letter-spacing:.12em;color:var(--dim)}
+nav a{display:block;padding:5px 10px;border-radius:8px;color:var(--ink);text-decoration:none}
+nav a:hover{background:var(--accbg);color:var(--acc)}
+section{padding-top:34px;margin-top:34px;border-top:1px solid var(--line)}
+section:first-child{border-top:0;margin-top:0;padding-top:0}
+h2{font-size:26px;margin:0 0 6px;display:flex;align-items:center;gap:12px;line-height:1.35}
+h2 .n{flex:none;width:38px;height:38px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;font-size:18px}
+h3{font-size:18px;margin:26px 0 6px;color:var(--acc2)}
+p{margin:8px 0}
+.sub{color:var(--dim);margin:0 0 12px}
+ol.steps{padding-left:1.4em;margin:8px 0}
+ol.steps li{margin:6px 0;padding-left:4px}
+ol.steps li::marker{color:var(--acc);font-weight:800}
+ul{padding-left:1.3em;margin:8px 0}
+kbd,.btn{display:inline-block;font:700 13.5px/1.5 inherit;background:var(--accbg);color:var(--acc);border:1px solid var(--line);border-radius:7px;padding:0 7px;white-space:nowrap}
+figure{margin:16px 0 20px}
+figure img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid var(--line);background:var(--shot);cursor:zoom-in}
+figcaption{font-size:13.5px;color:var(--dim);margin-top:7px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:22px;align-items:start}
+.two.narrow{grid-template-columns:minmax(0,300px) minmax(0,1fr)}
+.two figure{margin-top:6px}
+.tip,.warn{border-left:4px solid var(--tipl);background:var(--tip);border-radius:0 10px 10px 0;padding:10px 14px;margin:14px 0;font-size:15px}
+.warn{border-color:var(--warnl);background:var(--warn)}
+.tblw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:15px;background:var(--card);border-radius:10px}
+th,td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top}
+th{background:var(--accbg);white-space:nowrap}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0}
+summary{font-weight:700;cursor:pointer}
+footer{max-width:1220px;margin:0 auto;padding:20px;color:var(--dim);font-size:13.5px;border-top:1px solid var(--line)}
+#zoom{position:fixed;inset:0;background:rgba(10,6,18,.92);display:none;place-items:center;z-index:9;cursor:zoom-out;padding:12px}
+#zoom.on{display:grid}
+#zoom img{max-width:100%;max-height:100%;border-radius:8px}
+@media (max-width:860px){.wrap{grid-template-columns:1fr;gap:0;padding:0 16px 60px}nav{position:static;max-height:none;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--card);margin-bottom:26px;columns:2}nav p{break-after:avoid}.two,.two.narrow{grid-template-columns:1fr}header.top{padding:28px 16px 20px}h2{font-size:22px}}
+@media print{nav,#zoom{display:none}.wrap{display:block}section{break-inside:avoid-page}figure{break-inside:avoid}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="top">
+  <span class="ver">校園拾光 2026v51 ・ 說明更新 2026-11-11</span>
+  <h1>活動拍完，<em>十分鐘</em>整理好照片</h1>
+  <p class="lead">校園拾光是給學校老師用的照片整理工具：把活動照片丟進來，它會在你的電腦裡自動分組、挑出清楚的照片、幫資料夾命名，還能一鍵做出成果表、FB 貼文、活動海報與回顧短片。這一頁用實際畫面，照著順序帶你走一遍。</p>
+  <ol class="flow"><li><b>1</b>匯入</li><li><b>2</b>整理方式</li><li><b>3</b>分析</li><li><b>4</b>命名</li><li><b>5</b>審核</li><li><b>6</b>匯出</li><li>＋ 相簿庫・成果包・海報・短片</li></ol>
+</header>
+<div class="wrap">
+<nav aria-label="目錄">
+  <p>基本流程</p>
+  <a href="#before">開始之前（備份・原始檔）</a><a href="#s1">1 匯入照片</a><a href="#s2">2 選整理方式</a><a href="#s3">3 分析結果怎麼看</a><a href="#s4">4 命名・標籤</a><a href="#s5">5 審核照片</a><a href="#s6">6 匯出</a>
+  <p>進階功能</p>
+  <a href="#lib">相簿庫與學年回顧</a><a href="#pack">成果包：說明與貼文</a><a href="#poster">活動海報</a><a href="#clip">回顧短片</a><a href="#rec">時間記錄器</a><a href="#auto">全自動・多位拍攝者</a>
+  <p>設定與安全</p>
+  <a href="#ai">AI（Gemini）設定</a><a href="#perf">分析設定</a><a href="#sec">資安與隱私</a><a href="#faq">常見問題</a>
+  <p><a href="./" style="padding:0;display:inline">← 回到校園拾光</a></p>
+</nav>
+<main>
+
+<section id="before">
+  <h2>開始之前</h2>
+  <div class="warn"><b>先備份照片。</b>請把原始照片複製一份到別的地方（隨身碟、雲端硬碟）再開始整理。校園拾光不會刪改你的原始檔，但整理照片前留一份備份永遠是好習慣。</div>
+  <div class="warn"><b>一定要用「照片原始檔」，不要用 LINE 傳的。</b>校園拾光是靠照片裡的<b>原始資訊（拍攝時間、相機資料）</b>來分組、排順序、算學年度的。LINE、Messenger 傳過的照片，還有截圖、修圖軟體另存的檔案，這些資訊都會被拿掉，結果就是：不同天的照片混在同一組、順序亂掉、日期變成下載那天。
+    <ul style="margin:6px 0 0">
+      <li><b>相機：</b>直接從記憶卡複製。</li>
+      <li><b>手機：</b>用傳輸線、AirDrop、Google 相簿／雲端硬碟的「原始畫質」下載，或 LINE <b>以外</b>的方式傳。</li>
+      <li><b>請同事提供照片時：</b>請他們給原始檔（隨身碟、雲端硬碟共用），不要丟 LINE 群組。</li>
+      <li>真的只有 LINE 的照片也能整理，但要自己檢查分組和日期。</li>
+    </ul></div>
+  <ul>
+    <li><b>瀏覽器：</b>請用電腦上的 <b>Chrome</b> 或 <b>Edge</b>。「存到資料夾」「相簿庫」「回顧短片」需要它們才完整；Safari、Firefox 可以分析與下載 ZIP。</li>
+    <li><b>不用安裝、不用登入：</b>打開網頁就能用；也可以把單一 HTML 檔存在電腦裡離線開啟。</li>
+    <li><b>照片不離開電腦：</b>分析、挑片、海報、短片都在你的電腦裡完成。只有你自己按下 AI 寫說明／貼文等功能時，才會送出縮小的照片，而且送出前畫面會先告訴你（見 <a href="#sec">資安與隱私</a>）。</li>
+  </ul>
+  <figure><img src="guide/01_home.webp" alt="校園拾光首頁：上方是六個步驟，左邊是匯入與設定，右邊是結果區"><figcaption>首頁。最上面一排是六個步驟，做到哪一步會亮起來；右上角 <span class="btn">❓</span> 隨時可以開內建說明。</figcaption></figure>
+</section>
+
+<section id="s1">
+  <h2><span class="n">1</span>匯入照片</h2>
+  <p class="sub">支援相機、手機、LINE 轉傳的照片；HEIC 會自動轉檔。</p>
+  <div class="two narrow">
+    <figure><img src="guide/02_side.webp" alt="左側欄：匯入照片、拍攝者、整理方式與場合"><figcaption>左側欄由上到下就是操作順序。</figcaption></figure>
+    <div>
+      <ol class="steps">
+        <li>把照片（或整個資料夾）<b>拖曳</b>到左上角的框，或按 <span class="btn">點擊選取</span>。</li>
+        <li><b>拍攝者</b>（可不填）：填了之後，匯出的資料夾名稱會加上拍攝者。</li>
+        <li>匯入完成，框裡會顯示「已載入 N 張照片」。</li>
+      </ol>
+      <h3>其他匯入方式</h3>
+      <ul>
+        <li><span class="btn">⚡ 選資料夾，全自動</span>：選一個資料夾，分析→挑片→匯出一次做完（見 <a href="#auto">全自動</a>）。</li>
+        <li><span class="btn">👥 多位拍攝者</span>：好幾位老師各拍一批，合併成同一場活動。</li>
+        <li><span class="btn">🎬 影片截取精彩時刻</span>：從活動影片裡自動抓出清楚的畫面當照片。</li>
+        <li><span class="btn">📥 匯入整理記錄</span>：把上次存下來的整理進度接著做。</li>
+      </ul>
+      <div class="warn"><b>再提醒一次：請匯入原始檔。</b>LINE 傳過的照片沒有拍攝時間，系統只能改用檔案時間，分組和日期都可能不對。分析完如果有 3 成以上的照片缺拍攝時間，結果上方會出現紅色提醒：</div>
+      <figure><img src="guide/20_exifmiss.webp" alt="紅色提醒：全部照片沒有原始拍攝時間，分組和日期可能不對"><figcaption>看到這個提醒，請換成相機記憶卡或手機的原始檔再匯入一次。</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="s2">
+  <h2><span class="n">2</span>選整理方式</h2>
+  <p class="sub">先回答一個問題：這批照片是「一場活動」還是「很多天混在一起」？系統會依照片的日期範圍給你建議。</p>
+  <div class="tblw"><table>
+    <tr><th>整理方式</th><th>什麼時候用</th><th>接著要選</th></tr>
+    <tr><td><b>🎯 單一活動</b></td><td>今天的運動會、一場宣導、一次頒獎</td><td>場合（決定挑照片的標準）</td></tr>
+    <tr><td><b>📱 相簿一鍵整理</b></td><td>手機相簿、整學期的照片，很多場混在一起</td><td>怎麼拆：一天一組／半天一組／相隔 40 分鐘</td></tr>
+  </table></div>
+  <h3>單一活動：四種場合</h3>
+  <div class="tblw"><table>
+    <tr><th>場合</th><th>挑片方式</th></tr>
+    <tr><td>🏫 學校活動</td><td>紀錄模式：各時段平均保留、自然表情；只拿掉拍壞與明顯重複的</td></tr>
+    <tr><td>🏃 運動會</td><td>抓動作瞬間；連拍只留最清楚的 2 張</td></tr>
+    <tr><td>🏆 頒獎</td><td>紀錄模式：臉要清楚、閉眼的淘汰</td></tr>
+    <tr><td>🎓 畢業典禮</td><td>紀錄模式：閉眼淘汰；每組留最好的</td></tr>
+  </table></div>
+  <div class="two narrow">
+    <figure><img src="guide/02b_side_album.webp" alt="相簿一鍵整理的拆組選項"><figcaption>相簿一鍵整理：選好怎麼拆，按「📱 開始整理」。</figcaption></figure>
+    <div>
+      <h3>分組方式</h3>
+      <ul>
+        <li><b>自動（依間隔）</b>：兩張照片隔超過設定的分鐘數，就算下一組。</li>
+        <li><b>依時段</b>：運動會有賽程表時最好用。可以貼上賽程表、匯入時段，或用 <a href="#rec">時間記錄器</a> 在現場按。</li>
+      </ul>
+      <p>選好之後按右上角的 <span class="btn">▶ 開始分析</span>。36 張大約幾秒，上千張約幾分鐘，進度會顯示在畫面上。</p>
+    </div>
+  </div>
+</section>
+
+<section id="s3">
+  <h2><span class="n">3</span>分析結果怎麼看</h2>
+  <figure><img src="guide/03_results.webp" alt="分析完成畫面：統計卡、審核與匯出區、下方是各組照片"><figcaption>分析完成。上排是統計，中間是審核與匯出，下面一組一組列出照片。</figcaption></figure>
+  <div class="tblw"><table>
+    <tr><th>數字</th><th>意思</th></tr>
+    <tr><td>總照片數</td><td>這次匯入幾張；按 <span class="btn">▶ 重播</span> 可以再看一次整理動畫</td></tr>
+    <tr><td>⭐ 精選</td><td>清楚、有人、構圖好的照片，適合拿去發布</td></tr>
+    <tr><td>📁 紀錄</td><td>品質普通但值得留作紀錄的照片（紀錄模式才有）</td></tr>
+    <tr><td>時間分群</td><td>分成幾組（幾場活動／幾個時段）</td></tr>
+    <tr><td>連拍組</td><td>偵測到幾組連拍，每組只留最好的</td></tr>
+  </table></div>
+  <figure><img src="guide/04_group.webp" alt="各組照片：組名、日期、入選張數與照片縮圖"><figcaption>每一組有自己的名稱、日期、入選張數。亮框的是入選照片；點照片可以放大看、切換入選或淘汰。</figcaption></figure>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>命名・標籤</h2>
+  <p class="sub">每一組按 <span class="btn">📁 命名・標籤</span>，名字取好，之後在相簿庫才找得到。</p>
+  <div class="two">
+    <div>
+      <ol class="steps">
+        <li><b>學年度、學期</b>會依拍攝日期自動算好；日期怪怪的會出現黃色提醒（常見原因：相機時間沒設定）。</li>
+        <li><b>活動名稱</b>：上方是依月份推薦的常見活動，點一下就填好；也可以在搜尋框找（防災、家庭、研習…），或自己打。</li>
+        <li><b>補充</b>（可不填）：例如「四年級大隊接力」。</li>
+        <li>確認後，資料夾名稱會是「114學年度第1學期_運動會」這樣的格式。</li>
+      </ol>
+      <div class="tip">只想改名字，按組名右邊的 <span class="btn">✏️ 改名</span> 比較快。</div>
+    </div>
+    <figure><img src="guide/05_nametag.webp" alt="命名與標籤視窗：學年度、學期、活動名稱與推薦活動"><figcaption>命名・標籤視窗。活動分類有學校活動、教學活動、議題宣導、研習四大類可以挑。</figcaption></figure>
+  </div>
+</section>
+
+<section id="s5">
+  <h2><span class="n">5</span>審核照片</h2>
+  <p class="sub">相信 AI 就直接匯出；想自己看過一遍也可以。</p>
+  <div class="tblw"><table>
+    <tr><th>模式</th><th>說明</th></tr>
+    <tr><td><b>🤖 AI 直出</b></td><td>不用看，直接匯出 AI 挑好的照片。趕時間用這個。</td></tr>
+    <tr><td><b>👁️ 手動審核</b></td><td>每張照片可以自己決定要不要；連拍會排在一起方便比較。</td></tr>
+    <tr><td><b>▶ 逐張看</b></td><td>一張一張放大看：<kbd>←</kbd> <kbd>→</kbd> 換張，<kbd>空白鍵</kbd> 或 <kbd>Enter</kbd> 切換入選／淘汰，<kbd>Esc</kbd> 關閉。</td></tr>
+  </table></div>
+  <figure><img src="guide/06_review.webp" alt="手動審核模式：每組照片可逐張勾選"><figcaption>手動審核。每組上方有 <span class="btn">✅ 全選此組</span> <span class="btn">🚫 全不選</span> <span class="btn">🗑 不要這組</span>；用「全部／入選／淘汰」切換只看哪一種。</figcaption></figure>
+  <figure><img src="guide/06b_seq.webp" alt="逐張看：大圖與右側評分資訊"><figcaption>逐張看。右邊會顯示這張照片的清晰度、人臉數、分數，以及為什麼入選或淘汰。</figcaption></figure>
+</section>
+
+<section id="s6">
+  <h2><span class="n">6</span>匯出</h2>
+  <div class="tblw"><table>
+    <tr><th>方式</th><th>適合</th></tr>
+    <tr><td><b>📚 存進相簿庫</b>（推薦）</td><td>第一次先選一個固定資料夾，之後每次活動都自動依「學年度／分類／活動」歸檔，還能搜尋、做學年回顧。</td></tr>
+    <tr><td><b>存到資料夾</b></td><td>這次的照片放進指定資料夾就好。</td></tr>
+    <tr><td><b>下載 ZIP</b></td><td>Safari／Firefox，或要把整包傳給別人。</td></tr>
+    <tr><td><b>成果包</b></td><td>直接做成果表、AI 說明、FB 貼文、海報與短片（見 <a href="#pack">成果包</a>）。</td></tr>
+  </table></div>
+  <ul>
+    <li><b>尺寸：</b>預設 Full HD 1920px（每張約 800KB），上傳網站、傳 LINE 都夠用；要留原圖可以改。</li>
+    <li><span class="btn">📄 下載篩選報告</span>：列出每張照片入選或淘汰的原因。</li>
+    <li><span class="btn">📤 匯出整理記錄</span>：把這次的分組、命名、勾選存成檔案，下次或換台電腦可以接著做。</li>
+  </ul>
+</section>
+
+<section id="lib">
+  <h2>相簿庫與學年回顧</h2>
+  <p class="sub">右上角 <span class="btn">📚 相簿庫</span>。它就是你電腦裡的一個資料夾，校園拾光幫你記住每張照片屬於哪場活動。</p>
+  <figure><img src="guide/08_library.webp" alt="相簿庫：依活動列出照片，上方可搜尋與篩選"><figcaption>相簿庫。可以依活動、分類、學年度瀏覽；上方搜尋框打活動名稱或日期範圍就能找到。</figcaption></figure>
+  <ul>
+    <li><b>勾選照片</b>之後可以：做成果包、加入相簿、標成最愛、移到回收桶。</li>
+    <li><b>全選此活動</b>：一次選整場，再按成果包最快。</li>
+    <li><b>下載索引、匯出 CSV</b>：備份相簿庫的活動清單。</li>
+  </ul>
+  <h3>學年回顧</h3>
+  <figure><img src="guide/09_year.webp" alt="學年回顧：每場活動一張代表照，排成一頁"><figcaption>學年回顧：整學年每場活動挑一張代表照排成一頁，可以勾選要放哪些分類，再下載圖片、列印 PDF 或存成 Word。</figcaption></figure>
+</section>
+
+<section id="pack">
+  <h2>成果包：照片說明與 FB 貼文</h2>
+  <p class="sub">從相簿庫勾選照片後按成果包，或在匯出區直接按 <span class="btn">成果包</span>。</p>
+  <figure><img src="guide/10_pack.webp" alt="成果包：每張照片一行說明，下方是 FB 貼文"><figcaption>成果包。每張照片一行說明，下面是 FB 貼文，都可以直接修改。</figcaption></figure>
+  <ol class="steps">
+    <li>確認<b>活動名稱</b>與<b>學校／單位</b>。</li>
+    <li>選文字<b>風格</b>（活潑熱血、溫馨、正式…）。</li>
+    <li>按 <span class="btn">✨ AI 寫每張照片說明</span>：每張照片產生一句說明。</li>
+    <li>（可不寫）在 <b>✍️ 文章重點</b> 打幾句想強調的事，再按 <span class="btn">✨ AI 寫 FB 貼文</span>，會寫成 200–300 字的貼文；按 <span class="btn">📋 複製</span> 貼到粉專。</li>
+    <li>下載<b>成果表</b>（Word）或整包 ZIP。</li>
+  </ol>
+  <div class="tip">AI 功能要先在 <a href="#ai">設定 → AI</a> 填 Gemini Key。沒有 Key 也沒關係，說明和貼文都可以自己打。AI 只會收到縮成 768px 的照片與活動名稱，不寫姓名、不點名、不描述外貌。</div>
+  <h3>分享版照片</h3>
+  <figure><img src="guide/11_share.webp" alt="分享區：LINE 版、FB 版與複製群組訊息"><figcaption><span class="btn">LINE 版</span>、<span class="btn">FB 版</span> 會把照片縮成適合的大小；可以勾選在右下角加上「活動名稱・日期」浮水印。</figcaption></figure>
+  <div class="warn">發布前請再看一次：貼文沒有學生姓名，照片裡沒有家長不同意公開的孩子。</div>
+</section>
+
+<section id="poster">
+  <h2>活動海報</h2>
+  <p class="sub">在成果包往下捲就會看到。海報是在你的電腦裡畫出來的。</p>
+  <figure><img src="guide/12_poster.webp" alt="活動海報：版型、配色、標語與預覽"><figcaption>左邊是即時預覽，右邊是選項。</figcaption></figure>
+  <ul>
+    <li><b>版型：</b>A4 直式（列印張貼）、IG 方形、限時動態直式。</li>
+    <li><b>配色：</b>多種主題色可換。</li>
+    <li><b>標語：</b>預設會帶入學年度與分類，可以改成自己的一句話。</li>
+    <li><b>校徽：</b>上傳一次就記在這台電腦，下次自動帶入。</li>
+    <li><b>✨ AI 畫一張封面插圖</b>（可不用）：依活動名稱畫一張插圖鋪滿整張海報，有插圖時就不放照片。只送出文字、不送照片；需要 Gemini 付費方案的 Key。</li>
+    <li>完成後按 <span class="btn">⬇ 下載 PNG</span> 或 <span class="btn">🖨 列印／PDF</span>。</li>
+  </ul>
+</section>
+
+<section id="clip">
+  <h2>回顧短片</h2>
+  <p class="sub">把入選照片做成有片頭、轉場、配樂的 MP4。全部在你的電腦裡轉檔，不經過任何伺服器。</p>
+  <figure><img src="guide/13_clip.webp" alt="回顧短片的選項：比例、每張秒數、標題版型與動畫、轉場、文字特效、配樂"><figcaption>回顧短片的選項。</figcaption></figure>
+  <div class="tblw"><table>
+    <tr><th>選項</th><th>說明</th></tr>
+    <tr><td>比例</td><td>16:9 橫式（電視、YouTube）或 9:16 直式（Reels、Shorts、限時動態）</td></tr>
+    <tr><td>每張</td><td>每張照片停留 2／3／4 秒</td></tr>
+    <tr><td>標題版型・標題動畫</td><td>片頭標題的位置與進場方式</td></tr>
+    <tr><td>過場動畫</td><td>照片之間怎麼切換（交叉淡化、滑動、縮放…）</td></tr>
+    <tr><td>文字特效</td><td>照片說明文字的樣式（立體陰影、描邊、漸層…）</td></tr>
+    <tr><td>配樂</td><td>內建 10 首公眾領域（CC0）輕快配樂，按 <span class="btn">🔊 試聽</span>；也可以選自己的音樂檔</td></tr>
+    <tr><td>片頭／照片說明／片尾</td><td>要不要片頭（活動名稱＋日期）、每張的說明文字、片尾（學校＋張數）</td></tr>
+  </table></div>
+  <ol class="steps">
+    <li>按 <span class="btn">▶ 預覽 3 秒</span> 先看效果。</li>
+    <li>按 <span class="btn">🎬 製作 MP4</span>。畫面會出現醒目的進度框，顯示百分比、目前畫面與預估剩餘時間。</li>
+    <li>做完會自動下載。製作中請不要把分頁切到背景，速度會變慢。</li>
+  </ol>
+  <div class="tip">如果做得很慢或卡住：系統會自動換另一種轉檔方式再試。還是不行的話，按進度框裡的 <span class="btn">📋 複製診斷</span>，把內容貼給管理者，就能知道是哪裡出問題。</div>
+</section>
+
+<section id="rec">
+  <h2>時間記錄器</h2>
+  <p class="sub">右上角 <span class="btn">⏱ 記錄器</span>。運動會這種「一個項目接一個項目」的活動最好用。</p>
+  <figure><img src="guide/18_recorder.webp" alt="時間記錄器：貼上賽程表、新增一項、依預定時間排序"><figcaption>記錄器可以用手機開，在現場操作。</figcaption></figure>
+  <ol class="steps">
+    <li>活動前：按 <span class="btn">📋 貼上賽程表</span>，從 Word、Excel 或 LINE 複製賽程貼上，會自動辨識項目與時間。</li>
+    <li>活動中：每個項目開始時按一下，記下實際時間。</li>
+    <li>活動後：把時段匯出，回到電腦在「依時段」分組裡匯入，照片就會照項目分好。</li>
+  </ol>
+</section>
+
+<section id="auto">
+  <h2>全自動・多位拍攝者</h2>
+  <div class="two narrow">
+    <figure><img src="guide/17_auto.webp" alt="一鍵全自動視窗"><figcaption>一鍵全自動。</figcaption></figure>
+    <div>
+      <h3>⚡ 一鍵全自動</h3>
+      <p>選一個照片資料夾，系統自動分析、挑片，並把結果匯出到同一個資料夾裡，全程不用再按任何東西。沿用目前的場合與尺寸設定，適合固定流程、照片很多的時候。</p>
+      <h3>👥 多位拍攝者</h3>
+      <p>每位老師的照片各匯入一次並填上拍攝者，系統會依時間把大家的照片合在一起分組，重複的畫面只留最好的。</p>
+    </div>
+  </div>
+</section>
+
+<section id="ai">
+  <h2>AI（Gemini）設定</h2>
+  <p class="sub">右上角 <span class="btn">⚙️ 設定</span> → <span class="btn">✨ AI</span>。只有要用「AI 寫說明、貼文、畫插圖」才需要設定；挑照片不需要。</p>
+  <div class="two narrow">
+    <figure><img src="guide/15_gemini.webp" alt="設定的 AI 分頁：方案、Key、模型與確認按鈕"><figcaption>AI 設定。</figcaption></figure>
+    <div>
+      <ol class="steps">
+        <li>到 Google AI Studio 申請 <b>Gemini API Key</b>（免費）。</li>
+        <li><b>方案</b>：照實選「免費方案」或「付費方案」。選錯會讓免費 Key 很快碰到上限。</li>
+        <li>貼上 Key，按 <span class="btn">✔ 確認</span>。系統會實際連線測試，告訴你 Key 能不能用、哪些模型可用。</li>
+        <li><b>模型</b>：一般選「自動（建議）」就好，遇到忙線或額度用完會自動換下一個模型。</li>
+      </ol>
+      <div class="tblw"><table>
+        <tr><th></th><th>免費方案</th><th>付費方案</th></tr>
+        <tr><td>寫照片說明、FB 貼文</td><td>可以，每天有次數上限，速度較慢</td><td>可以，較快</td></tr>
+        <tr><td>畫海報插圖</td><td>不行</td><td>可以（每張約新台幣 1–2 元）</td></tr>
+        <tr><td>資料用途</td><td>Google 可能用來改進產品</td><td>不會拿去訓練</td></tr>
+      </table></div>
+      <div class="warn">Key 只存在這台電腦的瀏覽器裡。公用電腦用完請到設定把 Key 清掉。出現「今天的免費額度用完了」時，隔天會自動恢復。</div>
+    </div>
+  </div>
+</section>
+
+<section id="perf">
+  <h2>分析設定</h2>
+  <div class="two narrow">
+    <figure><img src="guide/15b_perf.webp" alt="設定的分析分頁：分析品質、AI 人臉、門檻"><figcaption>設定 → ⚡ 分析。</figcaption></figure>
+    <div>
+      <ul>
+        <li><b>分析品質：</b>預設「高品質」。電腦比較舊、照片上千張時可以調低，速度較快。</li>
+        <li><b>AI 人臉：</b>打開後會偵測人臉、閉眼，挑人像更準。模型下載一次後就在本機執行，不會送出照片。</li>
+        <li><b>入選門檻、連拍相似度：</b>覺得挑得太嚴或太鬆時再調整。</li>
+        <li><b>備份／還原設定：</b>換電腦時把設定帶走。</li>
+      </ul>
+      <p>設定裡還有 <b>🏷 分類</b>（各月份常見活動、議題宣導、研習名稱）與 <b>📚 相簿庫</b> 分頁，可以加入自己學校常用的活動名稱。</p>
+    </div>
+  </div>
+</section>
+
+<section id="sec">
+  <h2>資安與隱私</h2>
+  <p class="sub">首頁標題下方的「資料去向說明」，或設定裡的 <span class="btn">🔒 資安與隱私</span>，隨時可以查。</p>
+  <div class="two">
+    <div>
+      <div class="tblw"><table>
+        <tr><th>功能</th><th>會送出什麼</th></tr>
+        <tr><td>匯入、分析、挑片、命名、匯出、相簿庫、海報、短片</td><td><b>不送出</b>，只在這台電腦</td></tr>
+        <tr><td>AI 人臉</td><td>不送照片，只下載模型到本機</td></tr>
+        <tr><td>AI 寫說明／貼文</td><td>你勾選的照片（縮到 768px）與活動名稱 → Google Gemini</td></tr>
+        <tr><td>AI 畫插圖</td><td>只有文字（活動名稱等）→ Google Gemini</td></tr>
+        <tr><td>相簿庫「查地標名稱」</td><td>約略座標，不含照片 → OpenStreetMap</td></tr>
+      </table></div>
+      <p>沒有帳號、沒有追蹤、沒有廣告；也不會拿你的照片訓練任何 AI。</p>
+    </div>
+    <figure><img src="guide/16_security.webp" alt="個資與資料去向說明表"><figcaption>程式內的完整說明表：每個功能送出什麼、給誰、會不會被拿去訓練。</figcaption></figure>
+  </div>
+</section>
+
+<section id="faq">
+  <h2>常見問題</h2>
+  <details><summary>照片分組怪怪的，不同天的被分在一起？</summary><p>通常是照片沒有拍攝時間（LINE 轉傳、截圖、修圖軟體另存都會把它拿掉）。請盡量用相機或手機的原始檔；相機的日期時間也要先設定正確。</p></details>
+  <details><summary>有些我想要的照片沒有入選？</summary><p>學校活動、頒獎、畢業典禮已經是「紀錄模式」，只會拿掉拍壞和明顯重複的。還是想留，切到 <b>👁️ 手動審核</b> 把它勾回來；或到設定 → 分析把入選門檻調低。</p></details>
+  <details><summary>「存到資料夾」「相簿庫」按了沒反應？</summary><p>這兩個功能需要 Chrome 或 Edge。Safari、Firefox 請改用「下載 ZIP」。</p></details>
+  <details><summary>AI 一直顯示忙線或額度用完？</summary><p>到設定 → AI 確認方案選的是你實際的方案，按 <b>✔ 確認</b> 測試 Key。免費方案每天有次數上限，用完要等隔天；模型選「自動」可以讓系統自己換到還有額度的模型。</p></details>
+  <details><summary>回顧短片做很久？</summary><p>請用 Chrome 或 Edge、製作中保持在這個分頁。照片張數多、每張秒數長都會比較久。真的卡住時按 <b>📋 複製診斷</b> 回報。</p></details>
+  <details><summary>換電腦要怎麼搬？</summary><p>相簿庫資料夾整個複製過去，再到新電腦的相簿庫選那個資料夾即可；設定用「備份／還原設定」帶走。做到一半的整理用「匯出整理記錄」。</p></details>
+  <details><summary>配樂可以用在公開影片嗎？</summary><p>內建 10 首是公眾領域（CC0）音樂，可以自由使用、不需標示。自己選的音樂請自行確認授權。</p></details>
+</section>
+</main>
+</div>
+<footer>校園拾光 2026v51・圖文操作說明（2026-11-11）。畫面中的照片為示意插圖，活動名稱為範例。</footer>
+<div id="zoom" onclick="this.classList.remove('on')"><img alt=""></div>
+<script>
+document.querySelectorAll('figure img').forEach(function(i){i.addEventListener('click',function(){var z=document.getElementById('zoom');z.firstChild.src=i.src;z.classList.add('on');});});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')document.getElementById('zoom').classList.remove('on');});
+</script>
+</body>
+</html>

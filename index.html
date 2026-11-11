@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v50 (2026-11-10)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v51 (2026-11-11)　（原名：AI 照片篩選器）
+  2026v51 (2026-11-11, build v208): 實機與資安測試修正 — 日期改台灣時間（早上 8 點前不再算成前一天）；沒拍攝時間的照片多時紅色提醒改用原始檔；
+                                   記錄器分享連結型別檢查（壞連結不再讓記錄器打不開）；整理記錄標籤格式容錯；ZIP 檔名去掉 Windows 不能用的字元；加圖文操作說明連結
   2026v50 (2026-11-10, build v207): 授權檢查 — 配樂只留作者寫明公眾領域／CC0 的 10 首（換掉 5 首）；補 OpenStreetMap 出處標示
   2026v49 (2026-11-10, build v206): Gemini 設定加「模型」選單與「✔ 確認」鈕；某模型今天用完自動換下一個；免費 Key 設成付費時自動改用 Flash-Lite
   2026v48 (2026-11-10, build v205): Gemini 每個模型都沒免費額度時不再一直「忙線重試」，直接顯示 Google 的原因；沒額度只記 10 分鐘
@@ -243,7 +245,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v50 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v51 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3240,7 +3242,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v50 · 2026-11-10</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v51 · 2026-11-11</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3340,7 +3342,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v50 程式逐項清點（2026-11-10）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v51 程式逐項清點（2026-11-11）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3767,7 +3769,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v50（2026-11-10）。</span>
+        <span style="font-size:11px;">本說明對應 2026v51（2026-11-11）。</span><br>
+        <a href="guide.html" target="_blank" rel="noopener" onclick="if (!/^https?:$/.test(location.protocol)) { event.preventDefault(); showToast('📖 圖文操作說明在校園拾光網站上：網址後面加 /guide.html'); }" style="display:inline-block;margin-top:6px;font-weight:700;color:var(--accent);">📖 看圖文操作說明（每一步都有畫面）→</a>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
       拖曳或點擊選照片；截圖、文件翻拍、LINE 轉傳、HEIC 會自動分到「🧹 匯入分流」，要不要納入你決定。<br>
@@ -4371,8 +4374,11 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v50';
-const APP_BUILD = 'v207';   // 內部建置號（補丁與測試用）
+const APP_VERSION = '2026v51';
+// 2026v51：本機時間的日期／時間字串（toISOString 是世界標準時間，台灣早上 8 點前會變成前一天）
+function localYmd(d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
+function localStamp(len = 19, d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${localYmd(d)} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`.slice(0, len); }
+const APP_BUILD = 'v208';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -5293,7 +5299,7 @@ function exportScenarioConfig() {
   const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `情境設定_${currentScenario}_${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `情境設定_${currentScenario}_${localYmd()}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
   showToast('📤 情境設定已匯出');
@@ -5719,6 +5725,7 @@ function sessApply(s) {
     if (g.dropped) { g.droppedPhotos = ph; g.photos = []; ph.forEach(p => { p._preDropSel = p.selected; p.selected = false; p.droppedGroup = true; }); }
     else g.photos = ph;
     g.name = g.name || albumDateName(g.start); g.folderName = g.folderName || safeName(g.name);
+    if (!Array.isArray(g.tags)) g.tags = g.tags ? String(g.tags).split(/[,，、；;]/).map(t => t.trim()).filter(Boolean) : [];   // 2026v51：舊檔／手改的檔標籤是文字
     return g;
   });
   // 這次多出來的照片 → 放一組「新加入的照片」
@@ -8451,7 +8458,7 @@ function exportSchedule() {
   const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `時段設定_${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `時段設定_${localYmd()}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
   showToast(`✅ 已匯出 ${customGroupDefs.length} 個時段設定，可分享給同事匯入`);
@@ -9008,6 +9015,7 @@ function renderResults() {
     <div class="stat-card"><div class="stat-number" style="color:var(--accent2)">${burstGroups}</div><div class="stat-label">連拍組</div></div>
     <div class="stat-card"><div class="stat-number" style="color:var(--purple)">${soloPhotos}</div><div class="stat-label">單張照片</div></div>
     ${exifCount > 0 ? `<div class="stat-card"><div class="stat-number" style="color:var(--blue)">📷 ${exifCount}</div><div class="stat-label">EXIF 偵測</div></div>` : ''}
+    ${(() => { const nt = photos.filter(p => p.timeSource === 'mtime').length; return nt && nt / photos.length >= 0.3 ? `<div class="stat-card exif-miss" style="grid-column:1/-1;text-align:left;border:2px solid var(--red);background:rgba(255,112,129,0.12);padding:12px 16px;line-height:1.7;"><b style="color:var(--red);font-size:15px;">⚠️ ${nt === photos.length ? '全部' : nt + ' 張'}照片沒有原始拍攝時間，分組和日期可能不對</b><div style="font-size:13px;color:var(--text-dim);">LINE、Messenger 傳過的照片、截圖、網路下載的檔案，拍攝時間會被拿掉，只能改用檔案日期 → 不同天的照片可能混在同一組、順序和學年度也可能錯。<b style="color:var(--text);">請改用照片原始檔</b>：相機記憶卡直接複製、手機用傳輸線／AirDrop、Google 相簿或雲端硬碟「下載原始檔」。</div></div>` : ''; })()}
     ${calibration.enabled ? `<div class="stat-card" style="cursor:pointer;border-color:var(--green);" onclick="showCalibrationInfo()" title="點擊查看校正資訊"><div class="stat-number" style="color:var(--green);font-size:16px;">🧠 已校正</div><div class="stat-label" style="font-family:var(--mono);font-size:9px;">pass≥${calibration.passScore} · ${calibration.totalSamples}筆</div></div>` : ''}`;
 
   if (outputMode === 'review') {
@@ -9732,7 +9740,7 @@ async function autoSelectFolder() {
 
 function updateAutoOutputPreview() {
   const photographer = document.getElementById('autoPhotographer').value.trim();
-  const dateStr = new Date().toISOString().slice(0, 10);
+  const dateStr = localYmd();
   const outputName = photographer ? `${dateStr}_${photographer}` : dateStr;
   document.getElementById('autoOutputName').textContent = outputName + '/';
   document.getElementById('autoOutputPath').style.display = 'block';
@@ -9873,7 +9881,7 @@ async function startAutoMode() {
   // ── Step 4: Export to same folder ──
   updateProgress(70, '步驟 4/4：匯出到資料夾...');
   const resizeMax = parseInt(exportSize) || 0;
-  const dateStr = new Date().toISOString().slice(0, 10);
+  const dateStr = localYmd();
   const rootName = photographer ? `${dateStr}_${photographer}` : dateStr;
 
   const rootDir = await autoDirHandle.getDirectoryHandle(rootName, { create: true });
@@ -10031,7 +10039,7 @@ async function multiRawSelectOutput() {
     multiRawOutputDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
     document.getElementById('multiRawOutputBtn').textContent = `✅ ${multiRawOutputDirHandle.name}`;
     document.getElementById('multiRawOutputInfo').style.display = 'block';
-    document.getElementById('multiRawOutputInfo').innerHTML = `💡 匯出到：<span style="color:var(--green);font-weight:600;">${escHtml(multiRawOutputDirHandle.name)}/${new Date().toISOString().slice(0,10)}_整合結果/</span>`;
+    document.getElementById('multiRawOutputInfo').innerHTML = `💡 匯出到：<span style="color:var(--green);font-weight:600;">${escHtml(multiRawOutputDirHandle.name)}/${localYmd()}_整合結果/</span>`;
     updateMultiRawStartBtn();
   } catch(e) { if (e.name !== 'AbortError') showToast('❌ ' + e.message); }
 }
@@ -10109,7 +10117,7 @@ async function startMultiRawMode() {
   // Step 4: Export
   updateProgress(70, '步驟 4/4：匯出到資料夾...');
   const resizeMax = parseInt(exportSize) || 0;
-  const rootName = `${new Date().toISOString().slice(0,10)}_整合結果`;
+  const rootName = `${localYmd()}_整合結果`;
   const rootDir = await multiRawOutputDirHandle.getDirectoryHandle(rootName, { create: true });
   let exported = 0;
   const allSelected = [];
@@ -10219,7 +10227,7 @@ async function mergeSelectOutput() {
     mergeOutputDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
     document.getElementById('mergeOutputBtn').textContent = `✅ ${mergeOutputDirHandle.name}`;
     document.getElementById('mergeOutputInfo').style.display = 'block';
-    document.getElementById('mergeOutputInfo').innerHTML = `💡 匯出到：<span style="color:var(--green);font-weight:600;">${escHtml(mergeOutputDirHandle.name)}/${new Date().toISOString().slice(0,10)}_整合結果/</span>`;
+    document.getElementById('mergeOutputInfo').innerHTML = `💡 匯出到：<span style="color:var(--green);font-weight:600;">${escHtml(mergeOutputDirHandle.name)}/${localYmd()}_整合結果/</span>`;
     updateMergeStartBtn();
   } catch(e) { if (e.name !== 'AbortError') showToast('❌ ' + e.message); }
 }
@@ -10249,7 +10257,7 @@ async function startMergeMode() {
   document.getElementById('progressArea').classList.add('show');
   updateProgress(0, '合併整合中...');
 
-  const rootName = `${new Date().toISOString().slice(0,10)}_整合結果`;
+  const rootName = `${localYmd()}_整合結果`;
   const rootDir = await mergeOutputDirHandle.getDirectoryHandle(rootName, { create: true });
   let totalFiles = 0, exported = 0;
   const allFiles = [];
@@ -10428,7 +10436,7 @@ async function exportToFolder() {
 
     const resizeMax = libMode ? libResizePref() : (parseInt(document.getElementById('exportResize').value) || 0);   // v149: 相簿庫有自己的尺寸
     const photographer = document.getElementById('photographerName').value.trim();
-    const dateStr = new Date().toISOString().slice(0, 10);
+    const dateStr = localYmd();
     const rootName = libMode ? (library.name || '相簿庫') : (photographer ? `${dateStr}_${photographer}` : dateStr);
 
     showExportProgress(`匯出到「${rootName}」...`, 0, '準備中');
@@ -10565,7 +10573,7 @@ async function exportZip(flat) {
 
   const resizeMax = parseInt(document.getElementById('exportResize').value) || 0;
   const photographer = document.getElementById('photographerName').value.trim();
-  const dateStr = new Date().toISOString().slice(0, 10);
+  const dateStr = localYmd();
   const rootPrefix = photographer ? `${dateStr}_${photographer}` : dateStr;
 
   const _ntRowsZ = {};
@@ -10585,6 +10593,7 @@ async function exportZip(flat) {
         fileData = await readFileAsArrayBuffer(p.file);
       }
 
+      fileName = String(fileName).replace(/[\\/:*?"<>|\u0000-\u001f]/g, '_').replace(/[. ]+$/, '') || `photo_${i + 1}.jpg`;   // 2026v51：Windows 解壓縮不能用的字元
       fileData = await tagPhotoData(fileData, fileName, photoTagsFor(_g)); ntCsvAdd(_ntRowsZ, folderPath, fileName, _g);
       zip.folder(folderPath).file(fileName, fileData);
       totalFiles++;
@@ -10749,7 +10758,7 @@ function exportCorrections() {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `修正記錄_${currentScenario}_${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `修正記錄_${currentScenario}_${localYmd()}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
 }
@@ -12588,7 +12597,7 @@ async function exportResultPack(mode) {
   document.getElementById('resultPackModal').classList.remove('show');
   if (typeof JSZip === 'undefined' && (mode === 'zip' || wantDocx)) { showToast('⚠️ JSZip 未載入，請確認網路後重試'); return; }
 
-  const dateStr = new Date().toISOString().slice(0, 10);
+  const dateStr = localYmd();
   const rootName = `成果包_${dateStr}`;
   let dirHandle = null, zip = null;
   if (mode === 'folder' && 'showDirectoryPicker' in window && !window._forceZip) {
@@ -12807,7 +12816,7 @@ async function importSchoolEvents(file) {
   const noM = list.filter(e => !e.m.length).length;
   const name = prompt(`讀到 ${list.length} 個活動${noM ? `（其中 ${noM} 個沒有填月份，只會出現在「學校活動」）` : ''}。\n這份清單是哪個學校的？`, '');
   if (name == null) return;
-  try { localStorage.setItem('schoolEventsCustom', JSON.stringify({ name: name.trim() || '自訂清單', at: new Date().toISOString().slice(0, 10), list })); } catch (e) { showToast(`❌ 存不進去：${e.message}`); return; }
+  try { localStorage.setItem('schoolEventsCustom', JSON.stringify({ name: name.trim() || '自訂清單', at: localYmd(), list })); } catch (e) { showToast(`❌ 存不進去：${e.message}`); return; }
   renderEventListSettings(); showToast(`✅ 已改用「${name.trim() || '自訂清單'}」的各月份常見活動（${list.length} 項）`);
 }
 function resetSchoolEvents() {
@@ -13532,7 +13541,7 @@ function libraryEntry(g, p, folder, fileName, photographer) {
     sy: groupSchoolYear(g).sy, category: libraryCategory(g), activity: g.name, topic: g.promoTopic || '',
     event: g.eventName || '', term: g.eventName ? ntTerm(g) : '', tags: (g.tags || []).join('、'),
     tier: photoTier(p), score: p.score ?? '', faces: p.faceCount ?? 0, detector: p.faceDetector || '', photographer: photographer || '',
-    exportedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    exportedAt: localStamp(19),
     kind: p.importKind || (p.importTag ? 'line' : 'camera'), scanned: 1,   // v130
     ...(p.gps ? { lat: p.gps.lat, lon: p.gps.lon } : {}),
   };
@@ -13801,7 +13810,7 @@ async function libraryIndexZip() {
   try { const hd = await root.getDirectoryHandle(LIB_HISTORY_DIR); for await (const [name, h] of hd.entries()) if (h.kind === 'file') { zip.file(`${LIB_HISTORY_DIR}/${name}`, await h.getFile()); n++; } } catch {}
   if (!n) { showToast('⚠️ 相簿庫裡還沒有索引'); return; }
   const blob = await zip.generateAsync({ type: 'blob' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `相簿庫索引_${library.name}_${new Date().toISOString().slice(0, 10)}.zip`; a.click();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `相簿庫索引_${library.name}_${localYmd()}.zip`; a.click();
   showToast(`📦 已下載 ${n} 個索引檔`);
 }
 function refreshBackupUi() {
@@ -14366,7 +14375,7 @@ function libNewAlbum(name) {
   const albums = _libIndex.albums = _libIndex.albums || [];
   const ex = albums.find(a => a.name === name); if (ex) return ex.id;
   const id = 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
-  albums.push({ id, name, created: new Date().toISOString().slice(0, 10) });
+  albums.push({ id, name, created: localYmd() });
   if (_libSel.size) { libAddSelToAlbum(id); return id; }
   libSaveSoon(); renderLibraryModal(); showToast(`📁 已建立「${name}」`);
   return id;
@@ -14530,7 +14539,7 @@ async function libraryImportFolders() {
   const byTop = new Map(); for (const x of todo) { const t = x.path.split('/')[0]; byTop.set(t, (byTop.get(t) || 0) + 1); }
   if (!confirm(`找到 ${todo.length} 張還沒收錄的照片：\n${[...byTop].slice(0, 8).map(([t, n]) => `　${t}/　${n} 張`).join('\n')}\n\n收錄後，相簿庫查得到（依活動、日期、地點、標籤…）。\n照片不會被搬動或改名；活動名稱用資料夾名稱，標籤從照片裡讀。`)) return;
   const pad = n => String(n).padStart(2, '0');
-  const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  const now = localStamp(19);
   const added = [];
   for (let i = 0; i < todo.length; i++) {
     const x = todo[i];
@@ -16012,7 +16021,7 @@ async function clipPreview() {
 posterLogoGet().catch(() => {});
 
 function libPackDl(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); }
-function libPackStamp() { return libPackDates().slice(0, 10) || new Date().toISOString().slice(0, 10); }
+function libPackStamp() { return libPackDates().slice(0, 10) || localYmd(); }
 // v136: 成果包 ZIP — 成果表.docx＋照片／＋拼貼.jpg＋照片說明.txt＋FB貼文.txt＋README.txt
 async function libPackZip() {
   libPackSync(); if (!_libPack) return;
@@ -16066,7 +16075,7 @@ async function libPackDocx() {
     const sub = `${unit}　${libPackDates()}　共 ${out.length} 張`;
     const blob = await buildDocx(_libPack.act, sub, out, _libPack.postInDoc && _libPack.post ? { title: '活動紀要', text: _libPack.post } : null);
     out.forEach(o => { if (o.canvas) { o.canvas.width = 1; o.canvas.height = 1; } });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `成果表_${safeName(_libPack.act)}_${(libPackDates().slice(0, 10) || new Date().toISOString().slice(0, 10))}.docx`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `成果表_${safeName(_libPack.act)}_${(libPackDates().slice(0, 10) || localYmd())}.docx`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
     showToast(`📑 成果表已下載（${out.length} 張）${miss.length ? `；${miss.length} 張找不到檔案：${miss.slice(0, 3).join('、')}` : ''}`);
   } catch (e) { showToast(`❌ 成果表沒做成：${e.message || e}`); }
   finally { libPackEnd(); }
@@ -16208,7 +16217,7 @@ async function libTrashEntries(ents, label, extraBase) {
     }
     const gone = new Set(moved.map(e => e.key));
     _libIndex.entries = _libIndex.entries.filter(e => !gone.has(e.key));
-    if (moved.length) (_libIndex.trash = _libIndex.trash || []).unshift({ stamp, label, at: new Date().toISOString().slice(0, 16).replace('T', ' '), entries: moved });
+    if (moved.length) (_libIndex.trash = _libIndex.trash || []).unshift({ stamp, label, at: localStamp(16), entries: moved });
     for (const p of new Set(moved.map(e => e.path))) { await libWriteTagCsv(root, p, _libIndex.entries); await libRemoveIfEmpty(root, p); }
     if (extraBase) await libRemoveIfEmpty(root, extraBase);
     await libraryIndexSave();
@@ -16379,7 +16388,7 @@ function libraryExportCsv() {
   const val = (e, k) => k === 'tier' ? (e.tier === 'record' ? '紀錄' : '精選') : k === '_fav' ? (e.fav ? '★' : '') : k === '_albums' ? libAlbumNames(e)
     : k === '_place' ? libPlaceLabel(e) : k === '_kind' ? (KIND[e.kind] || '') : e[k];
   const csv = '\uFEFF' + cols.map(c => c[0]).join(',') + '\n' + rows.map(e => cols.map(c => esc(val(e, c[1]))).join(',')).join('\n');
-  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = `相簿庫_${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = `相簿庫_${localYmd()}.csv`; a.click();
   showToast(`📄 已匯出 ${rows.length} 筆`);
 }
 
@@ -16746,14 +16755,18 @@ function recNormTime(v, withSec) {
 }
 function recDurTxt(sec) { sec = Math.max(0, Math.round(sec)); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60; return h ? `${h}:${rp2(m)}:${rp2(s)}` : `${m}:${rp2(s)}`; }
 function recUid() { return Math.random().toString(36).slice(2, 9); }
+// 2026v51 資安：分享連結、匯入檔、本機存檔都可能被改過 → 每一欄先確認型別（時間不是文字就當沒記錄），不然記錄器會一直打不開
+const recStr = (v, max = 60) => (typeof v === 'string' || typeof v === 'number') ? String(v).slice(0, max) : '';
+const recTime = v => (typeof v === 'string' && v.length <= 40 && /\d{1,2}:\d{2}/.test(v)) ? v : null;
 function recMkItem(o) {
-  const it = { id: o.id || recUid(), name: String(o.name || '項目').slice(0, 60), exp: o.exp || '', expEnd: o.expEnd || '', start: o.start || null, end: o.end || null, subIdx: o.subIdx || 0, skip: !!o.skip };
-  if (o.subs && o.subs.length) it.subs = o.subs.map(s => typeof s === 'string' ? { name: s, start: null, end: null } : { name: s.name, start: s.start || null, end: s.end || null });
+  o = (o && typeof o === 'object') ? o : {};
+  const it = { id: recStr(o.id, 40) || recUid(), name: recStr(o.name) || '項目', exp: recStr(o.exp, 20), expEnd: recStr(o.expEnd, 20), start: recTime(o.start), end: recTime(o.end), subIdx: Number.isInteger(o.subIdx) && o.subIdx >= 0 ? o.subIdx : 0, skip: !!o.skip };
+  if (Array.isArray(o.subs) && o.subs.length) it.subs = o.subs.filter(s => s != null).map(s => (typeof s === 'string' || typeof s === 'number') ? { name: String(s).slice(0, 60), start: null, end: null } : { name: recStr(s.name) || '小項', start: recTime(s.start), end: recTime(s.end) });
   return it;
 }
 function recMigrate(j) {
-  const r = { v: 2, name: j.name || '', date: j.date || recToday(), items: [] };
-  r.items = (j.items || []).map(it => recMkItem({ ...it, exp: it.exp != null ? it.exp : (it.expected || '') }));
+  const r = { v: 2, name: recStr(j.name, 80), date: /^\d{4}-\d{2}-\d{2}$/.test(j.date) ? j.date : recToday(), items: [] };
+  r.items = (Array.isArray(j.items) ? j.items : []).filter(it => it && typeof it === 'object').map(it => recMkItem({ ...it, exp: it.exp != null ? it.exp : (it.expected || '') }));
   return r;
 }
 function recLoad() {
@@ -17326,7 +17339,8 @@ function recCompact(r) {
   return { n: r.name || '', d: r.date || recToday(), i: r.items.map(it => [it.name, it.exp || '', it.expEnd || '', it.start || '', it.end || '', (it.subs || []).map(s => [s.name, s.start || '', s.end || '']), it.skip ? 1 : 0, it.subIdx || 0]) };
 }
 function recFromCompact(c) {
-  return { v: 2, name: c.n || '', date: c.d || recToday(), items: (c.i || []).map(a => recMkItem({ name: a[0], exp: a[1], expEnd: a[2], start: a[3] || null, end: a[4] || null, subs: (a[5] || []).map(s => ({ name: s[0], start: s[1] || null, end: s[2] || null })), skip: !!a[6], subIdx: a[7] || 0 })) };
+  c = (c && typeof c === 'object') ? c : {};
+  return { v: 2, name: recStr(c.n, 80), date: /^\d{4}-\d{2}-\d{2}$/.test(c.d) ? c.d : recToday(), items: (Array.isArray(c.i) ? c.i : []).filter(Array.isArray).map(a => recMkItem({ name: a[0], exp: a[1], expEnd: a[2], start: a[3] || null, end: a[4] || null, subs: (Array.isArray(a[5]) ? a[5] : []).filter(Array.isArray).map(s => ({ name: s[0], start: s[1] || null, end: s[2] || null })), skip: !!a[6], subIdx: a[7] || 0 })) };
 }
 const recB64 = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const recUnB64 = s => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
