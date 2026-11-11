@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v52 (2026-11-11)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v53 (2026-11-11)　（原名：AI 照片篩選器）
+  2026v53 (2026-11-11, build v210): 🏃 運動會：身體被切掉的不再入選 — 新增「身體完整度」判斷（頭頂被切、臉在畫面邊緣被切、只拍到頭、身體一半在畫面外）→ 淘汰，
+                                   不會被「單張一律保留」救回；連拍組改挑身體完整的那張；沒拍到臉的只放 📁紀錄、不進 ⭐精選；運動會分析時自動載入 AI 人臉偵測（判斷需要真的人臉位置）
   2026v52 (2026-11-11, build v209): 運動會預設改成老師調好的設定 — 太相似：幾秒內 30 → 2 秒（欄位最小值 5 → 1 秒）
   2026v51 (2026-11-11, build v208): 實機與資安測試修正 — 日期改台灣時間（早上 8 點前不再算成前一天）；沒拍攝時間的照片多時紅色提醒改用原始檔；
                                    記錄器分享連結型別檢查（壞連結不再讓記錄器打不開）；整理記錄標籤格式容錯；ZIP 檔名去掉 Windows 不能用的字元；加圖文操作說明連結
@@ -246,7 +248,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v52 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v53 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3243,7 +3245,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v52 · 2026-11-11</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v53 · 2026-11-11</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3287,9 +3289,9 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><th>連線</th><th>何時</th><th>下載什麼</th></tr>
         <tr><td>本工具的網站（例如 Netlify 上的網址）</td><td>用網站版開啟時</td><td>工具本身（約 0.3 MB）與圖示；網站主機會有一般的存取紀錄（IP、時間），不含照片。用 file:// 直接開檔案時沒有這一項</td></tr>
         <tr><td>fonts.googleapis.com</td><td>每次開啟網頁</td><td>中文字型（Google 會看到你的 IP，不含照片）</td></tr>
-        <tr><td>cdn.jsdelivr.net</td><td>每次開啟網頁；開啟 AI 人臉／勾 128 維特徵／HEIC 轉檔／製作回顧短片時</td><td>JSZip（壓縮 ZIP 用，MIT）；onnxruntime-web（MIT）、face-api.js（MIT）、heic2any；mp4-muxer（MIT，只在製作 🎬 回顧短片時載入）。<b>都比對 SRI 雜湊</b>，被改過就不執行</td></tr>
+        <tr><td>cdn.jsdelivr.net</td><td>每次開啟網頁；開啟 AI 人臉（運動會分析時自動開）／勾 128 維特徵／HEIC 轉檔／製作回顧短片時</td><td>JSZip（壓縮 ZIP 用，MIT）；onnxruntime-web（MIT）、face-api.js（MIT）、heic2any；mp4-muxer（MIT，只在製作 🎬 回顧短片時載入）。<b>都比對 SRI 雜湊</b>，被改過就不執行</td></tr>
         <tr><td>網站本身 <code>audio/bgm/</code>；單檔版改用 cdn.jsdelivr.net/gh/…/pickupphoto@ea45f37a10a080d4fd8854200ebb08a33d84d9e4/audio/bgm/</td><td>回顧短片選了內建配樂，按 🔊 試聽或 🎬 製作時</td><td>只<b>下載</b>那一首配樂（約 1.2 MB，網址裡只有曲目代號），不送出任何資料。10 首都是作者自己聲明公眾領域／CC0 的音樂（Kevin MacLeod、Bryan Teoh，出自 FreePD.com）。抓回來比對 SHA-256，被改過就不用。沒網路時請用「自己選檔案」</td></tr>
-        <tr><td>media.githubusercontent.com</td><td>開啟 AI 人臉時</td><td>YuNet 人臉模型（MIT，比對 SHA-256 才使用）</td></tr>
+        <tr><td>media.githubusercontent.com</td><td>開啟 AI 人臉時（運動會分析時自動開，用來判斷身體有沒有被切掉）</td><td>YuNet 人臉模型（MIT，比對 SHA-256 才使用）</td></tr>
         <tr><td>accounts.google.com、googleapis.com</td><td>按「同步到 Google Drive」時</td><td>Google 登入；權限只有 drive.file（只看得到本工具建立的檔案）</td></tr>
       </table>
 
@@ -3343,7 +3345,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v52 程式逐項清點（2026-11-11）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v53 程式逐項清點（2026-11-11）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3770,7 +3772,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v52（2026-11-11）。</span><br>
+        <span style="font-size:11px;">本說明對應 2026v53（2026-11-11）。</span><br>
         <a href="guide.html" target="_blank" rel="noopener" onclick="if (!/^https?:$/.test(location.protocol)) { event.preventDefault(); showToast('📖 圖文操作說明在校園拾光網站上：網址後面加 /guide.html'); }" style="display:inline-block;margin-top:6px;font-weight:700;color:var(--accent);">📖 看圖文操作說明（每一步都有畫面）→</a>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
@@ -4375,11 +4377,11 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v52';
+const APP_VERSION = '2026v53';
 // 2026v51：本機時間的日期／時間字串（toISOString 是世界標準時間，台灣早上 8 點前會變成前一天）
 function localYmd(d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
 function localStamp(len = 19, d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${localYmd(d)} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`.slice(0, len); }
-const APP_BUILD = 'v209';   // 內部建置號（補丁與測試用）
+const APP_BUILD = 'v210';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -5976,6 +5978,14 @@ async function startAnalysis(opts = {}) {
   memMonLogEvent('analysis_start', `🚀 開始分析 ${photos.length} 張照片`);
   let errorCount = 0;
   try {
+    // 2026v53：運動會要判斷「人有沒有被切掉」，需要真的人臉位置 → 自動載入 AI 人臉偵測（只下載模型，不上傳照片；失敗就照舊用膚色偵測）
+    if (currentScenario === 'sports' && !faceApiState.enabled) {
+      try {
+        updateProgress(1, '🏃 運動會：載入 AI 人臉偵測，用來判斷身體有沒有被切掉（第一次約 11 MB，只下載模型、不上傳照片）…');
+        if (await ensureFaceApiReady((pct, t) => updateProgress(Math.max(1, Math.min(4, Math.round(pct / 25))), '🏃 ' + (t || '載入 AI 人臉偵測…')))) { faceApiState.enabled = true; try { updateFaceApiButton(); } catch {} }
+        else showToast('⚠️ AI 人臉偵測載入失敗，這次無法判斷身體有沒有被切掉（其他照常）');
+      } catch (e) { console.warn('sports auto face', e); }
+    }
     ({ errorCount } = await runAnalysisPipeline({
       onProgress: (pct, msg) => updateProgress(pct, msg),
       timeGroupMode: opts.timeGroupMode || null,
@@ -6303,6 +6313,7 @@ async function analyzePhoto(p, preDecoded) {  // ── EXIF: Read FIRST (before
   p.focusMismatchPenalty = 0;
   p.blurrySubjectPenalty = 0;
 
+  { const bc0 = detectBodyCut(cw, ch, f.regions, f.detector); p.bodyCutPenalty = bc0.pen; p.bodyCutWhy = bc0.why; p.bodyCutNoFace = !!bc0.noFace; }   // 2026v53（沒臉的也要標）
   if (f.regions.length > 0) {
     p.expressionScore = computeExpression(data, cw, ch, f.regions);
     const totalPixels = cw * ch;
@@ -6461,6 +6472,26 @@ function detectForegroundObstruction(data, w, h, faceRegions) {
 // Checks if the main face is too close to edges, cut off, or too small
 // Also detects "no usable face" — person visible but face not in frame
 // Returns penalty 0-30
+// 2026v53：身體完整度（運動會用）— 只在真的 AI 人臉偵測（YuNet／face-api）時判斷；膚色偵測的區塊可能是手腳，不可靠
+// 用最大的人臉推估肩膀到腰的位置：頭頂被切、臉被畫面邊緣切到、臉在最下面（身體在畫面外）、身體一半在畫面左右外 → 扣分
+function detectBodyCut(w, h, regions, detector) {
+  if (detector !== 'yunet' && detector !== 'faceapi') return { pen: 0, why: '' };
+  if (!regions || !regions.length) return { pen: 0, why: '沒拍到臉（可能只拍到身體一部分或背影）', noFace: true };
+  const m = regions.reduce((a, b) => (a.area || 0) > (b.area || 0) ? a : b);
+  const fw = m.maxX - m.minX, fh = m.maxY - m.minY, cx = (m.minX + m.maxX) / 2;
+  if (!(fw > 0 && fh > 0)) return { pen: 0, why: '' };
+  const why = []; let pen = 0;
+  if (m.minY <= h * 0.01) { pen += 30; why.push('頭頂被切掉'); }
+  if (m.minX <= w * 0.01 || m.maxX >= w * 0.99) { pen += 30; why.push('臉被畫面邊緣切到'); }
+  if (fh < h * 0.28) {                                   // 臉部特寫不算（特寫本來就看不到身體）
+    const tTop = m.maxY, tBot = m.maxY + fh * 2.5;       // 下巴 → 腰
+    if (Math.max(0, tBot - h) / (tBot - tTop) >= 0.7) { pen += 30; why.push('只拍到頭，身體在畫面外'); }
+    const tl = cx - fw * 1.6, tr = cx + fw * 1.6;        // 肩膀寬度
+    if ((Math.max(0, -tl) + Math.max(0, tr - w)) / (tr - tl) >= 0.45) { pen += 25; why.push('身體有一半在畫面外'); }
+  }
+  return { pen: Math.min(40, pen), why: why.join('、') };
+}
+
 function detectFaceTruncation(w, h, faceRegions) {
   if (!faceRegions.length) return 10; // No face at all → mild penalty (was 20)
 
@@ -8293,8 +8324,8 @@ function detectBurstsAndDedup() {
       const aColor = a.colorScore || 50, bColor = b.colorScore || 50;
       if (currentScenario === 'sports') {
         const ba = Math.max(a.bodySharpness, a.faceClarity), bb = Math.max(b.bodySharpness, b.faceClarity);
-        sa = a.faceProminence * 0.28 + ba * 0.28 + a.sharpness * 0.22 + a.expressionScore * 0.08 + a.exposure * 0.04 + aComp * 0.06 + aColor * 0.04;
-        sb = b.faceProminence * 0.28 + bb * 0.28 + b.sharpness * 0.22 + b.expressionScore * 0.08 + b.exposure * 0.04 + bComp * 0.06 + bColor * 0.04;
+        sa = a.faceProminence * 0.28 + ba * 0.28 + a.sharpness * 0.22 + a.expressionScore * 0.08 + a.exposure * 0.04 + aComp * 0.06 + aColor * 0.04 - (a.bodyCutPenalty || 0) * 3;   // 2026v53：身體被切掉的排後面
+        sb = b.faceProminence * 0.28 + bb * 0.28 + b.sharpness * 0.22 + b.expressionScore * 0.08 + b.exposure * 0.04 + bComp * 0.06 + bColor * 0.04 - (b.bodyCutPenalty || 0) * 3;
       } else if (currentScenario === 'school_event') {
         // 學校活動：人臉清晰25% + 主體20% + 表情15% + 構圖15% + 銳利10% + 色彩10% + 曝光5%
         sa = a.faceClarity * 0.25 + a.faceProminence * 0.20 + a.expressionScore * 0.15 + aComp * 0.15 + a.sharpness * 0.10 + aColor * 0.10 + a.exposure * 0.05;
@@ -8826,6 +8857,7 @@ function scoreAndSelect() {
     p.prominenceClarityPenalty = pcPen;
 
     rawScore = rawScore - obPen - ftPen - fmPen - bsPen - pcPen - ffPen - sbPen;
+    if (currentScenario === 'sports') rawScore -= (p.bodyCutPenalty || 0);   // 2026v53 身體被切掉
 
     p.score = Math.round(Math.min(100, Math.max(0, rawScore)));
     p.stars = Math.min(5, Math.max(0, Math.round(p.score / 20 * 2) / 2));
@@ -8913,9 +8945,13 @@ function scoreAndSelect() {
       reason = `✅ 正常入選（分數 ${p.score} ≥ ${calibration.passScore}）`;
     }
 
+    // 2026v53 運動會：身體被切掉 → 淘汰（不會被單張保留救回）
+    const bodyCut = scenario === 'sports' && (p.bodyCutPenalty || 0) >= 25;
+    if (bodyCut) { pass = false; reason = `✂️ 身體被切掉（${p.bodyCutWhy}）`; }
     // v112 單張保護：沒有連拍、沒有相似照 → 重要紀錄，除非拍壞，否則保留
     p.tier = pass ? 'pick' : 'drop';
-    if (!pass && settings.keepSingles && isSinglePhoto(p)) {
+    if (pass && scenario === 'sports' && p.bodyCutNoFace) { p.tier = 'record'; reason = `📁 紀錄（${p.bodyCutWhy}；不放進精選）`; }   // 2026v53
+    if (!pass && !bodyCut && settings.keepSingles && isSinglePhoto(p)) {
       const hard = singleHardDefect(p, sharpT);
       if (!hard) { pass = true; p.tier = 'record'; reason = `📁 單張保留（重要紀錄；${reason.replace(/^[^\s]+\s*/, '')}）`; }
       else reason = `🗑 建議刪除（${hard}）`;
@@ -17698,7 +17734,7 @@ document.addEventListener('click', e => { if (e.target.closest?.('#advancedPanel
 
 // Short, human reason label for a rejected photo (derived from the existing selectReason)
 const REJECT_TAGS = {
-  manual: '✋ 你移除的', burst: '📸 連拍有更好的', blur: '🌫️ 模糊', shake: '🌫️ 晃到', eyes: '😑 閉眼', cut: '✂️ 切到臉',
+  manual: '✋ 你移除的', burst: '📸 連拍有更好的', blur: '🌫️ 模糊', shake: '🌫️ 晃到', eyes: '😑 閉眼', cut: '✂️ 切到臉', body: '✂️ 身體被切掉',
   block: '🙈 被擋住', focus: '🎯 失焦', ratio: '📊 超出保留比例', low: '📉 分數低', quality: '⚠️ 品質',
 };
 function rejectTag(p) {
@@ -17709,6 +17745,7 @@ function rejectTag(p) {
   else if (/模糊淘汰|主體模糊/.test(r)) k = 'blur';
   else if (/閉眼/.test(r)) k = 'eyes';
   else if (/人臉截斷/.test(r)) k = 'cut';
+  else if (/身體被切掉/.test(r)) k = 'body';
   else if (/前景遮擋/.test(r)) k = 'block';
   else if (/快門太慢/.test(r)) k = 'shake';
   else if (/對焦偏移|前景失焦|大主體糊臉/.test(r)) k = 'focus';
