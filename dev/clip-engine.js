@@ -21,16 +21,12 @@ const CLIP_MODEL_FILES = {
   'onnx/model_fp16.onnx': [377377730, '0fad978faa89b85fda53a83a4c202116a9eb87c8f9723fb4d85e4483efbce4b2'],
 };
 const CLIP_CACHE = 'pickup-clip-v1';
-const clipState = { loaded: false, loading: null, error: '', device: '', dtype: '', T: null, model: null, tok: null, proc: null, dummyText: null, blankPx: null, textMemo: new Map() };
+const clipState = { loaded: false, loading: null, error: '', T: null, model: null, gpuModel: null, gpuError: '', tok: null, proc: null, dummyText: null, blankPx: null, textMemo: new Map() };
 
-// 用顯示卡（WebGPU＋半精度）還是 CPU（小模型）
-async function clipPlan() {
-  if (clipState.plan) return clipState.plan;
-  let gpu = false;
-  try { if (navigator.gpu && localStorage.getItem('clipPrefer') !== 'small') { const a = await navigator.gpu.requestAdapter(); gpu = !!(a && a.features && a.features.has('shader-f16')); } } catch (e) {}
-  clipState.plan = gpu ? { device: 'webgpu', dtype: 'fp16', file: 'onnx/model_fp16.onnx', mb: 377, label: '顯示卡（快，一張約 0.05～0.2 秒）' }
-                       : { device: 'wasm', dtype: 'q8', file: 'onnx/model_quantized.onnx', mb: 191, label: 'CPU（一張約 0.5～1 秒）' };
-  return clipState.plan;
+// 文字一定用 CPU 小模型（實測：顯示卡半精度版的「文字」部分算錯，圖的部分正確）
+// 顯示卡加速（選用）：另外下載半精度模型，只拿來算照片，比對跟小模型結果一致才使用
+async function clipGpuAvailable() {
+  try { if (!navigator.gpu) return false; const a = await navigator.gpu.requestAdapter(); return !!(a && a.features && a.features.has('shader-f16')); } catch (e) { return false; }
 }
 async function clipCachedNames() {
   try { const c = await caches.open(CLIP_CACHE); return new Set((await c.keys()).map(r => r.url)); } catch (e) { return new Set(); }
@@ -58,18 +54,11 @@ async function clipEnsure(pc = () => {}) {
   if (clipState.loading) return clipState.loading;
   clipState.loading = (async () => {
     try {
-      let plan = await clipPlan();
-      try { await clipLoadOnce(plan, pc); }
-      catch (e) {
-        if (plan.device !== 'webgpu') throw e;
-        console.warn('clip webgpu failed → cpu', e);   // 顯示卡不行 → 改 CPU 小模型
-        try { localStorage.setItem('clipPrefer', 'small'); } catch (e2) {}
-        clipState.plan = null; plan = await clipPlan();
-        await clipLoadOnce(plan, pc);
-      }
+      await clipLoadOnce({ device: 'wasm', dtype: 'q8', file: 'onnx/model_quantized.onnx', mb: 191 }, pc);
       clipState.loaded = true; clipState.error = '';
       pc(100, '看圖模型準備好了');
-      try { memMonLogEvent('clip_ready', `🔎 看圖模型：${plan.device} ${plan.dtype}`); } catch (e) {}
+      try { memMonLogEvent('clip_ready', '🔎 看圖模型：CPU q8'); } catch (e) {}
+      if (localStorage.getItem('clipGpu') === '1') clipGpuEnable(() => {}).catch(() => {});
       return true;
     } catch (e) {
       clipState.error = (e && e.message) || String(e); console.warn('clip load', e);
@@ -77,6 +66,35 @@ async function clipEnsure(pc = () => {}) {
     } finally { clipState.loading = null; }
   })();
   return clipState.loading;
+}
+// ⚡ 顯示卡加速：多下載 377 MB 半精度模型，只用來算照片；先跟 CPU 小模型比對（要幾乎一樣）才採用
+async function clipGpuEnable(pc = () => {}) {
+  if (clipState.gpuModel) return true;
+  if (!clipState.loaded || !(await clipGpuAvailable())) return false;
+  const MB = n => (n / 1048576).toFixed(0), f = 'onnx/model_fp16.onnx';
+  try {
+    pc(5, '下載顯示卡加速模型（約 377 MB，只下載一次）…');
+    const buf = await clipFetchVerified(CLIP_MODEL_BASE + f, CLIP_MODEL_FILES[f], (g, t) => pc(5 + Math.round(g / t * 85), `下載顯示卡加速模型 ${MB(g)} / ${MB(t)} MB…`));
+    const prev = clipState.T.env.customCache;
+    clipState.T.env.customCache = { match: async k => { const u = typeof k === 'string' ? k : k && k.url; if (u === CLIP_MODEL_BASE + f) return new Response(buf.slice(0)); return prev.match(k); }, put: async () => {} };
+    pc(92, '初始化顯示卡…');
+    const m = await clipState.T.ChineseCLIPModel.from_pretrained(CLIP_MODEL_ID, { revision: CLIP_MODEL_REV, dtype: 'fp16', device: 'webgpu' });
+    // 比對：同一張測試圖，顯示卡跟 CPU 算出來要幾乎一樣
+    const c = document.createElement('canvas'); c.width = 224; c.height = 224; const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 224, 224); g.addColorStop(0, '#e33'); g.addColorStop(0.5, '#3a3'); g.addColorStop(1, '#33e'); x.fillStyle = g; x.fillRect(0, 0, 224, 224);
+    x.fillStyle = '#fff'; x.beginPath(); x.arc(112, 90, 40, 0, 7); x.fill();
+    const px = await clipState.proc(clipState.T.RawImage.fromCanvas(c));
+    const a = clipNorm((await clipState.model({ ...clipState.dummyText, ...px })).image_embeds.data);
+    const b = clipNorm((await m({ ...clipState.dummyText, ...px })).image_embeds.data);
+    let dot = 0; for (let i = 0; i < a.length; i++) dot += a[i] * b[i];
+    if (!(dot > 0.95)) throw new Error('顯示卡算出來的結果跟 CPU 不一致（' + dot.toFixed(2) + '），不使用');
+    clipState.gpuModel = m; localStorage.setItem('clipGpu', '1');
+    pc(100, '⚡ 顯示卡加速已開啟');
+    return true;
+  } catch (e) {
+    console.warn('clip gpu', e); localStorage.removeItem('clipGpu'); clipState.gpuError = (e && e.message) || String(e);
+    return false;
+  }
 }
 async function clipLoadOnce(plan, pc) {
   const MB = n => (n / 1048576).toFixed(0);
@@ -114,7 +132,6 @@ async function clipLoadOnce(plan, pc) {
   clipState.proc = await T.AutoProcessor.from_pretrained(CLIP_MODEL_ID, opt);
   clipState.tok = await T.AutoTokenizer.from_pretrained(CLIP_MODEL_ID, opt);
   clipState.model = await T.ChineseCLIPModel.from_pretrained(CLIP_MODEL_ID, { ...opt, dtype: plan.dtype, device: plan.device });
-  clipState.device = plan.device; clipState.dtype = plan.dtype;
   clipState.dummyText = clipState.tok(['照片'], { padding: true, truncation: true });
   clipState.blankPx = await clipState.proc(new T.RawImage(new Uint8ClampedArray(224 * 224 * 3).fill(128), 224, 224, 3));
   clipState.textMemo.clear();
@@ -122,11 +139,11 @@ async function clipLoadOnce(plan, pc) {
   const chk = await clipEmbedPixels(clipState.blankPx);
   const [ta, tb] = await clipEmbedTexts(['一隻貓', '一張收據']);
   let dot = 0; for (let i = 0; i < ta.length; i++) dot += ta[i] * tb[i];
-  if (!chk || [...chk].some(v => !Number.isFinite(v)) || !(dot < 0.98)) throw new Error('看圖模型算出來的數字不正常（' + plan.device + '）');
+  if (!chk || [...chk].some(v => !Number.isFinite(v)) || !(dot < 0.98)) throw new Error('看圖模型算出來的數字不正常');
 }
 function clipNorm(v) { let s = 0; for (let i = 0; i < v.length; i++) s += v[i] * v[i]; s = Math.sqrt(s) || 1; const o = new Float32Array(v.length); for (let i = 0; i < v.length; i++) o[i] = v[i] / s; return o; }
 async function clipEmbedPixels(px) {
-  const out = await clipState.model({ ...clipState.dummyText, ...px });
+  const out = await (clipState.gpuModel || clipState.model)({ ...clipState.dummyText, ...px });
   return clipNorm(out.image_embeds.data);
 }
 // 一張照片 → 512 個數字（先縮小再算，快很多）
