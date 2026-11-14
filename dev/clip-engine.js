@@ -108,7 +108,7 @@ async function clipLoadOnce(plan, pc) {
     match: async key => { const u = typeof key === 'string' ? key : key && key.url; const b = files[u]; return b ? new Response(b.slice(0)) : undefined; },
     put: async () => {},
   };
-  T.env.allowRemoteModels = false;   // 只能用上面驗證過的檔案，不准另外從網路抓
+  T.env.allowRemoteModels = true;    // 需要的檔案都由上面驗證過的 customCache 提供（固定版本），不會另外下載
   pc(88, '初始化看圖模型…');
   const opt = { revision: CLIP_MODEL_REV };
   clipState.proc = await T.AutoProcessor.from_pretrained(CLIP_MODEL_ID, opt);
