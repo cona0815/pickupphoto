@@ -8,6 +8,8 @@
 | YuNet face_detection_yunet_2023mar（OpenCV Zoo） | 人臉偵測模型 | MIT | 從 GitHub 下載，比對 SHA-256 |
 | heic2any 0.0.4 | HEIC 轉檔 | MIT；內含 libheif／libde265（LGPL-3.0） | jsDelivr 載入原始檔，未修改、未併入本專案程式碼 |
 | mp4-muxer 5.2.2 | 把影片裝成 MP4 | MIT | jsDelivr 載入，SRI 鎖定，未修改 |
+| transformers.js 3.8.1（@huggingface/transformers，含 onnxruntime-web） | 相簿庫「AI 找照片」跑看圖模型 | Apache-2.0（onnxruntime-web：MIT） | 按「下載看圖模型」才從 jsDelivr 下載，比對 SHA-256，未修改 |
+| Chinese-CLIP ViT-B/16（OFA-Sys；Xenova 轉成 ONNX 版，固定版本 f269048） | 看圖模型（打字找照片、分類） | MIT（OFA-Sys/Chinese-CLIP） | 按「下載看圖模型」才從 Hugging Face 下載，比對 SHA-256，未修改 |
 | taiwan-atlas 鄉鎮市區界線 | 離線判斷地名 | MIT（資料來源：內政部開放資料） | 內嵌 |
 | Noto Sans TC、JetBrains Mono | 字型 | SIL Open Font License 1.1 | 由 Google Fonts 載入 |
 | OpenStreetMap Nominatim | 查地標名稱（按了才查） | 資料 ODbL，© OpenStreetMap 貢獻者 | 畫面上有標示出處 |

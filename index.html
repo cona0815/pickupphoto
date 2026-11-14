@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v53 (2026-11-11)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v54 (2026-11-14)　（原名：AI 照片篩選器）
+  2026v54 (2026-11-14, build v211): 🔎 相簿庫「AI 找照片」— 本機看圖模型（Chinese-CLIP，MIT；transformers.js 3.8.1，Apache-2.0）：
+                                   打字找照片（大隊接力、頒獎合照、營養午餐…）、老師常用 15 類自動分類＋自己加類別、自動分群並建議名稱；
+                                   照片不上傳，只下載固定版本程式與模型（比對 SHA-256）；特徵存在瀏覽器（IndexedDB pickupClip）；有顯示卡可選加速
   2026v53 (2026-11-11, build v210): 🏃 運動會：身體被切掉的不再入選 — 新增「身體完整度」判斷（頭頂被切、臉在畫面邊緣被切、只拍到頭、身體一半在畫面外）→ 淘汰，
                                    不會被「單張一律保留」救回；連拍組改挑身體完整的那張；沒拍到臉的只放 📁紀錄、不進 ⭐精選；運動會分析時自動載入 AI 人臉偵測（判斷需要真的人臉位置）
   2026v52 (2026-11-11, build v209): 運動會預設改成老師調好的設定 — 太相似：幾秒內 30 → 2 秒（欄位最小值 5 → 1 秒）
@@ -240,7 +243,7 @@
 <!-- 2026v25 資安：CSP — 這個網頁只准連到下面這些網站（其他網址一律被瀏覽器擋下）；不准 <object>、<base>、表單送出。
      'unsafe-inline'：單一 HTML 檔，程式寫在頁面裡；'unsafe-eval'：HEIC 轉檔函式庫 heic2any（libheif）在背景執行緒用到，拿掉 HEIC 就轉不了；
      blob:：AI 人臉引擎的 .mjs 先比對指紋再從記憶體載入。2026v27 起連線收緊到「路徑」（只准 Gemini 產生內容、雲端硬碟檔案 API…） -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net/npm/jszip@3.10.1/ https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/npm/heic2any@0.0.4/ https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/ https://accounts.google.com/gsi/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@ea45f37a10a080d4fd8854200ebb08a33d84d9e4/audio/bgm/ https://media.githubusercontent.com/media/opencv/opencv_zoo/ https://generativelanguage.googleapis.com/v1beta/models/ https://www.googleapis.com/drive/v3/files https://www.googleapis.com/upload/drive/v3/files https://www.googleapis.com/upload/drive/v3/files/ https://oauth2.googleapis.com/revoke https://accounts.google.com/gsi/ https://nominatim.openstreetmap.org/reverse; worker-src 'self' blob:; frame-src 'self' blob: https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net/npm/jszip@3.10.1/ https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/npm/heic2any@0.0.4/ https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/ https://accounts.google.com/gsi/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@ea45f37a10a080d4fd8854200ebb08a33d84d9e4/audio/bgm/ https://media.githubusercontent.com/media/opencv/opencv_zoo/ https://generativelanguage.googleapis.com/v1beta/models/ https://www.googleapis.com/drive/v3/files https://www.googleapis.com/upload/drive/v3/files https://www.googleapis.com/upload/drive/v3/files/ https://oauth2.googleapis.com/revoke https://accounts.google.com/gsi/ https://nominatim.openstreetmap.org/reverse https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/ https://huggingface.co/Xenova/chinese-clip-vit-base-patch16/ https://*.hf.co https://*.huggingface.co; worker-src 'self' blob:; frame-src 'self' blob: https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- 2026v4: PWA（放在網站上時可以安裝成 App） -->
 <link rel="manifest" href="manifest.webmanifest">
@@ -248,7 +251,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v53 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v54 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2406,6 +2409,20 @@
   .lib-vh { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; font-size: 13px; }
   .lib-vh .t { font-weight: 700; font-size: 15px; color: var(--text); }
   .lib-vh .n { font-size: 11.5px; color: var(--text-dim); }
+  .clip-panel { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+  .clip-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .clip-bar { height: 10px; border-radius: 6px; background: rgba(255,255,255,0.1); overflow: hidden; flex: 1; min-width: 160px; }
+  .clip-bar > div { height: 100%; background: linear-gradient(90deg, #ff9a52, #ffd36e); transition: width .3s; }
+  .clip-msg { font-size: 12px; color: var(--text-dim); }
+  .clip-sub { font-size: 11px; color: var(--text-dim); }
+  .clip-err { color: var(--red); font-size: 12px; }
+  .clip-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .clip-chip { border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); color: var(--text); border-radius: 999px; padding: 4px 11px; font-size: 12.5px; cursor: pointer; }
+  .clip-chip b { color: var(--accent); margin-left: 3px; font-weight: 700; }
+  .clip-chip.on { background: var(--accent); color: #1a1020; border-color: var(--accent); }
+  .clip-chip.on b { color: #1a1020; }
+  .clip-chip.add { border-style: dashed; color: var(--text-dim); }
+  .clip-chip .x { margin-left: 6px; opacity: .6; }
   .lib-note { font-size: 11px; color: var(--text-dim); line-height: 1.6; background: rgba(255,255,255,0.04); border-radius: 10px; padding: 6px 10px; margin-bottom: 8px; }
   .lib-selbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; min-height: 30px; margin-bottom: 6px; color: var(--text-dim); }
   .lib-selbar.on { background: rgba(255,138,76,0.12); border: 1px solid rgba(255,138,76,0.35); border-radius: 10px; padding: 4px 8px; color: var(--text); }
@@ -3245,7 +3262,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v53 · 2026-11-11</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v54 · 2026-11-14</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3276,6 +3293,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="ok"><td>匯入、分流、分析、評分、連拍、太相似合併、分群、命名、審核、匯出到資料夾／ZIP、成果包（Word、ZIP）、相簿庫（相冊、地點、最愛、回收桶、記錄備份）（v120 起已移除會送出學生臉部的「畢冊人臉分群」）</td><td>不送出</td><td>只在本機</td><td>不會</td></tr>
         <tr class="ok"><td>📍 相簿庫地點的地名（縣市、鄉鎮市區）</td><td>不送出：用內建的全台鄉鎮市區界線（內政部開放資料）在本機算</td><td>只在本機</td><td>不會</td></tr>
         <tr class="ok"><td>🤖 AI 人臉（YuNet）、🧬 128 維人臉特徵、HEIC 轉檔</td><td>不送照片，只下載程式與模型</td><td>只在本機執行</td><td>不會</td></tr>
+        <tr class="ok"><td>🔎 相簿庫「AI 找照片」（打字找照片、AI 分類、自動分群）</td><td>不送照片，只下載程式與模型（你按「下載看圖模型」才下載）</td><td>只在本機執行</td><td>不會</td></tr>
         <tr class="warn"><td>🌐 相簿庫地點「查地標名稱」（按了才送）</td><td>照片位置的座標（約 500 公尺一格），不含照片、活動名稱</td><td>OpenStreetMap（nominatim.openstreetmap.org）</td><td>不會；地名本身（縣市、鄉鎮市區）用內建資料，不連網</td></tr>
         <tr class="warn"><td>✨ 成果包 AI 文案（Gemini，按 ✨ 才送）</td><td>你在相簿庫勾選、要寫說明的照片（長邊 768 px；FB 貼文最多 6 張）與活動名稱、類型，請它寫照片說明與貼文；不寫姓名、不點名、不描述外貌</td><td>Google Gemini</td><td><b>免費方案：可能</b>，且可能有人工審閱；付費方案：不會</td></tr>
         <tr><td>✨ 海報 AI 封面插圖（Gemini 生圖，按了才送）</td><td><b>只送文字</b>：活動名稱與標語（最多 80 字），請它畫一張不含人臉、不含文字的插圖；<b>不送任何照片</b>。畫好的圖只放在記憶體</td><td>Google Gemini</td><td>生圖只有付費方案能用：不會</td></tr>
@@ -3291,6 +3309,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><td>fonts.googleapis.com</td><td>每次開啟網頁</td><td>中文字型（Google 會看到你的 IP，不含照片）</td></tr>
         <tr><td>cdn.jsdelivr.net</td><td>每次開啟網頁；開啟 AI 人臉（運動會分析時自動開）／勾 128 維特徵／HEIC 轉檔／製作回顧短片時</td><td>JSZip（壓縮 ZIP 用，MIT）；onnxruntime-web（MIT）、face-api.js（MIT）、heic2any；mp4-muxer（MIT，只在製作 🎬 回顧短片時載入）。<b>都比對 SRI 雜湊</b>，被改過就不執行</td></tr>
         <tr><td>網站本身 <code>audio/bgm/</code>；單檔版改用 cdn.jsdelivr.net/gh/…/pickupphoto@ea45f37a10a080d4fd8854200ebb08a33d84d9e4/audio/bgm/</td><td>回顧短片選了內建配樂，按 🔊 試聽或 🎬 製作時</td><td>只<b>下載</b>那一首配樂（約 1.2 MB，網址裡只有曲目代號），不送出任何資料。10 首都是作者自己聲明公眾領域／CC0 的音樂（Kevin MacLeod、Bryan Teoh，出自 FreePD.com）。抓回來比對 SHA-256，被改過就不用。沒網路時請用「自己選檔案」</td></tr>
+        <tr><td>cdn.jsdelivr.net（transformers.js）、huggingface.co（含 *.hf.co 下載節點）</td><td>相簿庫按「⬇️ 下載看圖模型」時（只一次，之後從瀏覽器快取讀）</td><td>transformers.js 3.8.1（Apache-2.0）與推論引擎；Chinese-CLIP 看圖模型（OFA-Sys，MIT；固定版本 f269048）— 每個檔案都比對 SHA-256 才使用</td></tr>
         <tr><td>media.githubusercontent.com</td><td>開啟 AI 人臉時（運動會分析時自動開，用來判斷身體有沒有被切掉）</td><td>YuNet 人臉模型（MIT，比對 SHA-256 才使用）</td></tr>
         <tr><td>accounts.google.com、googleapis.com</td><td>按「同步到 Google Drive」時</td><td>Google 登入；權限只有 drive.file（只看得到本工具建立的檔案）</td></tr>
       </table>
@@ -3311,9 +3330,10 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><td>📲 從手機相簿分享進來（Android，安裝成 App 後）</td><td>你選的照片交給這個網頁 App，暫存在這支手機瀏覽器的 IndexedDB，打開頁面匯入後立刻刪掉；不經過任何伺服器</td><td>只在這支手機</td></tr>
         <tr><td>📤 匯出整理記錄（.json）</td><td>檔名、分組、活動名稱、標籤、入選／淘汰（<b>不含照片</b>）存成檔案，由你自己帶到別台電腦</td><td>你放哪就在哪</td></tr>
         <tr><td>📲 直接分享（手機）</td><td>你在成果包按「直接分享」時，縮好的照片（最多 9 張）與群組訊息交給你在手機上選的 App（LINE、FB…），由那個 App 送出</td><td>看你選的 App</td></tr>
+        <tr><td>瀏覽器 IndexedDB（pickupClip）＋快取（pickup-clip-v1）</td><td>🔎 AI 找照片：相簿庫每張照片的<b>看圖特徵</b>（512 個數字，不能還原成照片，但能用來找出長得像的照片）、算過的文字特徵；看圖模型檔（約 210 MB，顯示卡加速再 377 MB）</td><td>瀏覽器設定 → 清除網站資料</td></tr>
         <tr><td>瀏覽器 IndexedDB（設定）</td><td>相簿庫、備份資料夾的位置；活動海報的<b>校徽</b>（你自己選的圖，轉成 PNG 存在這裡）；<b>最近整理記錄</b>（每批照片的檔名、分組、活動名稱、標籤、入選／淘汰，不含照片，最多 20 批，匯出後 7 天自動清）</td><td>設定 → 儲存 →「清除整理記錄」；或清除瀏覽器網站資料</td></tr>
         <tr><td>瀏覽器 Cache Storage（網站版／安裝成 App）</td><td>工具本身、圖示，以及公開程式庫與人臉模型（離線用）。<b>不含照片、不含分析結果</b></td><td>解除安裝 App，或清除瀏覽器網站資料</td></tr>
-        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、指定的 Gemini 模型代號、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關、整理動畫的開關、分享浮水印的開關、活動海報的版型／配色／勾選、回顧短片的設定（比例、秒數、動畫、過場、音量、選的內建配樂代號）、相簿庫最近 5 次搜尋、⏱ 時間記錄器的賽程與按下的時間（都不含照片；「📲 傳到手機」的連結把賽程放在網址 # 後面，只在兩台裝置之間傳，不經過伺服器）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
+        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、指定的 Gemini 模型代號、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關、整理動畫的開關、分享浮水印的開關、活動海報的版型／配色／勾選、回顧短片的設定（比例、秒數、動畫、過場、音量、選的內建配樂代號）、相簿庫最近 5 次搜尋、🔎 AI 找照片自己加的類別與是否用顯示卡加速、⏱ 時間記錄器的賽程與按下的時間（都不含照片；「📲 傳到手機」的連結把賽程放在網址 # 後面，只在兩台裝置之間傳，不經過伺服器）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
         <tr><td>你選的相簿庫資料夾</td><td>匯出的照片、index.json（檔名、日期、活動、分數、人數、拍攝者名字、最愛、自建相簿名稱、照片本身帶的 <b>GPS 經緯度</b>、你設定的學校位置、自己取的地點名稱與查到的地標名稱）、索引歷史（_index_history）與每天的記錄備份（_相簿庫記錄備份，保留 30 天）。設為最愛的照片檔內會寫入「5 顆星」。在相簿庫刪除的照片先放進「_回收桶」資料夾，按「永久刪除」才真的刪掉</td><td>自行管理資料夾</td></tr>
       </table>
       <div class="pv-note">共用電腦用完請清除分析快取；離職或交接時一併刪除相簿庫與 Gemini Key。</div>
@@ -3345,7 +3365,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v53 程式逐項清點（2026-11-11）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v54 程式逐項清點（2026-11-14）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3772,7 +3792,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v53（2026-11-11）。</span><br>
+        <span style="font-size:11px;">本說明對應 2026v54（2026-11-14）。</span><br>
         <a href="guide.html" target="_blank" rel="noopener" onclick="if (!/^https?:$/.test(location.protocol)) { event.preventDefault(); showToast('📖 圖文操作說明在校園拾光網站上：網址後面加 /guide.html'); }" style="display:inline-block;margin-top:6px;font-weight:700;color:var(--accent);">📖 看圖文操作說明（每一步都有畫面）→</a>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
@@ -4377,11 +4397,11 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v53';
+const APP_VERSION = '2026v54';
 // 2026v51：本機時間的日期／時間字串（toISOString 是世界標準時間，台灣早上 8 點前會變成前一天）
 function localYmd(d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
 function localStamp(len = 19, d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${localYmd(d)} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`.slice(0, len); }
-const APP_BUILD = 'v210';   // 內部建置號（補丁與測試用）
+const APP_BUILD = 'v211';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -14017,7 +14037,7 @@ function libSearchHints(all) {
 // ── v130 相冊：依活動／全部／日期／最愛／自建相簿／地點／截圖／文件／轉傳／標籤 ──
 let _libView = 'act', _libAlbum = '', _libTag = '', _libPlace = '', _libLimit = 400;
 const _libSel = new Set();
-const LIB_VIEWS = [['act', '🗂', '依活動'], ['all', '🖼', '全部照片'], ['date', '📅', '依日期'], ['fav', '⭐', '我的最愛'], ['album', '📁', '我的相簿'], ['place', '📍', '地點'], ['-'], ['shot', '📱', '截圖'], ['doc', '📄', '文件翻拍'], ['line', '📲', '轉傳'], ['tag', '🏷', '標籤'], ['-'], ['trash', '🗑', '回收桶']];
+const LIB_VIEWS = [['act', '🗂', '依活動'], ['all', '🖼', '全部照片'], ['clip', '🔎', 'AI 找照片'], ['date', '📅', '依日期'], ['fav', '⭐', '我的最愛'], ['album', '📁', '我的相簿'], ['place', '📍', '地點'], ['-'], ['shot', '📱', '截圖'], ['doc', '📄', '文件翻拍'], ['line', '📲', '轉傳'], ['tag', '🏷', '標籤'], ['-'], ['trash', '🗑', '回收桶']];
 const LIB_KIND = { shot: 'screenshot', doc: 'document', line: 'line' };
 function libTags(e) { return String(e.tags || '').split(/[、；;,]/).map(s => s.trim()).filter(Boolean); }
 function libDist(a, b) { const R = 6371000, r = x => x * Math.PI / 180; const dLa = r(b.lat - a.lat), dLo = r(b.lon - a.lon); const h = Math.sin(dLa / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLo / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); }
@@ -14107,6 +14127,7 @@ function libRange(list) { const ds = list.map(e => e.date).filter(Boolean).sort(
 function libCountFor(k, rows) {
   if (k === 'act') return new Set(rows.map(e => `${e.sy}|${e.category}|${e.activity}`)).size;
   if (k === 'all') return rows.length;
+  if (k === 'clip') return _clip.emb.size ? rows.filter(e => _clip.emb.has(e.key)).length : '';
   if (k === 'date') return rows.filter(e => e.date).length;
   if (k === 'fav') return rows.filter(e => e.fav).length;
   if (k === 'album') return (_libIndex?.albums || []).length;
@@ -14121,9 +14142,414 @@ function libNavHtml(rows) {
     : `<button class="lib-nv${_libView === v[0] ? ' on' : ''}" data-v="${v[0]}" onclick="libSetView('${v[0]}')"><span>${v[1]}</span>${v[2]}<b>${libCountFor(v[0], rows)}</b></button>`).join('')
     + `<div class="lib-nav-foot"><button class="tip-link" onclick="libraryImportFolders()" title="把相簿庫資料夾裡、還沒在索引的照片收錄進來（照片不搬動）">📥 收錄資料夾裡的照片</button><br><button class="tip-link" onclick="libraryRescan()" title="讀舊照片的 GPS、拍攝時間，並判斷截圖／文件／轉傳">🔄 補讀照片資訊</button><br>相簿、最愛、地點都記在相簿庫的 index.json；照片本身不會被移動或複製。</div>`;
 }
-function libSetView(v) { _libView = v; _libAlbum = ''; _libTag = ''; _libPlace = ''; _libLimit = 400; renderLibraryModal(); }
+function libSetView(v) { _libView = v; _libAlbum = ''; _libTag = ''; _libPlace = ''; _libLimit = 400; renderLibraryModal(); if (v === 'clip') clipOnEnterView(); }
 function libOpen(kind, val) { if (kind === 'album') _libAlbum = val; else if (kind === 'tag') _libTag = val; else if (kind === 'place') _libPlace = val; _libLimit = 400; renderLibraryModal(); }
 function libBack() { _libAlbum = ''; _libTag = ''; _libPlace = ''; _libLimit = 400; renderLibraryModal(); }
+
+// ══════════════════════════════════════════════════════════════
+// 2026v54 🔎 AI 看圖（本機）：Chinese-CLIP（OFA-Sys，MIT）＋ transformers.js 3.8.1（Apache-2.0）
+// 照片不離開電腦：只下載程式與模型（固定版本、比對 SHA-256），在瀏覽器裡把每張照片算成 512 個數字（特徵），
+// 存在這台電腦的瀏覽器（IndexedDB），之後打字找照片、分類、找相似都用這些數字比。
+// ══════════════════════════════════════════════════════════════
+const CLIP_TF_BASE = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/dist/';
+const CLIP_TF_FILES = {
+  'transformers.min.js': [888173, 'aa5002b70e789798da263f5f99c62bd3e8fcd0c119258a493c40c180648365fa'],
+  'ort-wasm-simd-threaded.jsep.mjs': [44484, '08fb86ec433c78bfb032c5d84a68b8e8e5a8d81268fa39e24314179a5767a5b9'],
+  'ort-wasm-simd-threaded.jsep.wasm': [21596019, 'c46655e8a94afc45338d4cb2b840475f88e5012d524509916e505079c00bfa39'],
+};
+const CLIP_MODEL_ID = 'Xenova/chinese-clip-vit-base-patch16';
+const CLIP_MODEL_REV = 'f26904860903e70e050b8f48255e5f48401816e9';
+const CLIP_MODEL_BASE = `https://huggingface.co/${CLIP_MODEL_ID}/resolve/${CLIP_MODEL_REV}/`;
+const CLIP_MODEL_FILES = {
+  'config.json': [844, '19447ad8c20d274f0644a6663af56286be98bd2d0e5f9472fcb318e04fcd6961'],
+  'preprocessor_config.json': [546, '61a78fdd2c7ac17b54b6190c0f4cb23423192c535003d52528d01e318a47608b'],
+  'tokenizer_config.json': [1315, '38fbc894183595cc1168e36150251b2fb658197b3a49f6908cce88ae22acd52a'],
+  'tokenizer.json': [439124, '7dfbf1966ebf99d471c3796e9b457329d2b2182b817e144f1e904b957745c839'],
+  'onnx/model_quantized.onnx': [190842404, 'a2c2849329eafb24100acec5a9421a39f8cb445296444c5c98855b69e5e7a751'],
+  'onnx/model_fp16.onnx': [377377730, '0fad978faa89b85fda53a83a4c202116a9eb87c8f9723fb4d85e4483efbce4b2'],
+};
+const CLIP_CACHE = 'pickup-clip-v1';
+const clipState = { loaded: false, loading: null, error: '', T: null, model: null, gpuModel: null, gpuError: '', tok: null, proc: null, dummyText: null, blankPx: null, textMemo: new Map() };
+
+// 文字一定用 CPU 小模型（實測：顯示卡半精度版的「文字」部分算錯，圖的部分正確）
+// 顯示卡加速（選用）：另外下載半精度模型，只拿來算照片，比對跟小模型結果一致才使用
+async function clipGpuAvailable() {
+  try { if (!navigator.gpu) return false; const a = await navigator.gpu.requestAdapter(); return !!(a && a.features && a.features.has('shader-f16')); } catch (e) { return false; }
+}
+async function clipCachedNames() {
+  try { const c = await caches.open(CLIP_CACHE); return new Set((await c.keys()).map(r => r.url)); } catch (e) { return new Set(); }
+}
+// 下載 → 比對大小與 SHA-256 → 存進瀏覽器快取（下次不用再下載）；不符就丟掉、不使用
+async function clipFetchVerified(url, spec, pc) {
+  let cache = null; try { cache = await caches.open(CLIP_CACHE); const hit = await cache.match(url); if (hit) return await hit.arrayBuffer(); } catch (e) {}
+  const res = await fetch(url, { mode: 'cors', credentials: 'omit' });
+  if (!res.ok) throw new Error('下載失敗 HTTP ' + res.status);
+  let buf;
+  if (res.body && pc) {
+    const rd = res.body.getReader(), parts = []; let got = 0, lastT = 0;
+    for (;;) { const { done, value } = await rd.read(); if (done) break; parts.push(value); got += value.length; const t = performance.now(); if (t - lastT > 250) { lastT = t; pc(got, spec[0]); } }
+    const u8 = new Uint8Array(got); let o = 0; for (const p of parts) { u8.set(p, o); o += p.length; } buf = u8.buffer;
+  } else buf = await res.arrayBuffer();
+  if (buf.byteLength !== spec[0] || await sha256Hex(buf) !== spec[1]) {
+    try { memMonLogEvent('clip_hash_fail', `⚠️ ${url.split('/').pop()} 驗證失敗`); } catch (e) {}
+    throw new Error(`檔案驗證失敗（${url.split('/').pop()}，SHA-256 不符），已丟棄`);
+  }
+  try { if (cache) await cache.put(url, new Response(buf, { headers: { 'content-type': 'application/octet-stream' } })); } catch (e) {}
+  return buf;
+}
+async function clipEnsure(pc = () => {}) {
+  if (clipState.loaded) return true;
+  if (clipState.loading) return clipState.loading;
+  clipState.loading = (async () => {
+    try {
+      await clipLoadOnce({ device: 'wasm', dtype: 'q8', file: 'onnx/model_quantized.onnx', mb: 191 }, pc);
+      clipState.loaded = true; clipState.error = '';
+      pc(100, '看圖模型準備好了');
+      try { memMonLogEvent('clip_ready', '🔎 看圖模型：CPU q8'); } catch (e) {}
+      if (localStorage.getItem('clipGpu') === '1') clipGpuEnable(() => {}).catch(() => {});
+      return true;
+    } catch (e) {
+      clipState.error = (e && e.message) || String(e); console.warn('clip load', e);
+      return false;
+    } finally { clipState.loading = null; }
+  })();
+  return clipState.loading;
+}
+// ⚡ 顯示卡加速：多下載 377 MB 半精度模型，只用來算照片；先跟 CPU 小模型比對（要幾乎一樣）才採用
+async function clipGpuEnable(pc = () => {}) {
+  if (clipState.gpuModel) return true;
+  if (!clipState.loaded || !(await clipGpuAvailable())) return false;
+  const MB = n => (n / 1048576).toFixed(0), f = 'onnx/model_fp16.onnx';
+  try {
+    pc(5, '下載顯示卡加速模型（約 377 MB，只下載一次）…');
+    const buf = await clipFetchVerified(CLIP_MODEL_BASE + f, CLIP_MODEL_FILES[f], (g, t) => pc(5 + Math.round(g / t * 85), `下載顯示卡加速模型 ${MB(g)} / ${MB(t)} MB…`));
+    const prev = clipState.T.env.customCache;
+    clipState.T.env.customCache = { match: async k => { const u = typeof k === 'string' ? k : k && k.url; if (u === CLIP_MODEL_BASE + f) return new Response(buf.slice(0)); return prev.match(k); }, put: async () => {} };
+    pc(92, '初始化顯示卡…');
+    const m = await clipState.T.ChineseCLIPModel.from_pretrained(CLIP_MODEL_ID, { revision: CLIP_MODEL_REV, dtype: 'fp16', device: 'webgpu' });
+    // 比對：同一張測試圖，顯示卡跟 CPU 算出來要幾乎一樣
+    const c = document.createElement('canvas'); c.width = 224; c.height = 224; const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 224, 224); g.addColorStop(0, '#e33'); g.addColorStop(0.5, '#3a3'); g.addColorStop(1, '#33e'); x.fillStyle = g; x.fillRect(0, 0, 224, 224);
+    x.fillStyle = '#fff'; x.beginPath(); x.arc(112, 90, 40, 0, 7); x.fill();
+    const px = await clipState.proc(clipState.T.RawImage.fromCanvas(c));
+    const a = clipNorm((await clipState.model({ ...clipState.dummyText, ...px })).image_embeds.data);
+    const b = clipNorm((await m({ ...clipState.dummyText, ...px })).image_embeds.data);
+    let dot = 0; for (let i = 0; i < a.length; i++) dot += a[i] * b[i];
+    if (!(dot > 0.95)) throw new Error('顯示卡算出來的結果跟 CPU 不一致（' + dot.toFixed(2) + '），不使用');
+    clipState.gpuModel = m; localStorage.setItem('clipGpu', '1');
+    pc(100, '⚡ 顯示卡加速已開啟');
+    return true;
+  } catch (e) {
+    console.warn('clip gpu', e); localStorage.removeItem('clipGpu'); clipState.gpuError = (e && e.message) || String(e);
+    return false;
+  }
+}
+async function clipLoadOnce(plan, pc) {
+  const MB = n => (n / 1048576).toFixed(0);
+  let T = clipState.T;
+  if (!T) {
+    // 1) 程式庫（transformers.js）與推論引擎：固定版本、比對 SHA-256，再用 blob: 載入
+    pc(1, '下載看圖程式（transformers.js，約 1 MB）…');
+    const tfBuf = await clipFetchVerified(CLIP_TF_BASE + 'transformers.min.js', CLIP_TF_FILES['transformers.min.js']);
+    pc(3, '下載推論引擎（約 21 MB，只下載一次）…');
+    const mjsBuf = await clipFetchVerified(CLIP_TF_BASE + 'ort-wasm-simd-threaded.jsep.mjs', CLIP_TF_FILES['ort-wasm-simd-threaded.jsep.mjs']);
+    const wasmBuf = await clipFetchVerified(CLIP_TF_BASE + 'ort-wasm-simd-threaded.jsep.wasm', CLIP_TF_FILES['ort-wasm-simd-threaded.jsep.wasm'], (g, t) => pc(3 + Math.round(g / t * 7), `下載推論引擎 ${MB(g)} / ${MB(t)} MB…`));
+    T = await import(URL.createObjectURL(new Blob([tfBuf], { type: 'text/javascript' })));
+    T.env.allowLocalModels = false;
+    T.env.useBrowserCache = false;
+    T.env.backends.onnx.wasm.wasmPaths = { mjs: URL.createObjectURL(new Blob([mjsBuf], { type: 'text/javascript' })), wasm: URL.createObjectURL(new Blob([wasmBuf], { type: 'application/wasm' })) };
+    T.env.backends.onnx.wasm.numThreads = 1;
+    T.env.backends.onnx.wasm.proxy = false;
+    clipState.T = T;
+  }
+  // 2) 模型：只給 transformers.js 我們驗證過的檔案（固定版本）
+  const files = {};
+  for (const f of ['config.json', 'preprocessor_config.json', 'tokenizer_config.json', 'tokenizer.json', plan.file]) {
+    const big = f === plan.file;
+    if (big) pc(10, `下載看圖模型（約 ${plan.mb} MB，只下載一次）…`);
+    files[CLIP_MODEL_BASE + f] = await clipFetchVerified(CLIP_MODEL_BASE + f, CLIP_MODEL_FILES[f], big ? (g, t) => pc(10 + Math.round(g / t * 75), `下載看圖模型 ${MB(g)} / ${MB(t)} MB…`) : null);
+  }
+  T.env.useCustomCache = true;
+  T.env.customCache = {
+    match: async key => { const u = typeof key === 'string' ? key : key && key.url; const b = files[u]; return b ? new Response(b.slice(0)) : undefined; },
+    put: async () => {},
+  };
+  T.env.allowRemoteModels = true;    // 需要的檔案都由上面驗證過的 customCache 提供（固定版本），不會另外下載
+  pc(88, '初始化看圖模型…');
+  const opt = { revision: CLIP_MODEL_REV };
+  clipState.proc = await T.AutoProcessor.from_pretrained(CLIP_MODEL_ID, opt);
+  clipState.tok = await T.AutoTokenizer.from_pretrained(CLIP_MODEL_ID, opt);
+  clipState.model = await T.ChineseCLIPModel.from_pretrained(CLIP_MODEL_ID, { ...opt, dtype: plan.dtype, device: plan.device });
+  clipState.dummyText = clipState.tok(['照片'], { padding: true, truncation: true });
+  clipState.blankPx = await clipState.proc(new T.RawImage(new Uint8ClampedArray(224 * 224 * 3).fill(128), 224, 224, 3));
+  clipState.textMemo.clear();
+  // 自我檢查：算一張測試圖與兩句話，結果要是正常數字、而且不一樣（顯示卡算錯 → 改 CPU）
+  const chk = await clipEmbedPixels(clipState.blankPx);
+  const [ta, tb] = await clipEmbedTexts(['一隻貓', '一張收據']);
+  let dot = 0; for (let i = 0; i < ta.length; i++) dot += ta[i] * tb[i];
+  if (!chk || [...chk].some(v => !Number.isFinite(v)) || !(dot < 0.98)) throw new Error('看圖模型算出來的數字不正常');
+}
+function clipNorm(v) { let s = 0; for (let i = 0; i < v.length; i++) s += v[i] * v[i]; s = Math.sqrt(s) || 1; const o = new Float32Array(v.length); for (let i = 0; i < v.length; i++) o[i] = v[i] / s; return o; }
+async function clipEmbedPixels(px) {
+  const out = await (clipState.gpuModel || clipState.model)({ ...clipState.dummyText, ...px });
+  return clipNorm(out.image_embeds.data);
+}
+// 一張照片 → 512 個數字（先縮小再算，快很多）
+async function clipEmbedImage(blob) {
+  const bmp = await createImageBitmap(blob, { resizeWidth: 320, resizeQuality: 'medium' });
+  const c = document.createElement('canvas'); c.width = bmp.width; c.height = bmp.height;
+  c.getContext('2d').drawImage(bmp, 0, 0); bmp.close && bmp.close();
+  const img = clipState.T.RawImage.fromCanvas(c);
+  return clipEmbedPixels(await clipState.proc(img));
+}
+// 一批文字 → 各自 512 個數字（記住算過的）
+async function clipEmbedTexts(texts) {
+  const need = [...new Set(texts.filter(t => !clipState.textMemo.has(t)))];
+  for (let i = 0; i < need.length; i += 16) {
+    const part = need.slice(i, i + 16);
+    const ti = clipState.tok(part, { padding: true, truncation: true, max_length: 52 });
+    const out = await clipState.model({ ...ti, ...clipState.blankPx });
+    const d = out.text_embeds.data, n = d.length / part.length;
+    part.forEach((t, k) => clipState.textMemo.set(t, clipNorm(d.subarray(k * n, (k + 1) * n))));
+  }
+  return texts.map(t => clipState.textMemo.get(t));
+}
+function clipMean(vs) { const o = new Float32Array(vs[0].length); for (const v of vs) for (let i = 0; i < o.length; i++) o[i] += v[i]; return clipNorm(o); }
+
+// ── 相簿庫「🔎 AI 找照片」：特徵存在這台電腦的瀏覽器（IndexedDB pickupClip），只是數字，不能還原成照片 ──
+const CLIP_CATS = [
+  ['合照', ['大合照', '一群學生排成好幾排拍合照', '師生合影']],
+  ['頒獎', ['頒獎', '老師頒發獎狀給學生', '學生上台領獎']],
+  ['運動競賽', ['運動會', '學生在操場上跑步比賽', '接力賽跑']],
+  ['舞台表演', ['舞台表演', '學生在舞台上唱歌跳舞', '學生上台演奏樂器']],
+  ['上課', ['上課', '學生坐在教室裡上課', '老師在黑板前教學']],
+  ['典禮集會', ['典禮', '全校學生在操場上集合', '升旗典禮']],
+  ['講座研習', ['研習', '講者對著投影片演講', '老師們在會議室開會']],
+  ['戶外教學', ['戶外教學', '學生參觀博物館', '學生在戶外大自然裡活動']],
+  ['學生作品', ['學生作品', '學生的畫作和美勞作品', '展示的手工作品']],
+  ['用餐', ['營養午餐', '學生在吃飯', '餐盤裡的飯菜']],
+  ['校園風景', ['校園風景', '學校建築', '校園裡的花草樹木']],
+  ['獎狀證書', ['獎狀', '獎盃和獎牌', '證書']],
+  ['海報文件', ['海報', '公告文件', '紙上的文字']],
+  ['截圖', ['手機截圖', '電腦螢幕畫面', '網頁截圖']],
+  ['親子活動', ['親子活動', '家長和孩子一起參加活動', '家長日']],
+];
+const CLIP_SEARCH_EXAMPLES = ['大隊接力', '頒獎合照', '營養午餐', '舞台表演', '升旗典禮', '學生畫作', '拔河', '戶外教學'];
+const _clip = { q: '', qv: null, cat: '', cluster: -1, clusters: null, running: false, stop: false, done: 0, total: 0, rate: 0,
+  loadPct: 0, loadMsg: '', loading: false, emb: new Map(), embLib: '', catVecs: null, catVer: '', assign: null, assignVer: '', busy: '' };
+function clipCustomCats() { try { const a = JSON.parse(localStorage.getItem('clipCustomCats') || '[]'); return Array.isArray(a) ? a.filter(s => typeof s === 'string' && s.trim()).map(s => s.trim().slice(0, 20)).slice(0, 30) : []; } catch (e) { return []; } }
+function clipAllCats() { return [...CLIP_CATS, ...clipCustomCats().map(n => [n, [n], true])]; }
+// IndexedDB
+let _clipDb = null;
+function clipDb() {
+  if (_clipDb) return _clipDb;
+  _clipDb = new Promise((res, rej) => { const r = indexedDB.open('pickupClip', 1); r.onupgradeneeded = () => { const d = r.result; if (!d.objectStoreNames.contains('emb')) d.createObjectStore('emb'); if (!d.objectStoreNames.contains('txt')) d.createObjectStore('txt'); }; r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+  _clipDb.catch(() => { _clipDb = null; });
+  return _clipDb;
+}
+function clipQuant(v) { let m = 0; for (const x of v) m = Math.max(m, Math.abs(x)); const s = m / 127 || 1; const q = new Int8Array(v.length); for (let i = 0; i < v.length; i++) q[i] = Math.round(v[i] / s); return q.buffer; }
+function clipDequant(buf) { return clipNorm(Float32Array.from(new Int8Array(buf))); }
+async function clipEmbLoad() {
+  const lib = library && library.name || ''; if (!lib) return;
+  if (_clip.embLib === lib) return;
+  const d = await clipDb(), pre = lib + '|', m = new Map();
+  await new Promise((res, rej) => { const tx = d.transaction('emb', 'readonly'); const rq = tx.objectStore('emb').openCursor(IDBKeyRange.bound(pre, pre + '￿'));
+    rq.onsuccess = () => { const c = rq.result; if (!c) return res(); m.set(String(c.key).slice(pre.length), clipDequant(c.value)); c.continue(); }; rq.onerror = () => rej(rq.error); });
+  _clip.emb = m; _clip.embLib = lib; _clip.assign = null; _clip.clusters = null;
+}
+async function clipEmbPut(key, v) { const d = await clipDb(); await new Promise((res, rej) => { const tx = d.transaction('emb', 'readwrite'); tx.objectStore('emb').put(clipQuant(v), library.name + '|' + key); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); }
+// 文字特徵：記在 IndexedDB，下次不用重算
+async function clipTexts(texts) {
+  const d = await clipDb().catch(() => null), miss = [];
+  for (const t of texts) if (!clipState.textMemo.has(t)) {
+    const v = d ? await new Promise(res => { const rq = d.transaction('txt', 'readonly').objectStore('txt').get(t); rq.onsuccess = () => res(rq.result); rq.onerror = () => res(null); }) : null;
+    if (v) clipState.textMemo.set(t, clipDequant(v)); else miss.push(t);
+  }
+  if (miss.length) {
+    if (!(await clipEnsure())) throw new Error(clipState.error || '看圖模型載入失敗');
+    for (let i = 0; i < miss.length; i += 32) {
+      const part = miss.slice(i, i + 32);
+      await clipEmbedTexts(part);
+      if (d) { const tx = d.transaction('txt', 'readwrite'); for (const t of part) tx.objectStore('txt').put(clipQuant(clipState.textMemo.get(t)), t); }
+    }
+  }
+  return texts.map(t => clipState.textMemo.get(t));
+}
+function clipDot(a, b) { let s = 0; for (let i = 0; i < a.length; i++) s += a[i] * b[i]; return s; }
+async function clipQueryVec(q) { const [a, b] = await clipTexts([q, `一張${q}的照片`]); return clipMean([a, b]); }
+async function clipCatVecs() {
+  const cats = clipAllCats(), ver = cats.map(c => c[0]).join('|');
+  if (_clip.catVecs && _clip.catVer === ver) return _clip.catVecs;
+  const m = new Map();
+  for (const [name, prompts] of cats) { const vs = await clipTexts([...prompts, ...prompts.map(p => `一張${p}的照片`)]); m.set(name, clipMean(vs)); }
+  _clip.catVecs = m; _clip.catVer = ver; _clip.assign = null;
+  return m;
+}
+// 每張照片分到最像的類別（不夠像 → 其他）
+function clipAssign() {
+  const ver = _clip.catVer + '#' + _clip.emb.size;
+  if (_clip.assign && _clip.assignVer === ver) return _clip.assign;
+  const out = new Map(), cats = [..._clip.catVecs || []];
+  if (!cats.length) return out;
+  for (const [k, v] of _clip.emb) {
+    const sc = cats.map(([n, c]) => [n, clipDot(v, c)]);
+    const mx = Math.max(...sc.map(s => s[1])); let z = 0; for (const s of sc) z += Math.exp(100 * (s[1] - mx));
+    sc.sort((a, b) => b[1] - a[1]);
+    const p = 1 / z;   // 第一名的機率
+    out.set(k, [p >= 0.4 ? sc[0][0] : '其他', sc[0][1], p]);
+  }
+  _clip.assign = out; _clip.assignVer = ver;
+  return out;
+}
+// 自動分群：長得像的湊一群，再從學校常見活動詞庫挑最像的名稱當建議
+async function clipClusters(rows) {
+  const items = rows.map(e => [e, _clip.emb.get(e.key)]).filter(x => x[1]);
+  if (items.length < 6) return [];
+  const k = Math.max(2, Math.min(12, Math.round(Math.sqrt(items.length / 3))));
+  let cents = []; const step = items.length / k;
+  for (let i = 0; i < k; i++) cents.push(Float32Array.from(items[Math.floor(i * step)][1]));
+  let lab = new Array(items.length).fill(0);
+  for (let it = 0; it < 12; it++) {
+    lab = items.map(([, v]) => { let bi = 0, bs = -9; cents.forEach((c, j) => { const s = clipDot(v, c); if (s > bs) { bs = s; bi = j; } }); return bi; });
+    cents = cents.map((c, j) => { const mem = items.filter((_, i) => lab[i] === j).map(x => x[1]); return mem.length ? clipMean(mem) : c; });
+  }
+  const vocab = [...new Set([...CLIP_CATS.map(c => c[0]), ...clipCustomCats(), ...(typeof SCHOOL_EVENTS !== 'undefined' ? SCHOOL_EVENTS.map(e => e.n.split('/')[0]) : []), ...(typeof PROMO_TOPICS !== 'undefined' ? PROMO_TOPICS.map(t => t.name) : [])])].slice(0, 260);
+  const vv = await clipTexts(vocab.map(w => `一張${w}的照片`));
+  const out = [];
+  cents.forEach((c, j) => {
+    const mem = items.filter((_, i) => lab[i] === j).map(([e, v]) => [e, clipDot(v, c)]).sort((a, b) => b[1] - a[1]);
+    if (mem.length < 3) return;
+    const names = vocab.map((w, i) => [w, clipDot(c, vv[i])]).sort((a, b) => b[1] - a[1]).slice(0, 3).map(x => x[0]);
+    out.push({ names, entries: mem.map(x => x[0]) });
+  });
+  return out.sort((a, b) => b.entries.length - a.entries.length);
+}
+
+// ── 畫面 ──
+function clipBar(pct, msg) { return `<div class="clip-bar"><div style="width:${Math.max(2, Math.min(100, pct))}%"></div></div><div class="clip-msg">${escHtml(msg || '')}</div>`; }
+function clipViewHtml(rows, head, scroll, empty) {
+  const ready = clipState.loaded;
+  const intro = `<div class="lib-note">🔎 <b>AI 看圖（在這台電腦上跑）</b>：每張照片會被算成一串數字存在這台電腦的瀏覽器，之後打字就能找照片、自動分類、把長得像的湊成一群。<b>照片不會上傳</b>，只會下載程式和模型（固定版本，比對 SHA-256）。</div>`;
+  if (!ready) {
+    const again = localStorage.getItem('clipReady') === '1';
+    const body = _clip.loading ? clipBar(_clip.loadPct, _clip.loadMsg)
+      : `${clipState.error ? `<div class="clip-err">⚠️ ${escHtml(clipState.error)}</div>` : ''}<button class="lib-pack-btn" onclick="clipStart()">${again ? '🔎 啟用 AI 看圖（已經下載過，幾秒鐘）' : '⬇️ 下載看圖模型（約 210 MB，只下載一次）'}</button>
+         <div class="clip-sub">模型：Chinese-CLIP（OFA-Sys，MIT 授權）＋ transformers.js（Apache-2.0）。下載完存在這台電腦的瀏覽器，下次不用再下載。</div>`;
+    return head('🔎 AI 找照片', '用說的找照片・自動分類') + intro + `<div class="clip-panel">${body}</div>`;
+  }
+  const withEmb = rows.filter(e => _clip.emb.has(e.key)), left = rows.length - withEmb.length;
+  const eta = _clip.rate ? Math.ceil((_clip.total - _clip.done) / _clip.rate / 60) : 0;
+  const idx = _clip.running ? `${clipBar(_clip.total ? _clip.done / _clip.total * 100 : 0, `AI 看照片中… ${_clip.done} / ${_clip.total}${eta ? `，大約還要 ${eta} 分鐘` : ''}（可以繼續做別的事）`)}<button class="tip-link" onclick="_clip.stop=true">⏸ 先停</button>`
+    : left ? `<span>還有 <b>${left}</b> 張 AI 還沒看過</span> <button class="lib-pack-btn" onclick="clipIndexRun()">▶ 讓 AI 看照片</button>` : `<span>✅ ${withEmb.length} 張都看過了</span>`;
+  const gpu = clipState.gpuModel ? '<span class="clip-sub">⚡ 顯示卡加速中</span>' : (_clip.gpuOk ? `<button class="tip-link" onclick="clipGpuStart()" title="再下載 377 MB 顯示卡版模型，看照片快約 10 倍（只用來看照片，找照片時的文字一樣用小模型）">⚡ 用顯示卡加速（再下載 377 MB）</button>` : '');
+  const assign = _clip.catVecs ? clipAssign() : new Map();
+  const cnt = new Map(); for (const e of withEmb) { const a = assign.get(e.key); if (a) cnt.set(a[0], (cnt.get(a[0]) || 0) + 1); }
+  const cats = clipAllCats();
+  const chips = cats.map(([n, , custom]) => `<button class="clip-chip${_clip.cat === n ? ' on' : ''}" onclick="clipPickCat(${JSON.stringify(n).replace(/"/g, '&quot;')})">${escHtml(n)} <b>${cnt.get(n) || 0}</b>${custom ? `<span class="x" title="刪掉這個類別" onclick="event.stopPropagation();clipDelCat(${JSON.stringify(n).replace(/"/g, '&quot;')})">×</span>` : ''}</button>`).join('')
+    + `<button class="clip-chip${_clip.cat === '其他' ? ' on' : ''}" onclick="clipPickCat('其他')">其他 <b>${cnt.get('其他') || 0}</b></button>`
+    + `<button class="clip-chip add" onclick="clipAddCat()">＋ 自己加類別</button>`;
+  const ctrl = `<div class="clip-panel">
+      <div class="clip-row">${idx} ${gpu}</div>
+      <div class="clip-row"><input type="search" id="clipQ" class="lib-q" style="flex:1;min-width:200px;" value="${escHtml(_clip.q)}" placeholder="✏️ 用說的找照片：${CLIP_SEARCH_EXAMPLES.slice(0, 4).join('、')}…" onkeydown="if(event.key==='Enter')clipSearch(this.value)">
+        <button class="lib-pack-btn" onclick="clipSearch(document.getElementById('clipQ').value)">🔎 找</button>
+        <button class="tip-link" onclick="clipClusterRun()" title="把長得像的照片湊成一群，並建議名稱">🧭 自動分群建議</button></div>
+      <div class="clip-row" style="font-size:12px;color:var(--text-dim);">試試看：${CLIP_SEARCH_EXAMPLES.map(w => `<button class="tip-link" onclick="clipSearch('${w}')">${w}</button>`).join(' ')}</div>
+      <div class="clip-chips">${chips}</div>
+      ${_clip.busy ? `<div class="clip-msg">⏳ ${escHtml(_clip.busy)}</div>` : ''}
+    </div>`;
+  let title = '', list = null, inner = '';
+  if (_clip.cluster >= 0 && _clip.clusters && _clip.clusters[_clip.cluster]) {
+    const c = _clip.clusters[_clip.cluster];
+    title = `<button onclick="_clip.cluster=-1;renderLibraryModal()">← 所有分群</button> 🧭 可能是：${escHtml(c.names[0])}`;
+    const rs = new Set(rows); list = c.entries.filter(e => rs.has(e));
+  } else if (_clip.clusters && !_clip.q && !_clip.cat) {
+    title = `🧭 自動分群建議（${_clip.clusters.length} 群）`;
+    inner = _clip.clusters.length ? `<div class="lib-cards">${_clip.clusters.map((c, i) => libCardHtml(c.entries[0], `可能是：${escHtml(c.names[0])}`, `${c.entries.length} 張・也像 ${escHtml(c.names.slice(1).join('、'))}<br><button class="tip-link" onclick="event.stopPropagation();clipAddCat(${JSON.stringify(c.names[0]).replace(/"/g, '&quot;')})">＋ 加成類別</button>`, `_clip.cluster=${i};renderLibraryModal()`)).join('')}</div>` : empty('照片太少，分不出群');
+  } else if (_clip.q && _clip.qv) {
+    const sc = withEmb.map(e => [e, clipDot(_clip.emb.get(e.key), _clip.qv)]).sort((a, b) => b[1] - a[1]);
+    title = `🔎「${escHtml(_clip.q)}」最像的照片 <button class="tip-link" onclick="clipSearch('')">清除</button>`;
+    list = sc.slice(0, 120).map(x => x[0]);
+  } else if (_clip.cat) {
+    list = withEmb.filter(e => (assign.get(e.key) || [])[0] === _clip.cat).sort((a, b) => (assign.get(b.key)[1]) - (assign.get(a.key)[1]));
+    title = `🏷 ${escHtml(_clip.cat)}（AI 分類，可能有錯）`;
+  }
+  if (list) inner = list.length ? libGridHtml(list) : empty(withEmb.length ? '沒有找到' : '還沒有照片給 AI 看過，先按上面「▶ 讓 AI 看照片」');
+  if (!title) { title = '結果'; inner = empty(withEmb.length ? '打字找照片、點類別，或按「🧭 自動分群建議」' : '先按上面「▶ 讓 AI 看照片」，看完就能找照片、分類'); }
+  return head('🔎 AI 找照片', `${withEmb.length} / ${rows.length} 張已看過`) + ctrl + `<div class="lib-vh" style="margin-top:6px;"><span class="t">${title}</span>${list ? `<span class="n">${list.length} 張</span>` : ''}</div>` + scroll(inner);
+}
+async function clipStart() {
+  if (_clip.loading) return;
+  _clip.loading = true; _clip.loadPct = 1; _clip.loadMsg = '準備中…'; renderLibraryModal();
+  let lastR = 0;
+  const ok = await clipEnsure((p, t) => { _clip.loadPct = p; _clip.loadMsg = t; const n = performance.now(); if (n - lastR > 400) { lastR = n; if (_libView === 'clip') renderLibraryModal(); } });
+  _clip.loading = false;
+  if (ok) {
+    try { localStorage.setItem('clipReady', '1'); } catch (e) {}
+    _clip.gpuOk = !clipState.gpuModel && await clipGpuAvailable();
+    await clipEmbLoad(); await clipCatVecs();
+  }
+  if (_libView === 'clip') renderLibraryModal();
+}
+async function clipGpuStart() {
+  _clip.busy = '下載顯示卡加速模型…'; renderLibraryModal();
+  let lastR = 0;
+  const ok = await clipGpuEnable((p, t) => { _clip.busy = t; const n = performance.now(); if (n - lastR > 500) { lastR = n; if (_libView === 'clip') renderLibraryModal(); } });
+  _clip.busy = ''; _clip.gpuOk = false;
+  showToast(ok ? '⚡ 顯示卡加速已開啟' : '⚠️ 這台電腦的顯示卡不能用：' + (clipState.gpuError || '未知原因') + '（照常用 CPU）');
+  if (_libView === 'clip') renderLibraryModal();
+}
+async function clipIndexRun() {
+  if (_clip.running) return;
+  if (!(await clipEnsure())) { showToast('⚠️ 看圖模型載入失敗：' + clipState.error); return; }
+  await clipEmbLoad();
+  const todo = libFiltered().filter(e => !_clip.emb.has(e.key)).sort(libByTaken);
+  _clip.running = true; _clip.stop = false; _clip.done = 0; _clip.total = todo.length; _clip.rate = 0;
+  const t0 = performance.now(); let lastR = 0, fail = 0;
+  renderLibraryModal();
+  for (const e of todo) {
+    if (_clip.stop || !document.getElementById('libraryModal')?.classList.contains('show')) break;
+    try { const f = await libPackFile(e); const v = await clipEmbedImage(f); _clip.emb.set(e.key, v); await clipEmbPut(e.key, v); }
+    catch (err) { fail++; console.warn('clip embed', e.file, err); }
+    _clip.done++; _clip.rate = _clip.done / ((performance.now() - t0) / 1000);
+    const n = performance.now(); if (n - lastR > 1500) { lastR = n; _clip.assign = null; if (_libView === 'clip') renderLibraryModal(); }
+    await new Promise(r => setTimeout(r, 0));
+  }
+  _clip.running = false; _clip.assign = null; _clip.clusters = null;
+  showToast(_clip.stop ? `⏸ 先停在 ${_clip.done} 張，下次按「▶ 讓 AI 看照片」會接著看` : `✅ AI 看完 ${_clip.done - fail} 張${fail ? `（${fail} 張讀不到）` : ''}`);
+  if (_libView === 'clip') renderLibraryModal();
+}
+async function clipSearch(q) {
+  q = String(q || '').trim().slice(0, 40); _clip.q = q; _clip.cat = ''; _clip.cluster = -1; _clip.qv = null;
+  if (!q) { renderLibraryModal(); return; }
+  _clip.busy = `找「${q}」…`; renderLibraryModal();
+  try { _clip.qv = await clipQueryVec(q); } catch (e) { showToast('⚠️ ' + e.message); }
+  _clip.busy = ''; renderLibraryModal();
+}
+function clipPickCat(n) { _clip.cat = _clip.cat === n ? '' : n; _clip.q = ''; _clip.qv = null; _clip.cluster = -1; renderLibraryModal(); }
+async function clipAddCat(name) {
+  name = name || prompt('新增類別（打一句話，例如：鼓號樂隊、交通安全宣導、拔河）：', '');
+  name = String(name || '').trim().slice(0, 20); if (!name) return;
+  const a = clipCustomCats(); if (!a.includes(name) && !CLIP_CATS.some(c => c[0] === name)) { a.push(name); localStorage.setItem('clipCustomCats', JSON.stringify(a)); }
+  _clip.busy = `學習新類別「${name}」…`; renderLibraryModal();
+  try { await clipCatVecs(); } catch (e) { showToast('⚠️ ' + e.message); }
+  _clip.busy = ''; _clip.cat = name; _clip.q = ''; _clip.cluster = -1; renderLibraryModal();
+}
+async function clipDelCat(name) {
+  localStorage.setItem('clipCustomCats', JSON.stringify(clipCustomCats().filter(n => n !== name)));
+  if (_clip.cat === name) _clip.cat = '';
+  try { await clipCatVecs(); } catch (e) {}
+  renderLibraryModal();
+}
+async function clipClusterRun() {
+  _clip.q = ''; _clip.qv = null; _clip.cat = ''; _clip.cluster = -1;
+  _clip.busy = '把長得像的照片湊成一群…（第一次要學習學校常見活動名稱，約半分鐘）'; renderLibraryModal();
+  try { _clip.clusters = await clipClusters(libFiltered()); } catch (e) { showToast('⚠️ ' + e.message); }
+  _clip.busy = ''; renderLibraryModal();
+}
+async function clipOnEnterView() {
+  if (clipState.loaded) { try { await clipEmbLoad(); await clipCatVecs(); } catch (e) {} if (_libView === 'clip') renderLibraryModal(); return; }
+  if (localStorage.getItem('clipReady') === '1' && !_clip.loading) clipStart();   // 下載過 → 自動啟用（從瀏覽器快取載入）
+}
 
 function renderLibraryModal() {
   const modal = document.getElementById('libraryModal'); if (!modal) return;
@@ -14287,6 +14713,7 @@ function libViewHtml(rows) {
     return head(name, `${list.length} 張`) + `<div class="lib-note">匯入時被分到這一類、按「＋ 納入分析」後匯出的照片。v130 以前匯出的照片，按左下「🔄 補讀照片資訊」判斷。</div>` + scroll(list.length ? libGridHtml(list) : empty('沒有這類照片'));
   }
   if (v === 'trash') return libTrashHtml();
+  if (v === 'clip') return clipViewHtml(rows, head, scroll, empty);   // 2026v54
   if (v === 'tag') {
     if (_libTag) { const list = sorted.filter(e => libTags(e).includes(_libTag)); return head(`<button onclick="libBack()">← 所有標籤</button> #${escHtml(_libTag)}`, `${list.length} 張`) + scroll(libGridHtml(list)); }
     const cnt = new Map(); for (const e of rows) for (const t of libTags(e)) cnt.set(t, (cnt.get(t) || 0) + 1);
