@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v54 (2026-11-14)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v55 (2026-11-15)　（原名：AI 照片篩選器）
+  2026v55 (2026-11-15, build v212): 🔎 進階設定「AI 看圖找同一個畫面」（預設關）— 不是連拍、但隔幾秒對同一個畫面拍好幾張 → 只留最好的；
+                                   同時算「動作瞬間」分數（跨步、衝線、交棒、騰空），連拍組與同畫面挑最好那張時當參考；照片特徵記在瀏覽器，下次不用重算
   2026v54 (2026-11-14, build v211): 🔎 相簿庫「AI 找照片」— 本機看圖模型（Chinese-CLIP，MIT；transformers.js 3.8.1，Apache-2.0）：
                                    打字找照片（大隊接力、頒獎合照、營養午餐…）、老師常用 15 類自動分類＋自己加類別、自動分群並建議名稱；
                                    照片不上傳，只下載固定版本程式與模型（比對 SHA-256）；特徵存在瀏覽器（IndexedDB pickupClip）；有顯示卡可選加速
@@ -251,7 +253,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v54 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v55 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3262,7 +3264,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v54 · 2026-11-14</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v55 · 2026-11-15</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3293,7 +3295,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="ok"><td>匯入、分流、分析、評分、連拍、太相似合併、分群、命名、審核、匯出到資料夾／ZIP、成果包（Word、ZIP）、相簿庫（相冊、地點、最愛、回收桶、記錄備份）（v120 起已移除會送出學生臉部的「畢冊人臉分群」）</td><td>不送出</td><td>只在本機</td><td>不會</td></tr>
         <tr class="ok"><td>📍 相簿庫地點的地名（縣市、鄉鎮市區）</td><td>不送出：用內建的全台鄉鎮市區界線（內政部開放資料）在本機算</td><td>只在本機</td><td>不會</td></tr>
         <tr class="ok"><td>🤖 AI 人臉（YuNet）、🧬 128 維人臉特徵、HEIC 轉檔</td><td>不送照片，只下載程式與模型</td><td>只在本機執行</td><td>不會</td></tr>
-        <tr class="ok"><td>🔎 相簿庫「AI 找照片」（打字找照片、AI 分類、自動分群）</td><td>不送照片，只下載程式與模型（你按「下載看圖模型」才下載）</td><td>只在本機執行</td><td>不會</td></tr>
+        <tr class="ok"><td>🔎 相簿庫「AI 找照片」（打字找照片、AI 分類、自動分群）、進階設定「AI 看圖找同一個畫面」</td><td>不送照片，只下載程式與模型（你按「下載看圖模型」才下載）</td><td>只在本機執行</td><td>不會</td></tr>
         <tr class="warn"><td>🌐 相簿庫地點「查地標名稱」（按了才送）</td><td>照片位置的座標（約 500 公尺一格），不含照片、活動名稱</td><td>OpenStreetMap（nominatim.openstreetmap.org）</td><td>不會；地名本身（縣市、鄉鎮市區）用內建資料，不連網</td></tr>
         <tr class="warn"><td>✨ 成果包 AI 文案（Gemini，按 ✨ 才送）</td><td>你在相簿庫勾選、要寫說明的照片（長邊 768 px；FB 貼文最多 6 張）與活動名稱、類型，請它寫照片說明與貼文；不寫姓名、不點名、不描述外貌</td><td>Google Gemini</td><td><b>免費方案：可能</b>，且可能有人工審閱；付費方案：不會</td></tr>
         <tr><td>✨ 海報 AI 封面插圖（Gemini 生圖，按了才送）</td><td><b>只送文字</b>：活動名稱與標語（最多 80 字），請它畫一張不含人臉、不含文字的插圖；<b>不送任何照片</b>。畫好的圖只放在記憶體</td><td>Google Gemini</td><td>生圖只有付費方案能用：不會</td></tr>
@@ -3330,10 +3332,10 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><td>📲 從手機相簿分享進來（Android，安裝成 App 後）</td><td>你選的照片交給這個網頁 App，暫存在這支手機瀏覽器的 IndexedDB，打開頁面匯入後立刻刪掉；不經過任何伺服器</td><td>只在這支手機</td></tr>
         <tr><td>📤 匯出整理記錄（.json）</td><td>檔名、分組、活動名稱、標籤、入選／淘汰（<b>不含照片</b>）存成檔案，由你自己帶到別台電腦</td><td>你放哪就在哪</td></tr>
         <tr><td>📲 直接分享（手機）</td><td>你在成果包按「直接分享」時，縮好的照片（最多 9 張）與群組訊息交給你在手機上選的 App（LINE、FB…），由那個 App 送出</td><td>看你選的 App</td></tr>
-        <tr><td>瀏覽器 IndexedDB（pickupClip）＋快取（pickup-clip-v1）</td><td>🔎 AI 找照片：相簿庫每張照片的<b>看圖特徵</b>（512 個數字，不能還原成照片，但能用來找出長得像的照片）、算過的文字特徵；看圖模型檔（約 210 MB，顯示卡加速再 377 MB）</td><td>瀏覽器設定 → 清除網站資料</td></tr>
+        <tr><td>瀏覽器 IndexedDB（pickupClip）＋快取（pickup-clip-v1）</td><td>🔎 AI 找照片／AI 看圖找同一個畫面：相簿庫與分析過的照片的<b>看圖特徵</b>（512 個數字，不能還原成照片，但能用來找出長得像的照片）、算過的文字特徵；看圖模型檔（約 210 MB，顯示卡加速再 377 MB）</td><td>瀏覽器設定 → 清除網站資料</td></tr>
         <tr><td>瀏覽器 IndexedDB（設定）</td><td>相簿庫、備份資料夾的位置；活動海報的<b>校徽</b>（你自己選的圖，轉成 PNG 存在這裡）；<b>最近整理記錄</b>（每批照片的檔名、分組、活動名稱、標籤、入選／淘汰，不含照片，最多 20 批，匯出後 7 天自動清）</td><td>設定 → 儲存 →「清除整理記錄」；或清除瀏覽器網站資料</td></tr>
         <tr><td>瀏覽器 Cache Storage（網站版／安裝成 App）</td><td>工具本身、圖示，以及公開程式庫與人臉模型（離線用）。<b>不含照片、不含分析結果</b></td><td>解除安裝 App，或清除瀏覽器網站資料</td></tr>
-        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、指定的 Gemini 模型代號、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關、整理動畫的開關、分享浮水印的開關、活動海報的版型／配色／勾選、回顧短片的設定（比例、秒數、動畫、過場、音量、選的內建配樂代號）、相簿庫最近 5 次搜尋、🔎 AI 找照片自己加的類別與是否用顯示卡加速、⏱ 時間記錄器的賽程與按下的時間（都不含照片；「📲 傳到手機」的連結把賽程放在網址 # 後面，只在兩台裝置之間傳，不經過伺服器）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
+        <tr><td>瀏覽器 localStorage</td><td>Gemini Key、Gemini 方案、指定的 Gemini 模型代號、宣導主題勾選、Google Client ID、上次備份／同步時間、外觀設定、命名記錄（自己打的活動名稱與月份、用過的標籤與次數）、Gemini 命名顯示開關、成果表 Gemini 說明的勾選、成果表說明逐張確認的勾選、成果包的學校／單位名稱、AI 文字風格、相簿一鍵整理的分組方式、各情境自己改過的進階設定、相簿庫位置類型（本機／Google 雲端硬碟）、存進相簿庫的照片大小、相簿庫記錄自動備份的間隔與上次備份時間、各月份常見活動的開關與你們學校匯入的活動清單、「下一步」提示的開關、整理動畫的開關、分享浮水印的開關、活動海報的版型／配色／勾選、回顧短片的設定（比例、秒數、動畫、過場、音量、選的內建配樂代號）、相簿庫最近 5 次搜尋、🔎 AI 找照片自己加的類別與是否用顯示卡加速、AI 看圖找同一個畫面的開關與秒數／相似度、⏱ 時間記錄器的賽程與按下的時間（都不含照片；「📲 傳到手機」的連結把賽程放在網址 # 後面，只在兩台裝置之間傳，不經過伺服器）</td><td>設定 → Gemini 🗑；或清除瀏覽器網站資料</td></tr>
         <tr><td>你選的相簿庫資料夾</td><td>匯出的照片、index.json（檔名、日期、活動、分數、人數、拍攝者名字、最愛、自建相簿名稱、照片本身帶的 <b>GPS 經緯度</b>、你設定的學校位置、自己取的地點名稱與查到的地標名稱）、索引歷史（_index_history）與每天的記錄備份（_相簿庫記錄備份，保留 30 天）。設為最愛的照片檔內會寫入「5 顆星」。在相簿庫刪除的照片先放進「_回收桶」資料夾，按「永久刪除」才真的刪掉</td><td>自行管理資料夾</td></tr>
       </table>
       <div class="pv-note">共用電腦用完請清除分析快取；離職或交接時一併刪除相簿庫與 Gemini Key。</div>
@@ -3365,7 +3367,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v54 程式逐項清點（2026-11-14）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v55 程式逐項清點（2026-11-15）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3588,6 +3590,21 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
                   <input type="number" class="num-input" id="simThreshold" value="90" min="50" max="100">
                   <span style="font-size:11px;color:var(--text-dim);margin-left:4px;">%</span>
                 </div>
+                <div class="control-row" style="flex-wrap:wrap;">
+                  <span class="control-label"><span class="emoji">🔎</span> AI 看圖找同一個畫面</span>
+                  <div class="toggle" id="aiSceneToggle" onclick="aiSceneToggle(this)" title="不是連拍、但隔幾秒對同一個畫面拍了好幾張 → 只留最好的一張；同時參考「動作瞬間」（跨步、衝線、交棒、騰空）"></div>
+                  <div style="font-size:10px;color:var(--text-dim);line-height:1.5;width:100%;">不是連拍、但隔幾秒對同一個畫面拍了好幾張 → 只留最好的；挑的時候也參考「動作瞬間」。要先下載看圖模型（約 210 MB，只下載一次；照片不上傳），每張多約 0.6 秒（有顯示卡約 0.06 秒）</div>
+                </div>
+                <div class="control-row">
+                  <span class="control-label"><span class="emoji">⏱</span> AI 同畫面：幾秒內</span>
+                  <input type="number" class="num-input" id="aiSceneSec" value="20" min="2" max="300" onchange="aiSceneSave()">
+                  <span style="font-size:11px;color:var(--text-dim);margin-left:4px;">秒</span>
+                </div>
+                <div class="control-row">
+                  <span class="control-label"><span class="emoji">🎯</span> AI 同畫面：相似度</span>
+                  <input type="number" class="num-input" id="aiSceneSim" value="95" min="85" max="99" onchange="aiSceneSave()">
+                  <span style="font-size:11px;color:var(--text-dim);margin-left:4px;">%</span>
+                </div>
               </div>
           
 
@@ -3792,7 +3809,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v54（2026-11-14）。</span><br>
+        <span style="font-size:11px;">本說明對應 2026v55（2026-11-15）。</span><br>
         <a href="guide.html" target="_blank" rel="noopener" onclick="if (!/^https?:$/.test(location.protocol)) { event.preventDefault(); showToast('📖 圖文操作說明在校園拾光網站上：網址後面加 /guide.html'); }" style="display:inline-block;margin-top:6px;font-weight:700;color:var(--accent);">📖 看圖文操作說明（每一步都有畫面）→</a>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
@@ -4397,11 +4414,11 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v54';
+const APP_VERSION = '2026v55';
 // 2026v51：本機時間的日期／時間字串（toISOString 是世界標準時間，台灣早上 8 點前會變成前一天）
 function localYmd(d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
 function localStamp(len = 19, d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${localYmd(d)} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`.slice(0, len); }
-const APP_BUILD = 'v211';   // 內部建置號（補丁與測試用）
+const APP_BUILD = 'v212';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -5968,6 +5985,10 @@ async function runAnalysisPipeline(options = {}) {
       groupMode === 'custom' ? groupByCustomTime() : groupByAutoTime();
     }
   }
+
+  // 2026v55：AI 看圖（選用）— 算每張照片的特徵與「動作瞬間」分數
+  if (aiSceneOn()) { try { await aiSceneAnalyze(prog); } catch (e) { console.warn('ai scene', e); showToast('⚠️ AI 看圖沒有完成：' + (e.message || e) + '（其他照常）'); } }
+  else photos.forEach(p => { p.aiAction = 0; });
 
   // ── Step 4: Score & select ──
   prog(96, '評分與篩選...');
@@ -8344,8 +8365,8 @@ function detectBurstsAndDedup() {
       const aColor = a.colorScore || 50, bColor = b.colorScore || 50;
       if (currentScenario === 'sports') {
         const ba = Math.max(a.bodySharpness, a.faceClarity), bb = Math.max(b.bodySharpness, b.faceClarity);
-        sa = a.faceProminence * 0.28 + ba * 0.28 + a.sharpness * 0.22 + a.expressionScore * 0.08 + a.exposure * 0.04 + aComp * 0.06 + aColor * 0.04 - (a.bodyCutPenalty || 0) * 3;   // 2026v53：身體被切掉的排後面
-        sb = b.faceProminence * 0.28 + bb * 0.28 + b.sharpness * 0.22 + b.expressionScore * 0.08 + b.exposure * 0.04 + bComp * 0.06 + bColor * 0.04 - (b.bodyCutPenalty || 0) * 3;
+        sa = a.faceProminence * 0.28 + ba * 0.28 + a.sharpness * 0.22 + a.expressionScore * 0.08 + a.exposure * 0.04 + aComp * 0.06 + aColor * 0.04 - (a.bodyCutPenalty || 0) * 3 + (a.aiAction || 0) * 150;   // 2026v53 身體被切掉排後面；2026v55 動作瞬間加分
+        sb = b.faceProminence * 0.28 + bb * 0.28 + b.sharpness * 0.22 + b.expressionScore * 0.08 + b.exposure * 0.04 + bComp * 0.06 + bColor * 0.04 - (b.bodyCutPenalty || 0) * 3 + (b.aiAction || 0) * 150;
       } else if (currentScenario === 'school_event') {
         // 學校活動：人臉清晰25% + 主體20% + 表情15% + 構圖15% + 銳利10% + 色彩10% + 曝光5%
         sa = a.faceClarity * 0.25 + a.faceProminence * 0.20 + a.expressionScore * 0.15 + aComp * 0.15 + a.sharpness * 0.10 + aColor * 0.10 + a.exposure * 0.05;
@@ -8999,6 +9020,7 @@ function scoreAndSelect() {
     }
   }
   try { dedupSimilarScenes(); } catch (e) { console.warn('scene dedup', e); }   // v149
+  try { dedupAiScenes(); } catch (e) { console.warn('ai scene dedup', e); }       // 2026v55
 }
 // 2026v35 紀錄模式的收尾：連拍組換成睜眼那張、每組／每個活動至少留一張
 function recordModeFixups(sharpT) {
@@ -9028,6 +9050,85 @@ function photoSimilar(a, b, pct) {
   if (a.hash && b.hash) { let d = 0; for (let k = 0; k < 64; k++) if (a.hash[k] !== b.hash[k]) d++; return d <= Math.floor(64 * (1 - pct / 100)); }
   return false;
 }
+// ══════════════════════════════════════════════════════════════
+// 2026v55 🔎 AI 看圖找同一個畫面＋動作瞬間（選用，預設關）
+// ══════════════════════════════════════════════════════════════
+const AI_ACTION_PROMPTS = ['運動員奔跑的瞬間', '學生衝過終點線', '接力賽交棒', '跳躍騰空', '用力拔河', '投球的動作'];
+const AI_STILL_PROMPTS = ['站著不動的人', '人的背影', '空無一人的場地', '在旁邊觀看的人群'];
+function aiSceneOn() { try { return localStorage.getItem('aiScene') === '1'; } catch (e) { return false; } }
+function aiSceneSave() {
+  try {
+    const sec = Math.min(300, Math.max(2, parseInt(document.getElementById('aiSceneSec')?.value) || 20));
+    const sim = Math.min(99, Math.max(85, parseInt(document.getElementById('aiSceneSim')?.value) || 95));
+    localStorage.setItem('aiSceneCfg', JSON.stringify({ sec, sim }));
+  } catch (e) {}
+}
+function aiSceneCfg() { try { const c = JSON.parse(localStorage.getItem('aiSceneCfg') || '{}'); return { sec: Math.min(300, Math.max(2, +c.sec || 20)), sim: Math.min(99, Math.max(85, +c.sim || 95)) }; } catch (e) { return { sec: 20, sim: 95 }; } }
+function aiSceneSyncUI() {
+  const t = document.getElementById('aiSceneToggle'); if (t) t.classList.toggle('on', aiSceneOn());
+  const c = aiSceneCfg(); const a = document.getElementById('aiSceneSec'), b = document.getElementById('aiSceneSim');
+  if (a) a.value = c.sec; if (b) b.value = c.sim;
+}
+function aiSceneToggle(el) {
+  const on = !aiSceneOn();
+  try { localStorage.setItem('aiScene', on ? '1' : '0'); } catch (e) {}
+  el.classList.toggle('on', on);
+  showToast(on ? (localStorage.getItem('clipReady') === '1' ? '🔎 AI 看圖找同一個畫面：已開（下次分析時使用）' : '🔎 已開：下次分析時會先下載看圖模型（約 210 MB，只下載一次；照片不上傳）') : '🔎 AI 看圖找同一個畫面：已關');
+}
+// 照片特徵（用縮圖算，快）：記在瀏覽器，同一張照片下次不用重算
+async function aiSceneAnalyze(prog) {
+  const ok = await clipEnsure((p, t) => prog(93, '🔎 ' + t));
+  if (!ok) throw new Error(clipState.error || '看圖模型載入失敗');
+  try { localStorage.setItem('clipReady', '1'); } catch (e) {}
+  if (localStorage.getItem('clipGpu') === '1' && !clipState.gpuModel) await clipGpuEnable(() => {}).catch(() => {});
+  const d = await clipDb().catch(() => null);
+  const keyOf = p => `img|${p.file.name}|${p.file.size}|${p.file.lastModified}`;
+  const [act, still] = [await clipTexts(AI_ACTION_PROMPTS), await clipTexts(AI_STILL_PROMPTS)];
+  const t0 = performance.now(); let done = 0, lastP = 0;
+  for (const p of photos) {
+    let v = null;
+    if (d) v = await new Promise(res => { const rq = d.transaction('img', 'readonly').objectStore('img').get(keyOf(p)); rq.onsuccess = () => res(rq.result ? clipDequant(rq.result) : null); rq.onerror = () => res(null); });
+    if (!v) {
+      try {
+        const blob = p.thumbUrl ? await fetch(p.thumbUrl).then(r => r.blob()) : p.file;
+        v = await clipEmbedImage(blob);
+        if (d) { const tx = d.transaction('img', 'readwrite'); tx.objectStore('img').put(clipQuant(v), keyOf(p)); }
+      } catch (e) { console.warn('ai scene embed', p.name, e); }
+    }
+    p.clipEmb = v || null;
+    p.aiAction = v ? Math.max(...act.map(a => clipDot(v, a))) - Math.max(...still.map(a => clipDot(v, a))) : 0;
+    done++;
+    const n = performance.now();
+    if (n - lastP > 400) { lastP = n; const rate = done / ((n - t0) / 1000); prog(93 + Math.round(done / photos.length * 3), `🔎 AI 看圖：${done} / ${photos.length}${rate > 0 && done < photos.length ? `（大約還要 ${Math.ceil((photos.length - done) / rate)} 秒）` : ''}`); await new Promise(r => setTimeout(r, 0)); }
+  }
+}
+// 同一組、幾秒內、AI 看起來幾乎一樣 → 只留最好的一張（分數＋動作瞬間）
+function dedupAiScenes() {
+  photos.forEach(p => { p.isAiSceneDup = false; });
+  if (!aiSceneOn()) return 0;
+  const { sec, sim } = aiSceneCfg(), win = sec * 1000, th = sim / 100;
+  const cand = photos.filter(p => p.selected && !p.manualOverride && p.clipEmb && p.time instanceof Date && !isNaN(p.time)).sort((a, b) => a.time - b.time);
+  const par = new Map(cand.map(p => [p, p])); const find = p => { while (par.get(p) !== p) { par.set(p, par.get(par.get(p))); p = par.get(p); } return p; };
+  for (let i = 0; i < cand.length; i++) for (let j = i + 1; j < cand.length && cand[j].time - cand[i].time <= win; j++) {
+    if (cand[i].groupId !== cand[j].groupId) continue;
+    if (clipDot(cand[i].clipEmb, cand[j].clipEmb) >= th) par.set(find(cand[i]), find(cand[j]));
+  }
+  const cl = new Map(); for (const p of cand) { const r = find(p); if (!cl.has(r)) cl.set(r, []); cl.get(r).push(p); }
+  const hm = d => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+  let n = 0;
+  for (const items of cl.values()) {
+    if (items.length < 2) continue;
+    const rank = p => (p.score || 0) + (p.aiAction || 0) * 200 - (p.bodyCutPenalty || 0);
+    const s = [...items].sort((a, b) => rank(b) - rank(a) || a.time - b.time), best = s[0];
+    for (const p of s.slice(1)) {
+      p.selected = false; p.tier = 'drop'; p.isAiSceneDup = true;
+      p.selectReason = `🔎 同一個畫面（AI 看圖：和 ${hm(best.time)} 那張幾乎一樣，${sec} 秒內拍了 ${items.length} 張），只留最好的 1 張`;
+      n++;
+    }
+  }
+  return n;
+}
+
 function dedupSimilarScenes() {
   photos.forEach(p => { p.isSceneDup = false; });
   if (!settings.sceneDedup) return 0;
@@ -14343,7 +14444,7 @@ function clipAllCats() { return [...CLIP_CATS, ...clipCustomCats().map(n => [n, 
 let _clipDb = null;
 function clipDb() {
   if (_clipDb) return _clipDb;
-  _clipDb = new Promise((res, rej) => { const r = indexedDB.open('pickupClip', 1); r.onupgradeneeded = () => { const d = r.result; if (!d.objectStoreNames.contains('emb')) d.createObjectStore('emb'); if (!d.objectStoreNames.contains('txt')) d.createObjectStore('txt'); }; r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+  _clipDb = new Promise((res, rej) => { const r = indexedDB.open('pickupClip', 2); r.onupgradeneeded = () => { const d = r.result; for (const n of ['emb', 'txt', 'img']) if (!d.objectStoreNames.contains(n)) d.createObjectStore(n); }; r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
   _clipDb.catch(() => { _clipDb = null; });
   return _clipDb;
 }
@@ -16982,6 +17083,7 @@ const GEMINI_PICKS = ['gemini-3.5-flash-lite', 'gemini-3.8-flash', 'gemini-3.6-f
 function getGeminiModel() { try { const v = localStorage.getItem('geminiModel') || ''; return GEMINI_PICKS.includes(v) ? v : ''; } catch { return ''; } }
 function setGeminiModel(v) { try { GEMINI_PICKS.includes(v) ? localStorage.setItem('geminiModel', v) : localStorage.removeItem('geminiModel'); } catch {} const g = document.getElementById('geminiModelGlobal'); if (g) g.value = getGeminiModel(); _gemDead.clear(); }
 document.addEventListener('DOMContentLoaded', () => { const g = document.getElementById('geminiModelGlobal'); if (g) g.value = getGeminiModel(); });
+document.addEventListener('DOMContentLoaded', () => { try { aiSceneSyncUI(); } catch (e) {} });   // 2026v55
 async function geminiKeyTest() {
   const out = document.getElementById('geminiTestOut'), btn = document.getElementById('geminiTestBtn'), key = getGeminiKey();
   const say = (t, c) => { if (out) { out.textContent = t; out.style.color = c || ''; } };
