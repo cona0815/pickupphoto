@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v55 (2026-11-15)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v56 (2026-11-16)　（原名：AI 照片篩選器）
+  2026v56 (2026-11-16, build v213): 🔎 AI 看圖拉到一般流程 — 相簿一鍵整理多一種拆法「🔎 依內容（AI）」（合照、頒獎、運動、截圖、文件…各一組）；
+                                   審核區「🔎 AI 找照片」直接在這一批裡打字找、看分類、點一下改入選／淘汰（不用先存相簿庫）
   2026v55 (2026-11-15, build v212): 🔎 進階設定「AI 看圖找同一個畫面」（預設關）— 不是連拍、但隔幾秒對同一個畫面拍好幾張 → 只留最好的；
                                    同時算「動作瞬間」分數（跨步、衝線、交棒、騰空），連拍組與同畫面挑最好那張時當參考；照片特徵記在瀏覽器，下次不用重算
   2026v54 (2026-11-14, build v211): 🔎 相簿庫「AI 找照片」— 本機看圖模型（Chinese-CLIP，MIT；transformers.js 3.8.1，Apache-2.0）：
@@ -253,7 +255,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v55 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v56 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2411,6 +2413,16 @@
   .lib-vh { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; font-size: 13px; }
   .lib-vh .t { font-weight: 700; font-size: 15px; color: var(--text); }
   .lib-vh .n { font-size: 11.5px; color: var(--text-dim); }
+  .bclip-modal { max-width: 980px !important; width: 96vw; max-height: 90vh; overflow-y: auto; }
+  .bclip-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .bclip-head h3 { margin: 0; }
+  .bclip-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0; font-size: 13px; }
+  .bclip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+  .bclip-tile { position: relative; border-radius: 10px; overflow: hidden; cursor: pointer; border: 3px solid transparent; aspect-ratio: 4 / 3; background: rgba(255,255,255,0.05); }
+  .bclip-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .bclip-tile span { position: absolute; left: 6px; bottom: 6px; font-size: 11px; padding: 2px 7px; border-radius: 999px; background: rgba(0,0,0,0.65); color: #fff; }
+  .bclip-tile.on { border-color: var(--green); }
+  .bclip-tile.off { opacity: 0.55; border-color: var(--red); }
   .clip-panel { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
   .clip-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .clip-bar { height: 10px; border-radius: 6px; background: rgba(255,255,255,0.1); overflow: hidden; flex: 1; min-width: 160px; }
@@ -3264,7 +3276,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v55 · 2026-11-15</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v56 · 2026-11-16</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3367,7 +3379,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v55 程式逐項清點（2026-11-15）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v56 程式逐項清點（2026-11-16）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3622,7 +3634,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
           <span class="ac-for">很多天、很多場混在一起的照片（手機相簿）；情境自動用「🏫 學校活動」</span>
           <span class="ac-line">怎麼拆成一場一場？</span>
           <div class="ac-chips" role="radiogroup" aria-label="分組方式">
-            <button class="ac-chip" data-split="day" onclick="setAlbumSplit('day')" title="同一天的照片放一起">📅 一天一組</button><button class="ac-chip" data-split="half" onclick="setAlbumSplit('half')" title="上午、下午各一組">🌓 半天一組</button><button class="ac-chip" data-split="gap" onclick="setAlbumSplit('gap')" title="同一天裡相隔 40 分鐘以上就算下一場">⏱ 相隔 40 分鐘</button>
+            <button class="ac-chip" data-split="day" onclick="setAlbumSplit('day')" title="同一天的照片放一起">📅 一天一組</button><button class="ac-chip" data-split="half" onclick="setAlbumSplit('half')" title="上午、下午各一組">🌓 半天一組</button><button class="ac-chip" data-split="ai" onclick="setAlbumSplit('ai')" title="依照片內容分：合照、頒獎、運動、舞台、上課、截圖、文件…各一組（AI 在電腦上看圖，照片不上傳；第一次要下載看圖模型約 210 MB）">🔎 依內容（AI）</button><button class="ac-chip" data-split="gap" onclick="setAlbumSplit('gap')" title="同一天裡相隔 40 分鐘以上就算下一場">⏱ 相隔 40 分鐘</button>
           </div>
           <button class="ac-go alb" id="btnAlbumSide" disabled onclick="startAlbumMode()">📱 開始整理</button>
           <span class="ac-line" id="acGemini">拆好後逐組按「📁 命名・標籤」挑名稱</span>
@@ -3809,7 +3821,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v55（2026-11-15）。</span><br>
+        <span style="font-size:11px;">本說明對應 2026v56（2026-11-16）。</span><br>
         <a href="guide.html" target="_blank" rel="noopener" onclick="if (!/^https?:$/.test(location.protocol)) { event.preventDefault(); showToast('📖 圖文操作說明在校園拾光網站上：網址後面加 /guide.html'); }" style="display:inline-block;margin-top:6px;font-weight:700;color:var(--accent);">📖 看圖文操作說明（每一步都有畫面）→</a>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
@@ -3821,7 +3833,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       　① 選場合（<b>一定要自己選，不預設</b>）：<b>🏫 學校活動</b>（各時段平均、自然表情）／<b>🏃 運動會</b>（抓動作瞬間）／<b>🏆 頒獎</b>（臉清楚、不閉眼）／<b>🎓 畢業典禮</b>（每組留 1 張）<br>
       　② 分組 ▸ 調整：自動（相隔 N 分鐘算下一場）或依時段（手機「時間記錄器」）<br>
       　③ 進階 ▸ 調整：模糊門檻、連拍留幾張、<b>🪞 太相似只留 1 張</b>（學校活動預設：60 秒內、相似度 90%）、保留比例。<b>改過的只套用到這個場合</b>，記在這台電腦，可「↺ 恢復預設」。<br>
-      <b>📱 相簿一鍵整理</b> — 很多天、很多場混在一起的手機相簿：自動用學校活動，可選 📅 一天一組／🌓 半天一組（中午切）／⏱ 相隔 40 分鐘。
+      <b>📱 相簿一鍵整理</b> — 很多天、很多場混在一起的手機相簿：自動用學校活動，可選 📅 一天一組／🌓 半天一組（中午切）／🔎 依內容（AI：合照、頒獎、運動、截圖、文件…各一組）／⏱ 相隔 40 分鐘。
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">3</span> 分群</div>
       在 🎯 單一活動卡的「② 分組」裡設定（開始分析之前）。相機時鐘不準用「⏱ 相機時間校正」；空檔照片可自動歸到最近的時段。
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">4</span> 分析</div>
@@ -4414,11 +4426,11 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v55';
+const APP_VERSION = '2026v56';
 // 2026v51：本機時間的日期／時間字串（toISOString 是世界標準時間，台灣早上 8 點前會變成前一天）
 function localYmd(d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
 function localStamp(len = 19, d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${localYmd(d)} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`.slice(0, len); }
-const APP_BUILD = 'v212';   // 內部建置號（補丁與測試用）
+const APP_BUILD = 'v213';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -5969,7 +5981,12 @@ async function runAnalysisPipeline(options = {}) {
   }
 
   // ── Step 3: Time grouping ──
-  prog(93, '依時間分群...');
+  // 2026v55／v56：AI 看圖（選用）— 找同一個畫面、相簿依內容拆，都要先算每張照片的特徵
+  if (aiSceneOn() || (albumMode && albumSplitPref() === 'ai')) {
+    try { await aiSceneAnalyze(prog); if (albumMode && albumSplitPref() === 'ai') await clipCatVecs(); }
+    catch (e) { console.warn('ai scene', e); showToast('⚠️ AI 看圖沒有完成：' + (e.message || e) + '（改用時間分組，其他照常）'); }
+  } else photos.forEach(p => { p.aiAction = 0; });
+  prog(93, albumMode && albumSplitPref() === 'ai' && photos.some(p => p.clipEmb) ? '依內容分組...' : '依時間分群...');
   if (timeGroupMode === 'auto') {
     groupMode = 'auto';
     groupByAutoTime();
@@ -5985,10 +6002,6 @@ async function runAnalysisPipeline(options = {}) {
       groupMode === 'custom' ? groupByCustomTime() : groupByAutoTime();
     }
   }
-
-  // 2026v55：AI 看圖（選用）— 算每張照片的特徵與「動作瞬間」分數
-  if (aiSceneOn()) { try { await aiSceneAnalyze(prog); } catch (e) { console.warn('ai scene', e); showToast('⚠️ AI 看圖沒有完成：' + (e.message || e) + '（其他照常）'); } }
-  else photos.forEach(p => { p.aiAction = 0; });
 
   // ── Step 4: Score & select ──
   prog(96, '評分與篩選...');
@@ -8417,6 +8430,7 @@ function detectBurstsAndDedup() {
 // ── AUTO GROUPING ──
 function groupByAutoTime() {
   const split = albumMode ? albumSplitPref() : '';
+  if (split === 'ai' && _clip.catVecs && photos.some(p => p.clipEmb)) return groupByAiContent();   // 2026v56
   const gapMs = albumMode ? (split === 'gap' ? ALBUM_GAP_MIN * 60000 : Infinity) : (parseInt(document.getElementById('timeGap').value) || 30) * 60000;
   const sorted = [...photos].sort((a,b) => (a.time||0) - (b.time||0));
   groups = []; let cur = null;
@@ -8436,6 +8450,32 @@ function groupByAutoTime() {
       else if (seen[n] > 1) n = `${n} ${seen[n]}`;
       g.name = n; g.folderName = safeName(n);
     });
+  }
+}
+
+// 2026v56 依內容（AI）：每張照片分到最像的類別，一類一組（不夠像 → 其他）
+function aiPhotoCat(v) {
+  const cats = [..._clip.catVecs || []]; if (!v || !cats.length) return ['其他', 0];
+  const sc = cats.map(([n, c]) => [n, clipDot(v, c)]);
+  const mx = Math.max(...sc.map(x => x[1])); let z = 0; for (const x of sc) z += Math.exp(100 * (x[1] - mx));
+  sc.sort((a, b) => b[1] - a[1]);
+  return [1 / z >= 0.4 ? sc[0][0] : '其他', sc[0][1]];
+}
+function groupByAiContent() {
+  const order = [...clipAllCats().map(c => c[0]), '其他'], by = new Map();
+  for (const p of [...photos].sort((a, b) => (a.time || 0) - (b.time || 0))) {
+    const [c] = aiPhotoCat(p.clipEmb); p.aiCat = c;
+    if (!by.has(c)) by.set(c, []); by.get(c).push(p);
+  }
+  const fmt = d => `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  groups = [];
+  for (const c of order) {
+    const ps = by.get(c); if (!ps || !ps.length) continue;
+    const ts = ps.map(p => p.time).filter(t => t instanceof Date && !isNaN(t));
+    const g = { id: groups.length, name: c, folderName: safeName(c), photos: ps, start: ts.length ? new Date(Math.min(...ts)) : null, end: ts.length ? new Date(Math.max(...ts)) : null, aiContent: true };
+    g.timeRange = g.start ? `${fmt(g.start)} — ${fmt(g.end)}` : '未知時間';
+    ps.forEach(p => { p.groupId = g.id; });
+    groups.push(g);
   }
 }
 
@@ -9051,6 +9091,101 @@ function photoSimilar(a, b, pct) {
   return false;
 }
 // ══════════════════════════════════════════════════════════════
+// 2026v56 🔎 審核區「AI 找照片」：這一批照片直接打字找、看分類、點一下改入選／淘汰
+// ══════════════════════════════════════════════════════════════
+const _bclip = { q: '', qv: null, cat: '', busy: '', pct: 0, limit: 120 };
+function openBatchClip() {
+  if (!photos.length) { showToast('先匯入並分析照片'); return; }
+  let m = document.getElementById('batchClipModal');
+  if (!m) {
+    m = document.createElement('div'); m.id = 'batchClipModal'; m.className = 'modal-overlay';
+    m.onclick = e => { if (e.target === m) closeBatchClip(); };
+    m.innerHTML = '<div class="modal bclip-modal"><div id="bclipBody"></div></div>';
+    document.body.appendChild(m);
+  }
+  m.classList.add('show'); renderBatchClip();
+  if (clipState.loaded || localStorage.getItem('clipReady') === '1') bclipPrepare();
+}
+function closeBatchClip() {
+  document.getElementById('batchClipModal')?.classList.remove('show');
+  if (photos.length && groups.length) { window._quietRender = true; try { renderResults(); } catch (e) { console.warn(e); } }
+}
+async function bclipPrepare() {
+  if (_bclip.busy) return;
+  try {
+    _bclip.busy = '準備看圖模型…'; _bclip.pct = 1; renderBatchClip();
+    let lastR = 0;
+    const ok = await clipEnsure((p, t) => { _bclip.busy = t; _bclip.pct = p; const n = performance.now(); if (n - lastR > 400) { lastR = n; renderBatchClip(); } });
+    if (!ok) throw new Error(clipState.error || '看圖模型載入失敗');
+    try { localStorage.setItem('clipReady', '1'); } catch (e) {}
+    if (localStorage.getItem('clipGpu') === '1' && !clipState.gpuModel) await clipGpuEnable(() => {}).catch(() => {});
+    const todo = photos.filter(p => !p.clipEmb);
+    if (todo.length) await aiEmbedPhotos(todo, (d, t, eta) => { _bclip.busy = `AI 看照片：${d} / ${t}${eta ? `（大約還要 ${eta} 秒）` : ''}`; _bclip.pct = d / t * 100; renderBatchClip(); });
+    await clipCatVecs();
+  } catch (e) { showToast('⚠️ ' + (e.message || e)); }
+  _bclip.busy = ''; renderBatchClip();
+}
+function bclipList() {
+  const ps = photos.filter(p => p.clipEmb);
+  if (_bclip.q && _bclip.qv) { const sc = ps.map(p => [p, clipDot(p.clipEmb, _bclip.qv)]).sort((a, b) => b[1] - a[1]); const top = sc.length ? sc[0][1] : 0; return sc.filter(x => x[1] >= top - CLIP_SEARCH_MARGIN).map(x => x[0]); }
+  if (_bclip.cat) return ps.filter(p => aiPhotoCat(p.clipEmb)[0] === _bclip.cat).sort((a, b) => aiPhotoCat(b.clipEmb)[1] - aiPhotoCat(a.clipEmb)[1]);
+  return null;
+}
+function renderBatchClip() {
+  const el = document.getElementById('bclipBody'); if (!el) return;
+  const ready = clipState.loaded && photos.some(p => p.clipEmb) && !_bclip.busy;
+  const head = `<div class="bclip-head"><h3>🔎 AI 找照片（這一批 ${photos.length} 張）</h3><button class="tip-link" onclick="closeBatchClip()">✕ 關閉</button></div>
+    <div class="clip-sub">AI 在這台電腦上看圖，照片不上傳。點縮圖可以改 <b>入選／淘汰</b>。要找整學期的照片，請用「📚 相簿庫 → 🔎 AI 找照片」。</div>`;
+  if (_bclip.busy) { el.innerHTML = head + `<div class="clip-panel">${clipBar(_bclip.pct, _bclip.busy)}</div>`; return; }
+  if (!ready) {
+    el.innerHTML = head + `<div class="clip-panel">${clipState.error ? `<div class="clip-err">⚠️ ${escHtml(clipState.error)}</div>` : ''}
+      <button class="lib-pack-btn" onclick="bclipPrepare()">${localStorage.getItem('clipReady') === '1' ? '🔎 開始（看圖模型已下載過）' : '⬇️ 下載看圖模型並開始（約 210 MB，只下載一次）'}</button>
+      <div class="clip-sub">模型：Chinese-CLIP（MIT）＋ transformers.js（Apache-2.0），固定版本、比對 SHA-256。每張約 0.6 秒（有顯示卡更快）。</div></div>`;
+    return;
+  }
+  const cnt = new Map(); for (const p of photos) if (p.clipEmb) { const c = aiPhotoCat(p.clipEmb)[0]; cnt.set(c, (cnt.get(c) || 0) + 1); }
+  const q = s => JSON.stringify(s).replace(/"/g, '&quot;');
+  const custom = new Set(clipCustomCats());
+  const chips = [...clipAllCats().map(c => c[0]), '其他'].filter(n => cnt.get(n) || custom.has(n)).map(n => `<button class="clip-chip${_bclip.cat === n ? ' on' : ''}" onclick="bclipCat(${q(n)})">${escHtml(n)} <b>${cnt.get(n) || 0}</b></button>`).join('')
+    + `<button class="clip-chip add" onclick="bclipAddCat()">＋ 自己加類別</button>`;
+  const list = bclipList();
+  let grid = '';
+  if (list) {
+    const show = list.slice(0, _bclip.limit);
+    grid = `<div class="bclip-bar"><span>${_bclip.q ? `「${escHtml(_bclip.q)}」最像的照片` : `🏷 ${escHtml(_bclip.cat)}（AI 分類，可能有錯）`}：${list.length} 張（越前面越像）</span>
+        <button class="tip-link" onclick="bclipSetAll(true)">✅ 這些全部入選</button><button class="tip-link" onclick="bclipSetAll(false)">✕ 這些全部淘汰</button></div>
+      <div class="bclip-grid">${show.map(p => { const i = photos.indexOf(p); return `<div class="bclip-tile ${p.selected ? 'on' : 'off'}" onclick="bclipToggle(${i})" title="${escHtml(p.name)}（點一下改${p.selected ? '淘汰' : '入選'}）"><img src="${p.thumbUrl}" loading="lazy" alt=""><span>${p.selected ? '✅ 入選' : '✕ 淘汰'}</span></div>`; }).join('')}</div>
+      ${list.length > show.length ? `<button class="tip-link" onclick="_bclip.limit+=120;renderBatchClip()">再顯示 ${Math.min(120, list.length - show.length)} 張</button>` : ''}`;
+  } else grid = `<div class="clip-msg" style="padding:20px;text-align:center;">打字找照片，或點上面的類別</div>`;
+  el.innerHTML = head + `<div class="clip-panel">
+      <div class="clip-row"><input type="search" id="bclipQ" class="lib-q" style="flex:1;min-width:200px;" value="${escHtml(_bclip.q)}" placeholder="✏️ 用說的找照片：${CLIP_SEARCH_EXAMPLES.slice(0, 4).join('、')}…" onkeydown="if(event.key==='Enter')bclipSearch(this.value)">
+        <button class="lib-pack-btn" onclick="bclipSearch(document.getElementById('bclipQ').value)">🔎 找</button>${_bclip.q || _bclip.cat ? `<button class="tip-link" onclick="bclipSearch('')">清除</button>` : ''}</div>
+      <div class="clip-row" style="font-size:12px;color:var(--text-dim);">試試看：${CLIP_SEARCH_EXAMPLES.map(w => `<button class="tip-link" onclick="bclipSearch(${q(w)})">${w}</button>`).join(' ')}</div>
+      <div class="clip-chips">${chips}</div></div>` + grid;
+}
+async function bclipSearch(t) {
+  t = String(t || '').trim().slice(0, 40); _bclip.q = t; _bclip.cat = ''; _bclip.qv = null; _bclip.limit = 120;
+  if (t) { try { _bclip.qv = await clipQueryVec(t); } catch (e) { showToast('⚠️ ' + e.message); } }
+  renderBatchClip();
+}
+function bclipCat(n) { _bclip.cat = _bclip.cat === n ? '' : n; _bclip.q = ''; _bclip.qv = null; _bclip.limit = 120; renderBatchClip(); }
+async function bclipAddCat() {
+  const name = String(prompt('新增類別（打一句話，例如：鼓號樂隊、交通安全宣導、拔河）：', '') || '').trim().slice(0, 20); if (!name) return;
+  const a = clipCustomCats(); if (!a.includes(name) && !CLIP_CATS.some(c => c[0] === name)) { a.push(name); localStorage.setItem('clipCustomCats', JSON.stringify(a)); }
+  try { await clipCatVecs(); } catch (e) { showToast('⚠️ ' + e.message); }
+  _bclip.cat = name; _bclip.q = ''; renderBatchClip();
+}
+function bclipSet(p, on) {
+  if (p.selected === on) return;
+  if (!p.manualOverride) p.aiOriginalSelected = p.selected;
+  p.selected = on; p.manualOverride = true;
+  if (on && p.tier === 'drop') p.tier = 'pick';
+  if (!on) p.tier = 'drop';
+}
+function bclipToggle(i) { const p = photos[i]; if (!p) return; bclipSet(p, !p.selected); renderBatchClip(); }
+function bclipSetAll(on) { const l = bclipList() || []; if (!l.length || !confirm(`把這 ${l.length} 張全部設為「${on ? '入選' : '淘汰'}」？\n（AI 找的可能有錯，建議先看過縮圖）`)) return; l.forEach(p => bclipSet(p, on)); showToast(`${on ? '✅' : '✕'} ${l.length} 張設為${on ? '入選' : '淘汰'}`); renderBatchClip(); }
+
+// ══════════════════════════════════════════════════════════════
 // 2026v55 🔎 AI 看圖找同一個畫面＋動作瞬間（選用，預設關）
 // ══════════════════════════════════════════════════════════════
 const AI_ACTION_PROMPTS = ['運動員奔跑的瞬間', '學生衝過終點線', '接力賽交棒', '跳躍騰空', '用力拔河', '投球的動作'];
@@ -9081,11 +9216,14 @@ async function aiSceneAnalyze(prog) {
   if (!ok) throw new Error(clipState.error || '看圖模型載入失敗');
   try { localStorage.setItem('clipReady', '1'); } catch (e) {}
   if (localStorage.getItem('clipGpu') === '1' && !clipState.gpuModel) await clipGpuEnable(() => {}).catch(() => {});
+  await aiEmbedPhotos(photos, (done, total, eta) => prog(93 + Math.round(done / total * 3), `🔎 AI 看圖：${done} / ${total}${eta ? `（大約還要 ${eta} 秒）` : ''}`));
+}
+async function aiEmbedPhotos(list, onProg) {
   const d = await clipDb().catch(() => null);
   const keyOf = p => `img|${p.file.name}|${p.file.size}|${p.file.lastModified}`;
   const [act, still] = [await clipTexts(AI_ACTION_PROMPTS), await clipTexts(AI_STILL_PROMPTS)];
   const t0 = performance.now(); let done = 0, lastP = 0;
-  for (const p of photos) {
+  for (const p of list) {
     let v = null;
     if (d) v = await new Promise(res => { const rq = d.transaction('img', 'readonly').objectStore('img').get(keyOf(p)); rq.onsuccess = () => res(rq.result ? clipDequant(rq.result) : null); rq.onerror = () => res(null); });
     if (!v) {
@@ -9099,7 +9237,7 @@ async function aiSceneAnalyze(prog) {
     p.aiAction = v ? Math.max(...act.map(a => clipDot(v, a))) - Math.max(...still.map(a => clipDot(v, a))) : 0;
     done++;
     const n = performance.now();
-    if (n - lastP > 400) { lastP = n; const rate = done / ((n - t0) / 1000); prog(93 + Math.round(done / photos.length * 3), `🔎 AI 看圖：${done} / ${photos.length}${rate > 0 && done < photos.length ? `（大約還要 ${Math.ceil((photos.length - done) / rate)} 秒）` : ''}`); await new Promise(r => setTimeout(r, 0)); }
+    if (n - lastP > 400 || done === list.length) { lastP = n; const rate = done / ((n - t0) / 1000); onProg && onProg(done, list.length, rate > 0 && done < list.length ? Math.ceil((list.length - done) / rate) : 0); await new Promise(r => setTimeout(r, 0)); }
   }
 }
 // 同一組、幾秒內、AI 看起來幾乎一樣 → 只留最好的一張（分數＋動作瞬間）
@@ -13524,7 +13662,7 @@ async function fileToInline(file, maxDim) {
 const ALBUM_CATS = ['宣導活動', '教師研習', '運動會／體育', '典禮／頒獎', '課堂教學', '校外教學', '表演／展演', '會議／行政', '校園生活', '其他'];
 const ALBUM_GAP_MIN = 40; // 手機相簿：同一天內相隔超過 40 分鐘視為不同活動
 // v145: 相簿一鍵整理怎麼拆：day 一天一組／half 半天一組（中午 12 點切）／gap 相隔 40 分鐘（預設）
-function albumSplitPref(v) { try { if (v === undefined) { const s = localStorage.getItem('albumSplit'); return ['day', 'half', 'gap'].includes(s) ? s : 'gap'; } localStorage.setItem('albumSplit', v); } catch {} return v; }
+function albumSplitPref(v) { try { if (v === undefined) { const s = localStorage.getItem('albumSplit'); return ['day', 'half', 'gap', 'ai'].includes(s) ? s : 'gap'; } localStorage.setItem('albumSplit', v); } catch {} return v; }
 function setAlbumSplit(v) { albumSplitPref(v); try { updateAnalyzeChoice(); } catch {} }
 const ALBUM_NAME_RE = /^\d{1,2}\/\d{1,2}（.）(清晨|上午|中午|下午|晚上)( \d{1,2}:\d{2}| \d+)?$/;
 let albumMode = false;
@@ -14435,6 +14573,7 @@ const CLIP_CATS = [
   ['截圖', ['手機截圖', '電腦螢幕畫面', '網頁截圖']],
   ['親子活動', ['親子活動', '家長和孩子一起參加活動', '家長日']],
 ];
+const CLIP_SEARCH_MARGIN = 0.035;  // 2026v56：找照片只列「跟最像那張差不多像」的（實測：相關的差 0.02 內、不相關的差 0.05 以上）
 const CLIP_SEARCH_EXAMPLES = ['大隊接力', '頒獎合照', '營養午餐', '舞台表演', '升旗典禮', '學生畫作', '拔河', '戶外教學'];
 const _clip = { q: '', qv: null, cat: '', cluster: -1, clusters: null, running: false, stop: false, done: 0, total: 0, rate: 0,
   loadPct: 0, loadMsg: '', loading: false, emb: new Map(), embLib: '', catVecs: null, catVer: '', assign: null, assignVer: '', busy: '' };
@@ -14569,7 +14708,7 @@ function clipViewHtml(rows, head, scroll, empty) {
   } else if (_clip.q && _clip.qv) {
     const sc = withEmb.map(e => [e, clipDot(_clip.emb.get(e.key), _clip.qv)]).sort((a, b) => b[1] - a[1]);
     title = `🔎「${escHtml(_clip.q)}」最像的照片 <button class="tip-link" onclick="clipSearch('')">清除</button>`;
-    list = sc.slice(0, 120).map(x => x[0]);
+    const top = sc.length ? sc[0][1] : 0; list = sc.filter(x => x[1] >= top - CLIP_SEARCH_MARGIN).slice(0, 400).map(x => x[0]);   // 2026v56：只列跟最像那張差不多像的
   } else if (_clip.cat) {
     list = withEmb.filter(e => (assign.get(e.key) || [])[0] === _clip.cat).sort((a, b) => (assign.get(b.key)[1]) - (assign.get(a.key)[1]));
     title = `🏷 ${escHtml(_clip.cat)}（AI 分類，可能有錯）`;
@@ -18294,7 +18433,7 @@ function renderReviewFilter() {
   const counts = {};
   for (const p of photos) if (!p.selected) { const k = rejectTag(p).k; counts[k] = (counts[k] || 0) + 1; }
   const chip = (on, label, n, onclick) => `<button class="rf-chip${on ? ' on' : ''}" onclick="${onclick}">${label}${n != null ? `<b>${n}</b>` : ''}</button>`;
-  let html = `<button class="rf-chip rf-play" onclick="startSequentialReview()" title="照目前的篩選，一張張大圖看">▶ 逐張看</button>` + chip(reviewFilter.view === 'all', '全部', photos.length, "setReviewFilter('all')")
+  let html = `<button class="rf-chip rf-play" onclick="startSequentialReview()" title="照目前的篩選，一張張大圖看">▶ 逐張看</button><button class="rf-chip rf-play" onclick="openBatchClip()" title="用說的找照片、看 AI 分類（在電腦上看圖，照片不上傳）">🔎 AI 找照片</button>` + chip(reviewFilter.view === 'all', '全部', photos.length, "setReviewFilter('all')")
     + chip(reviewFilter.view === 'sel', '✅ 入選', sel, "setReviewFilter('sel')")
     + chip(reviewFilter.view === 'rej' && !reviewFilter.reason, '✕ 淘汰', rej, "setReviewFilter('rej')");
   if (reviewFilter.view === 'rej' && rej) {
