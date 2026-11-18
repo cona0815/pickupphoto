@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v57 (2026-11-18)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v58 (2026-11-18)　（原名：AI 照片篩選器）
+  2026v58 (2026-11-18, build v215): 🏠 生活拾光（生活版）— 同一份程式：網址 /life（或 ?edition=life、生活版單檔）；資料夾「2025-10-24_墾丁旅行」、相簿庫「年／分類／活動」；
+                                   AI 分類換成生活 16 類（自拍、家人朋友、小孩、寵物、旅行、風景、美食、收據、截圖、迷因…）；命名推薦換成出遊、聚餐、生日、節日；
+                                   藏起時間記錄器、宣導主題；成果包叫「回顧包」、學年回顧叫「年度回顧」；學校版完全不變
   2026v57 (2026-11-18, build v214): 🏷 AI 分類項目可以自訂 — 內建 26 類學校常見項目（可勾掉不用的）＋自己加；
                                    相簿一鍵整理選「🔎 依內容（AI）」時直接顯示分類項目與「調整」；相簿庫、審核區同一份設定
   2026v56 (2026-11-16, build v213): 🔎 AI 看圖拉到一般流程 — 相簿一鍵整理多一種拆法「🔎 依內容（AI）」（合照、頒獎、運動、截圖、文件…各一組）；
@@ -257,7 +260,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v57 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v58 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2425,6 +2428,11 @@
   .bclip-tile span { position: absolute; left: 6px; bottom: 6px; font-size: 11px; padding: 2px 7px; border-radius: 999px; background: rgba(0,0,0,0.65); color: #fff; }
   .bclip-tile.on { border-color: var(--green); }
   .bclip-tile.off { opacity: 0.55; border-color: var(--red); }
+  html.life #btnRecorder, html.life [onclick*="openRecorder"], html.life .rec-pill, html.life #recPill,
+  html.life [data-sec="promo"], html.life .scen-card[data-scen="award"], html.life .scen-card[data-scen="yearbook"],
+  html.life .ac-chip[data-scen="award"], html.life .ac-chip[data-scen="yearbook"], html.life a[href="guide.html"], html.life .nt-parts > label.nt-part:not(.grow) { display: none !important; }
+  .ed-switch { display: inline-block; margin-top: 4px; font-size: 12px; color: var(--accent); text-decoration: none; border: 1px solid rgba(255,138,76,0.35); border-radius: 999px; padding: 2px 10px; }
+  .ed-switch:hover { background: rgba(255,138,76,0.12); }
   .clip-panel { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
   .clip-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .clip-bar { height: 10px; border-radius: 6px; background: rgba(255,255,255,0.1); overflow: hidden; flex: 1; min-width: 160px; }
@@ -3278,7 +3286,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v57 · 2026-11-18</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v58 · 2026-11-18</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3381,7 +3389,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v57 程式逐項清點（2026-11-18）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v58 程式逐項清點（2026-11-18）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3824,7 +3832,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v57（2026-11-18）。</span><br>
+        <span style="font-size:11px;">本說明對應 2026v58（2026-11-18）。</span><br>
         <a href="guide.html" target="_blank" rel="noopener" onclick="if (!/^https?:$/.test(location.protocol)) { event.preventDefault(); showToast('📖 圖文操作說明在校園拾光網站上：網址後面加 /guide.html'); }" style="display:inline-block;margin-top:6px;font-weight:700;color:var(--accent);">📖 看圖文操作說明（每一步都有畫面）→</a>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
@@ -4429,11 +4437,15 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v57';
+const APP_VERSION = '2026v58';
+// 2026v58：學校版／生活版（生活版單檔把下面這行改成 'life'）
+const APP_EDITION_DEFAULT = 'school';
+const APP_EDITION = (() => { try { const q = new URLSearchParams(location.search).get('edition'); if (q === 'life' || q === 'school') return q; if (/^\/life(\/|\.html)?$/.test(location.pathname)) return 'life'; } catch (e) {} return APP_EDITION_DEFAULT; })();
+const IS_LIFE = APP_EDITION === 'life';
 // 2026v51：本機時間的日期／時間字串（toISOString 是世界標準時間，台灣早上 8 點前會變成前一天）
 function localYmd(d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
 function localStamp(len = 19, d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${localYmd(d)} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`.slice(0, len); }
-const APP_BUILD = 'v214';   // 內部建置號（補丁與測試用）
+const APP_BUILD = 'v215';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -9174,7 +9186,7 @@ async function bclipSearch(t) {
 function bclipCat(n) { _bclip.cat = _bclip.cat === n ? '' : n; _bclip.q = ''; _bclip.qv = null; _bclip.limit = 120; renderBatchClip(); }
 async function bclipAddCat() {
   const name = String(prompt('新增類別（打一句話，例如：鼓號樂隊、交通安全宣導、拔河）：', '') || '').trim().slice(0, 20); if (!name) return;
-  const a = clipCustomCats(); if (!a.includes(name) && !CLIP_CATS.some(c => c[0] === name)) { a.push(name); localStorage.setItem('clipCustomCats', JSON.stringify(a)); }
+  const a = clipCustomCats(); if (!a.includes(name) && !CLIP_CATS.some(c => c[0] === name)) { a.push(name); localStorage.setItem(CLIP_K_CUSTOM, JSON.stringify(a)); }
   try { await clipCatVecs(); } catch (e) { showToast('⚠️ ' + e.message); }
   _bclip.cat = name; _bclip.q = ''; renderBatchClip();
 }
@@ -13665,7 +13677,7 @@ async function fileToInline(file, maxDim) {
 const ALBUM_CATS = ['宣導活動', '教師研習', '運動會／體育', '典禮／頒獎', '課堂教學', '校外教學', '表演／展演', '會議／行政', '校園生活', '其他'];
 const ALBUM_GAP_MIN = 40; // 手機相簿：同一天內相隔超過 40 分鐘視為不同活動
 // v145: 相簿一鍵整理怎麼拆：day 一天一組／half 半天一組（中午 12 點切）／gap 相隔 40 分鐘（預設）
-function albumSplitPref(v) { try { if (v === undefined) { const s = localStorage.getItem('albumSplit'); return ['day', 'half', 'gap', 'ai'].includes(s) ? s : 'gap'; } localStorage.setItem('albumSplit', v); } catch {} return v; }
+function albumSplitPref(v) { try { if (v === undefined) { const s = localStorage.getItem('albumSplit'); return ['day', 'half', 'gap', 'ai'].includes(s) ? s : (IS_LIFE ? 'day' : 'gap'); } localStorage.setItem('albumSplit', v); } catch {} return v; }
 function setAlbumSplit(v) { albumSplitPref(v); try { updateAnalyzeChoice(); } catch {} }
 const ALBUM_NAME_RE = /^\d{1,2}\/\d{1,2}（.）(清晨|上午|中午|下午|晚上)( \d{1,2}:\d{2}| \d+)?$/;
 let albumMode = false;
@@ -14588,12 +14600,13 @@ const CLIP_CATS = [
   ['打掃環境', ['學生在打掃', '學生掃地拖地', '淨灘撿垃圾']],
   ['防災演練', ['防災演練', '學生抱頭蹲下躲在桌子下', '消防演練噴水']],
 ];
+const CLIP_K_CUSTOM = IS_LIFE ? 'clipCustomCats_life' : 'clipCustomCats', CLIP_K_OFF = IS_LIFE ? 'clipCatsOff_life' : 'clipCatsOff';   // 2026v58 生活版分開存
 const CLIP_SEARCH_MARGIN = 0.035;  // 2026v56：找照片只列「跟最像那張差不多像」的（實測：相關的差 0.02 內、不相關的差 0.05 以上）
 const CLIP_SEARCH_EXAMPLES = ['大隊接力', '頒獎合照', '營養午餐', '舞台表演', '升旗典禮', '學生畫作', '拔河', '戶外教學'];
 const _clip = { q: '', qv: null, cat: '', cluster: -1, clusters: null, running: false, stop: false, done: 0, total: 0, rate: 0,
   loadPct: 0, loadMsg: '', loading: false, emb: new Map(), embLib: '', catVecs: null, catVer: '', assign: null, assignVer: '', busy: '' };
-function clipCustomCats() { try { const a = JSON.parse(localStorage.getItem('clipCustomCats') || '[]'); return Array.isArray(a) ? a.filter(s => typeof s === 'string' && s.trim()).map(s => s.trim().slice(0, 20)).slice(0, 30) : []; } catch (e) { return []; } }
-function clipCatsOff() { try { const a = JSON.parse(localStorage.getItem('clipCatsOff') || '[]'); return new Set(Array.isArray(a) ? a.filter(x => typeof x === 'string') : []); } catch (e) { return new Set(); } }
+function clipCustomCats() { try { const a = JSON.parse(localStorage.getItem(CLIP_K_CUSTOM) || '[]'); return Array.isArray(a) ? a.filter(s => typeof s === 'string' && s.trim()).map(s => s.trim().slice(0, 20)).slice(0, 30) : []; } catch (e) { return []; } }
+function clipCatsOff() { try { const a = JSON.parse(localStorage.getItem(CLIP_K_OFF) || '[]'); return new Set(Array.isArray(a) ? a.filter(x => typeof x === 'string') : []); } catch (e) { return new Set(); } }
 function clipAllCats() { const off = clipCatsOff(); return [...CLIP_CATS.filter(c => !off.has(c[0])), ...clipCustomCats().map(n => [n, [n], true])]; }
 // 2026v57 🏷 AI 分類項目：內建的可以勾掉、可以自己加；相簿庫、審核區、相簿一鍵整理都用這一份
 function openClipCatEditor() {
@@ -14622,18 +14635,18 @@ function renderClipCatEditor() {
 }
 function clipCatToggle(n) {
   const off = clipCatsOff(); off.has(n) ? off.delete(n) : off.add(n);
-  try { localStorage.setItem('clipCatsOff', JSON.stringify([...off])); } catch (e) {}
+  try { localStorage.setItem(CLIP_K_OFF, JSON.stringify([...off])); } catch (e) {}
   renderClipCatEditor();
 }
 function clipCatAdd() {
   const el = document.getElementById('clipCatNew'); const n = String(el && el.value || '').trim().replace(/[<>"']/g, '').slice(0, 20); if (!n) return;
   const off = clipCatsOff();
-  if (CLIP_CATS.some(c => c[0] === n)) { off.delete(n); localStorage.setItem('clipCatsOff', JSON.stringify([...off])); }
-  else { const a = clipCustomCats(); if (!a.includes(n)) { a.push(n); localStorage.setItem('clipCustomCats', JSON.stringify(a.slice(0, 30))); } }
+  if (CLIP_CATS.some(c => c[0] === n)) { off.delete(n); localStorage.setItem(CLIP_K_OFF, JSON.stringify([...off])); }
+  else { const a = clipCustomCats(); if (!a.includes(n)) { a.push(n); localStorage.setItem(CLIP_K_CUSTOM, JSON.stringify(a.slice(0, 30))); } }
   renderClipCatEditor(); setTimeout(() => document.getElementById('clipCatNew')?.focus(), 0);
 }
-function clipCatRemove(n) { localStorage.setItem('clipCustomCats', JSON.stringify(clipCustomCats().filter(x => x !== n))); renderClipCatEditor(); }
-function clipCatReset() { if (!confirm('恢復預設：內建項目全部打開，自己加的刪掉？')) return; localStorage.removeItem('clipCatsOff'); localStorage.removeItem('clipCustomCats'); renderClipCatEditor(); }
+function clipCatRemove(n) { localStorage.setItem(CLIP_K_CUSTOM, JSON.stringify(clipCustomCats().filter(x => x !== n))); renderClipCatEditor(); }
+function clipCatReset() { if (!confirm('恢復預設：內建項目全部打開，自己加的刪掉？')) return; localStorage.removeItem(CLIP_K_OFF); localStorage.removeItem(CLIP_K_CUSTOM); renderClipCatEditor(); }
 async function clipCatEditorDone() {
   document.getElementById('clipCatModal')?.classList.remove('show');
   _clip.catVecs = null; _clip.assign = null;
@@ -14720,7 +14733,7 @@ async function clipClusters(rows) {
     lab = items.map(([, v]) => { let bi = 0, bs = -9; cents.forEach((c, j) => { const s = clipDot(v, c); if (s > bs) { bs = s; bi = j; } }); return bi; });
     cents = cents.map((c, j) => { const mem = items.filter((_, i) => lab[i] === j).map(x => x[1]); return mem.length ? clipMean(mem) : c; });
   }
-  const vocab = [...new Set([...CLIP_CATS.map(c => c[0]), ...clipCustomCats(), ...(typeof SCHOOL_EVENTS !== 'undefined' ? SCHOOL_EVENTS.map(e => e.n.split('/')[0]) : []), ...(typeof PROMO_TOPICS !== 'undefined' ? PROMO_TOPICS.map(t => t.name) : [])])].slice(0, 260);
+  const vocab = [...new Set([...CLIP_CATS.map(c => c[0]), ...clipCustomCats(), ...(IS_LIFE ? LIFE_EVENTS.flatMap(x => x[1]) : []), ...(!IS_LIFE && typeof SCHOOL_EVENTS !== 'undefined' ? SCHOOL_EVENTS.map(e => e.n.split('/')[0]) : []), ...(!IS_LIFE && typeof PROMO_TOPICS !== 'undefined' ? PROMO_TOPICS.map(t => t.name) : [])])].slice(0, 260);
   const vv = await clipTexts(vocab.map(w => `一張${w}的照片`));
   const out = [];
   cents.forEach((c, j) => {
@@ -14836,13 +14849,13 @@ function clipPickCat(n) { _clip.cat = _clip.cat === n ? '' : n; _clip.q = ''; _c
 async function clipAddCat(name) {
   name = name || prompt('新增類別（打一句話，例如：鼓號樂隊、交通安全宣導、拔河）：', '');
   name = String(name || '').trim().slice(0, 20); if (!name) return;
-  const a = clipCustomCats(); if (!a.includes(name) && !CLIP_CATS.some(c => c[0] === name)) { a.push(name); localStorage.setItem('clipCustomCats', JSON.stringify(a)); }
+  const a = clipCustomCats(); if (!a.includes(name) && !CLIP_CATS.some(c => c[0] === name)) { a.push(name); localStorage.setItem(CLIP_K_CUSTOM, JSON.stringify(a)); }
   _clip.busy = `學習新類別「${name}」…`; renderLibraryModal();
   try { await clipCatVecs(); } catch (e) { showToast('⚠️ ' + e.message); }
   _clip.busy = ''; _clip.cat = name; _clip.q = ''; _clip.cluster = -1; renderLibraryModal();
 }
 async function clipDelCat(name) {
-  localStorage.setItem('clipCustomCats', JSON.stringify(clipCustomCats().filter(n => n !== name)));
+  localStorage.setItem(CLIP_K_CUSTOM, JSON.stringify(clipCustomCats().filter(n => n !== name)));
   if (_clip.cat === name) _clip.cat = '';
   try { await clipCatVecs(); } catch (e) {}
   renderLibraryModal();
@@ -19171,6 +19184,105 @@ function tbGenText(results, okFail, badPass, acc) {
   }
   return t;
 }
+
+
+// ══════════════════════════════════════════════════════════════
+// 2026v58 🏠 生活拾光：同一份程式的生活版（網址 /life、?edition=life，或生活版單檔）
+// 不改學校版的程式，只在生活版時換掉幾個函式、換文字、藏起學校專用的東西
+// ══════════════════════════════════════════════════════════════
+const LIFE_CATS = [
+  ['自拍', ['自拍', '手機自拍的臉部特寫', '對著鏡頭比讚的自拍']],
+  ['家人朋友', ['家人合照', '朋友聚在一起合照', '一群人開心地笑']],
+  ['小孩', ['小孩', '小朋友在玩', '嬰兒']],
+  ['寵物', ['寵物', '狗', '貓']],
+  ['旅行', ['旅行', '觀光景點', '在機場或車站']],
+  ['風景', ['風景', '山和天空', '海邊夕陽']],
+  ['夜景', ['夜景', '城市的燈光', '煙火']],
+  ['美食', ['美食', '餐廳的一盤菜', '甜點和飲料']],
+  ['生日慶祝', ['生日蛋糕', '慶生派對', '吹蠟燭']],
+  ['運動戶外', ['運動', '爬山健行', '騎腳踏車']],
+  ['活動婚禮', ['婚禮', '舞台表演', '演唱會']],
+  ['居家', ['家裡的客廳', '房間', '居家生活']],
+  ['物品購物', ['商品', '買的東西', '開箱']],
+  ['收據文件', ['收據', '發票', '紙本文件']],
+  ['截圖', ['手機截圖', '電腦螢幕畫面', '網頁截圖']],
+  ['迷因轉傳', ['迷因梗圖', '有大字的圖片', '轉傳的長輩圖']],
+];
+const LIFE_EVENTS = [
+  ['出遊', ['出遊', '一日遊', '旅行', '國外旅遊', '露營', '野餐', '登山', '海邊', '泡湯', '逛夜市', '看展覽', '遊樂園', '動物園']],
+  ['聚會', ['聚餐', '生日', '家庭聚會', '同學會', '尾牙', '春酒', '婚禮', '喜宴', '彌月', '慶生']],
+  ['節日', ['過年', '元宵', '清明', '端午', '中秋', '聖誕節', '跨年', '母親節', '父親節', '情人節', '萬聖節']],
+  ['家庭', ['小孩成長', '寶寶', '寵物', '搬家', '居家', '畢業', '開學', '才藝表演']],
+  ['運動', ['運動', '路跑', '騎單車', '游泳', '打球', '健身']],
+  ['其他', ['工作', '購物', '美食', '收據', '雜項']],
+];
+const LIFE_SEASON = { '過年': [1, 2], '元宵': [2, 3], '清明': [4], '端午': [5, 6], '中秋': [9, 10], '聖誕節': [12], '跨年': [12, 1], '母親節': [5], '父親節': [8], '情人節': [2], '萬聖節': [10], '尾牙': [1, 12], '春酒': [2, 3], '開學': [2, 9], '畢業': [6] };
+const LIFE_TEXT = [['校園拾光', '生活拾光'], ['學年回顧', '年度回顧'], ['學年度', '年'], ['成果包', '回顧包'], ['成果表', '照片表'], ['📸 校園活動智慧挑片助手', '📸 生活照片智慧整理'], ['學校活動', '一般活動'], ['做成果包', '做回顧包'], ['多位老師', '多個人'], ['老師', '你']];
+function lifeText(root) {
+  if (!root) return;
+  const fix = s => { let o = s; for (const [a, b] of LIFE_TEXT) if (o.includes(a)) o = o.split(a).join(b); return o; };
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  for (let n = w.nextNode(); n; n = w.nextNode()) { const pn = n.parentNode && n.parentNode.nodeName; if (pn === 'SCRIPT' || pn === 'STYLE' || pn === 'TEXTAREA') continue; const t = n.nodeValue; if (t && /校園拾光|學年|成果|學校活動|老師/.test(t)) { const f = fix(t); if (f !== t) n.nodeValue = f; } }
+  if (root.querySelectorAll) root.querySelectorAll('[title],[placeholder]').forEach(el => {
+    for (const a of ['title', 'placeholder']) { const v = el.getAttribute(a); if (v && /校園拾光|學年|成果|學校活動|老師/.test(v)) el.setAttribute(a, fix(v)); }
+  });
+}
+function lifeInit() {
+  document.documentElement.classList.add('life');
+  document.title = `生活拾光 ${APP_VERSION} — 照片整理・相簿・回顧短片`;
+  // AI 分類：生活組合（自己的設定跟學校版分開存）
+  CLIP_CATS.splice(0, CLIP_CATS.length, ...LIFE_CATS);
+  CLIP_SEARCH_EXAMPLES.splice(0, CLIP_SEARCH_EXAMPLES.length, '海邊夕陽', '拉麵', '生日蛋糕', '狗', '全家福', '夜景', '登山', '收據');
+  // 命名：「2025-10-24_墾丁旅行」，不用學年度學期
+  schoolYearOf = d => { if (!(d instanceof Date) || isNaN(d)) d = new Date(); return { sy: d.getFullYear(), term: 0 }; };
+  const ymd = d => (d instanceof Date && !isNaN(d)) ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` : '日期不明';
+  ntName = (g, ev, extra) => { const e = String(ev || '').trim(), x = String(extra || '').trim(); return `${ymd(ntMidDate(g))}_${e || '（名稱）'}${x ? '_' + x : ''}`; };
+  ntTerm = () => 0;
+  NT_TAG_GROUPS.splice(0, NT_TAG_GROUPS.length,
+    { name: '人物', color: '#ffb46b', tags: ['家人', '朋友', '小孩', '長輩', '同事', '寵物', '自己'] },
+    { name: '類型', color: '#c9b3ff', tags: ['旅行', '聚餐', '生日', '運動', '戶外', '展覽', '表演', '合照'] },
+    { name: '地點', color: '#ffd166', tags: ['家裡', '餐廳', '海邊', '山上', '公園', '國外', '市區'] });
+  ntCandidates = g => {
+    const mid = ntMidDate(g), m = mid ? mid.getMonth() + 1 : 0, stats = ntEventStats();
+    const hay = `${g.eventName ? (g.originalName || '') : (g.name || '')} ${g.ocrName || ''}`;
+    const pool = LIFE_EVENTS.flatMap(([c, ns]) => ns.map(n => ({ n, c, src: 'gen' }))).concat(ntCustomEvents().map(e => ({ n: e.n, c: '', src: 'mine', m: e.m || [] })));
+    const seen = new Set(), out = [];
+    for (const e of pool) {
+      if (seen.has(e.n)) continue; seen.add(e.n);
+      let s = 0; const why = [];
+      if (m && (LIFE_SEASON[e.n] || e.m || []).includes(m)) { s += 3; why.push(`${m} 月常見`); }
+      if (hay.includes(e.n)) { s += 4; why.push(`名稱讀到「${e.n}」`); }
+      if (stats[e.n]) { s += Math.min(3, stats[e.n] * 0.6); why.push(`你用過 ${stats[e.n]} 次`); }
+      if (g.aiContent && e.n === g.name) s += 2;
+      out.push({ n: e.n, s, why: why.join('・'), src: e.src, cal: null, mon: false, cat: e.c, topic: '', school: false, study: false, i: out.length });
+    }
+    return out.sort((a, b) => b.s - a.s || a.i - b.i);
+  };
+  // 相簿庫：年／分類／活動（例：2025/旅行/2025-10-24_墾丁旅行）
+  scenarioCategory = () => '生活';
+  libraryCategory = g => (g && g.lifeCat) || (g && g.aiContent ? g.name : '') || (g && g.tags && g.tags.find(t => ['旅行', '聚餐', '生日', '運動', '戶外', '展覽', '表演'].includes(t))) || '生活';
+  libraryFolderFor = (g, p) => { const base = `${groupSchoolYear(g).sy}/${safeName(libraryCategory(g))}/${safeName(g.name) || '未命名'}`; return photoTier(p) === 'record' ? `${base}/紀錄` : base; };
+  libFolderName = (sy, term, event, fallback) => safeName(String(event || '').trim() || fallback || '未命名');
+  const _lev = libEditVals; libEditVals = () => { const r = _lev(); r.term = ''; r.base = `${r.sy}/${safeName(r.cat)}/${r.folder}`; return r; };
+  albumFolder = g => safeName(g.name) || '未命名';
+  geminiNamingOn = () => false;
+  // 畫面文字：學年度 → 年、成果包 → 回顧包…（新畫出來的也跟著換）
+  lifeText(document.body);
+  let pend = new Set(), raf = 0;
+  new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1) pend.add(n); else if (n.nodeType === 3 && n.parentNode) pend.add(n.parentNode);
+    if (!raf) raf = requestAnimationFrame(() => { raf = 0; const ns = [...pend]; pend = new Set(); ns.forEach(lifeText); }); }).observe(document.body, { childList: true, subtree: true });
+  // 標題、副標
+  const h1 = document.querySelector('.header h1'); if (h1 && h1.firstChild && h1.firstChild.nodeType === 3) h1.firstChild.nodeValue = '生活拾光 ';
+  const sub = document.querySelector('.header .subtitle'); if (sub && sub.firstChild && sub.firstChild.nodeType === 3) sub.firstChild.nodeValue = '📸 生活照片智慧整理 · 旅行 · 家人 · 聚會 · 寵物 · 美食';
+}
+function editionSwitchHtml() {
+  const onSite = /^https?:$/.test(location.protocol) && !/githack|githubusercontent/.test(location.host);
+  const to = IS_LIFE ? (onSite ? './' : '?edition=school') : (onSite ? 'life' : '?edition=life');
+  return IS_LIFE ? `<a class="ed-switch" href="${to}" title="給學校教師用：學年度命名、成果包、時間記錄器">🏫 切換到學校版（教師用）</a>`
+                 : `<a class="ed-switch" href="${to}" title="一般人整理生活照片：旅行、家人、聚會、寵物">🏠 生活版（生活拾光）</a>`;
+}
+document.addEventListener('DOMContentLoaded', () => { const sub = document.querySelector('.header .subtitle'); if (sub) sub.insertAdjacentHTML('beforeend', `<br>${editionSwitchHtml()}`); });
+if (IS_LIFE) lifeInit();   // 這段在 body 最後，畫面元素都在了
 
 function tbCopyReport() {
   if (!window._tbTextReport) return;

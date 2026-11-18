@@ -33,6 +33,11 @@
 # 2026v27 資安：舊版本（versions/）有已修正的漏洞，又跟新版同一個網站（共用瀏覽器裡的 Gemini Key、相簿庫權限）
 # → 網站上不再提供，一律轉到目前版本；舊版只留在 GitHub 備查
 [[redirects]]
+  from = "/life"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
   from = "/versions/*"
   to = "/"
   status = 301
