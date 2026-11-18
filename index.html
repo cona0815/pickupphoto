@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v59 (2026-11-18)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v60 (2026-11-19)　（原名：AI 照片篩選器）
+  2026v60 (2026-11-19, build v217): 🏷 AI 分類重新設計 — 學校 9 類、生活 9 類＋其他，每類有「給 AI 看的說明」（可改）；以前的細項放「更多項目」（預設關）；
+                                   固定資料夾不用 AI：📱 截圖、📄 文件收據、↪ 轉傳、🔁 重複檔（大小＋內容比對）；
+                                   📋 分類總表：照片排成有編號的總表，自己貼給 Claude／Gemini 分，答案貼回來就套用；🎓 貼回來的答案當例子教本機 AI
   2026v59 (2026-11-18, build v216): 🏠 生活拾光左欄整個換成生活用語 — 單一活動：出遊、聚會、生日；場合：📷 一般生活／🏃 運動比賽；相簿一鍵整理說明；
                                    拍攝者例子；多位拍攝者說明；AI 照片說明與 FB／IG 貼文改成第一人稱的生活紀錄（不再是學校粉專口吻）
   2026v58 (2026-11-18, build v215): 🏠 生活拾光（生活版）— 同一份程式：網址 /life（或 ?edition=life、生活版單檔）；資料夾「2025-10-24_墾丁旅行」、相簿庫「年／分類／活動」；
@@ -262,7 +265,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v59 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v60 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2449,6 +2452,23 @@
   .clip-chip.on b { color: #1a1020; }
   .clip-chip.add { border-style: dashed; color: var(--text-dim); }
   .clip-chip .x { margin-left: 6px; opacity: .6; }
+  .clip-chip.fixed { border-style: dotted; }
+  /* 2026v60 分類項目編輯、分類總表 */
+  .cce-row > * { min-width: 0; }
+  .cce-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.06); opacity: .6; }
+  .cce-row.on { opacity: 1; }
+  .cce-name { width: 120px; flex: none; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .cce-desc { flex: 1 1 auto; width: auto !important; min-width: 0; font-size: 12.5px !important; padding: 5px 8px !important; }
+  .cce-fixed { font-size: 12px; color: var(--text-dim); background: rgba(255,255,255,0.05); border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; }
+  .cce-more { margin-top: 8px; } .cce-more summary { cursor: pointer; font-size: 13px; font-weight: 700; padding: 4px 0; }
+  .cce-teach { margin-top: 12px; font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+  .vlm-warn { font-size: 12px; line-height: 1.6; background: rgba(255,180,80,0.12); border: 1px solid rgba(255,180,80,0.35); border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
+  .vlm-step { margin: 12px 0; font-size: 13px; line-height: 1.6; }
+  .vlm-ta { width: 100%; min-height: 90px; margin: 6px 0; font-size: 12px; background: rgba(0,0,0,0.25); color: var(--text); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px; box-sizing: border-box; }
+  .vlm-sheets { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0; }
+  .vlm-sheet { width: 150px; font-size: 11px; color: var(--text-dim); }
+  .vlm-sheet img { width: 150px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); display: block; margin-bottom: 3px; }
+  .vlm-msg { font-size: 12.5px; margin-top: 6px; }
   .lib-note { font-size: 11px; color: var(--text-dim); line-height: 1.6; background: rgba(255,255,255,0.04); border-radius: 10px; padding: 6px 10px; margin-bottom: 8px; }
   .lib-selbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; min-height: 30px; margin-bottom: 6px; color: var(--text-dim); }
   .lib-selbar.on { background: rgba(255,138,76,0.12); border: 1px solid rgba(255,138,76,0.35); border-radius: 10px; padding: 4px 8px; color: var(--text); }
@@ -3288,7 +3308,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v59 · 2026-11-18</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v60 · 2026-11-19</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3320,6 +3340,8 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="ok"><td>📍 相簿庫地點的地名（縣市、鄉鎮市區）</td><td>不送出：用內建的全台鄉鎮市區界線（內政部開放資料）在本機算</td><td>只在本機</td><td>不會</td></tr>
         <tr class="ok"><td>🤖 AI 人臉（YuNet）、🧬 128 維人臉特徵、HEIC 轉檔</td><td>不送照片，只下載程式與模型</td><td>只在本機執行</td><td>不會</td></tr>
         <tr class="ok"><td>🔎 相簿庫「AI 找照片」（打字找照片、AI 分類、自動分群）、進階設定「AI 看圖找同一個畫面」</td><td>不送照片，只下載程式與模型（你按「下載看圖模型」才下載）</td><td>只在本機執行</td><td>不會</td></tr>
+        <tr class="ok"><td>🎓 AI 分類「學過的例子」、🔁 重複檔比對</td><td>不送出：例子是照片特徵（512 個數字，不能還原成照片）存在這台電腦的瀏覽器；重複檔是在本機比檔案大小和內容</td><td>只在本機</td><td>不會</td></tr>
+        <tr class="warn"><td>📋 分類總表（<b>你自己</b>貼給 Claude／Gemini）</td><td>本工具只在本機做出有編號的總表 JPG（照片縮小成每格 200 px）與提示詞，<b>不會自己送出</b>；你把總表貼給哪家 AI，那些小圖（可能看得到學生的臉）就交給那家公司</td><td>你選的 AI 服務（例如 Anthropic Claude、Google Gemini）</td><td>依那家服務與你的帳號設定：請用學校帳號、關掉「用對話改進模型」；不想送出就只用本機 AI</td></tr>
         <tr class="warn"><td>🌐 相簿庫地點「查地標名稱」（按了才送）</td><td>照片位置的座標（約 500 公尺一格），不含照片、活動名稱</td><td>OpenStreetMap（nominatim.openstreetmap.org）</td><td>不會；地名本身（縣市、鄉鎮市區）用內建資料，不連網</td></tr>
         <tr class="warn"><td>✨ 成果包 AI 文案（Gemini，按 ✨ 才送）</td><td>你在相簿庫勾選、要寫說明的照片（長邊 768 px；FB 貼文最多 6 張）與活動名稱、類型，請它寫照片說明與貼文；不寫姓名、不點名、不描述外貌</td><td>Google Gemini</td><td><b>免費方案：可能</b>，且可能有人工審閱；付費方案：不會</td></tr>
         <tr><td>✨ 海報 AI 封面插圖（Gemini 生圖，按了才送）</td><td><b>只送文字</b>：活動名稱與標語（最多 80 字），請它畫一張不含人臉、不含文字的插圖；<b>不送任何照片</b>。畫好的圖只放在記憶體</td><td>Google Gemini</td><td>生圖只有付費方案能用：不會</td></tr>
@@ -3391,7 +3413,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v59 程式逐項清點（2026-11-18）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v60 程式逐項清點（2026-11-19）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3834,7 +3856,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v59（2026-11-18）。</span><br>
+        <span style="font-size:11px;">本說明對應 2026v60（2026-11-19）。</span><br>
         <a href="guide.html" target="_blank" rel="noopener" onclick="if (!/^https?:$/.test(location.protocol)) { event.preventDefault(); showToast('📖 圖文操作說明在校園拾光網站上：網址後面加 /guide.html'); }" style="display:inline-block;margin-top:6px;font-weight:700;color:var(--accent);">📖 看圖文操作說明（每一步都有畫面）→</a>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
@@ -4439,7 +4461,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v59';
+const APP_VERSION = '2026v60';
 // 2026v58：學校版／生活版（生活版單檔把下面這行改成 'life'）
 const APP_EDITION_DEFAULT = 'school';
 const APP_EDITION = (() => { try { const q = new URLSearchParams(location.search).get('edition'); if (q === 'life' || q === 'school') return q; if (/^\/life(\/|\.html)?$/.test(location.pathname)) return 'life'; } catch (e) {} return APP_EDITION_DEFAULT; })();
@@ -4447,7 +4469,7 @@ const IS_LIFE = APP_EDITION === 'life';
 // 2026v51：本機時間的日期／時間字串（toISOString 是世界標準時間，台灣早上 8 點前會變成前一天）
 function localYmd(d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
 function localStamp(len = 19, d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${localYmd(d)} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`.slice(0, len); }
-const APP_BUILD = 'v216';   // 內部建置號（補丁與測試用）
+const APP_BUILD = 'v217';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -5999,11 +6021,14 @@ async function runAnalysisPipeline(options = {}) {
 
   // ── Step 3: Time grouping ──
   // 2026v55／v56：AI 看圖（選用）— 找同一個畫面、相簿依內容拆，都要先算每張照片的特徵
-  if (aiSceneOn() || (albumMode && albumSplitPref() === 'ai')) {
-    try { await aiSceneAnalyze(prog); if (albumMode && albumSplitPref() === 'ai') await clipCatVecs(); }
+  const aiSplit = albumMode && albumSplitPref() === 'ai';
+  if (aiSplit) { prog(92, '找完全一樣的重複檔...'); try { await markExactDups(photos); } catch (e) { console.warn('dup', e); } }   // 2026v60
+  const vlmAll = aiSplit && photos.every(p => p.vlmCat || photoFixedDir(p));   // Claude／Gemini 都分好了 → 不用下載本機 AI
+  if (aiSceneOn() || (aiSplit && !vlmAll)) {
+    try { await aiSceneAnalyze(prog); if (aiSplit) { await clipCatVecs(); await clipTeachFromPhotos(); } }
     catch (e) { console.warn('ai scene', e); showToast('⚠️ AI 看圖沒有完成：' + (e.message || e) + '（改用時間分組，其他照常）'); }
   } else photos.forEach(p => { p.aiAction = 0; });
-  prog(93, albumMode && albumSplitPref() === 'ai' && photos.some(p => p.clipEmb) ? '依內容分組...' : '依時間分群...');
+  prog(93, aiSplit && photos.some(p => p.clipEmb || p.vlmCat) ? '依內容分組...' : '依時間分群...');
   if (timeGroupMode === 'auto') {
     groupMode = 'auto';
     groupByAutoTime();
@@ -8447,7 +8472,7 @@ function detectBurstsAndDedup() {
 // ── AUTO GROUPING ──
 function groupByAutoTime() {
   const split = albumMode ? albumSplitPref() : '';
-  if (split === 'ai' && _clip.catVecs && photos.some(p => p.clipEmb)) return groupByAiContent();   // 2026v56
+  if (split === 'ai' && ((_clip.catVecs && photos.some(p => p.clipEmb)) || photos.some(p => p.vlmCat || photoFixedDir(p)))) return groupByAiContent();   // 2026v56／v60
   const gapMs = albumMode ? (split === 'gap' ? ALBUM_GAP_MIN * 60000 : Infinity) : (parseInt(document.getElementById('timeGap').value) || 30) * 60000;
   const sorted = [...photos].sort((a,b) => (a.time||0) - (b.time||0));
   groups = []; let cur = null;
@@ -8471,17 +8496,35 @@ function groupByAutoTime() {
 }
 
 // 2026v56 依內容（AI）：每張照片分到最像的類別，一類一組（不夠像 → 其他）
+let _apcMemo = new WeakMap(), _apcVer = '';
 function aiPhotoCat(v) {
-  const cats = [..._clip.catVecs || []]; if (!v || !cats.length) return ['其他', 0];
-  const sc = cats.map(([n, c]) => [n, clipDot(v, c)]);
-  const mx = Math.max(...sc.map(x => x[1])); let z = 0; for (const x of sc) z += Math.exp(100 * (x[1] - mx));
-  sc.sort((a, b) => b[1] - a[1]);
-  return [1 / z >= 0.4 ? sc[0][0] : '其他', sc[0][1]];
+  const cats = [...(_clip.catVecs || [])]; if (!v || !cats.length) return ['其他', 0, 0];
+  const ver = _clip.catVer + '#' + (_clip.teachRev || 0) + '#' + (_clip.fixVecs ? _clip.fixVecs.size : 0);
+  if (ver !== _apcVer) { _apcMemo = new WeakMap(); _apcVer = ver; }
+  const hit = _apcMemo.get(v); if (hit) return hit;
+  const all = [...cats, ...(_clip.fixVecs || [])], T = _clip.teachBy;
+  const raw = all.map(([, c]) => clipDot(v, c));
+  let lg = raw.map(s => 100 * s);
+  if (T && T.size) {   // 2026v60 學過的例子：比「平均像」更像的那類加分、比較不像的扣分
+    const aff = all.map(([n]) => { const ex = T.get(n); if (!ex || ex.length < 2) return null; const a = ex.map(e => Math.exp(-TEACH_BETA * (1 - clipDot(v, e)))).sort((x, y) => y - x).slice(0, 3); return a.reduce((x, y) => x + y, 0) / a.length; });
+    const got = aff.filter(x => x !== null);
+    if (got.length >= 2) { const mean = got.reduce((x, y) => x + y, 0) / got.length; lg = lg.map((s, i) => s + TEACH_ALPHA * ((aff[i] === null ? mean : aff[i]) - mean)); }
+  }
+  const mx = Math.max(...lg); let z = 0; for (const x of lg) z += Math.exp(x - mx);
+  const ord = lg.map((x, i) => i).sort((a, b) => lg[b] - lg[a]);
+  let out;
+  const b = ord[0], pb = Math.exp(lg[b] - mx) / z;
+  if (b >= cats.length) {   // 截圖／文件：要很確定才算
+    if (pb >= 0.7) out = [all[b][0], raw[b], pb];
+    else { const c = ord.find(i => i < cats.length), pc = Math.exp(lg[c] - mx) / z; out = [pc >= 0.4 ? all[c][0] : '其他', raw[c], pc]; }
+  } else out = [pb >= 0.4 ? all[b][0] : '其他', raw[b], pb];
+  _apcMemo.set(v, out);
+  return out;
 }
 function groupByAiContent() {
-  const order = [...clipAllCats().map(c => c[0]), '其他'], by = new Map();
+  const order = [...clipAllCats().map(c => c[0]), '其他', ...FIXED_DIRS], by = new Map();
   for (const p of [...photos].sort((a, b) => (a.time || 0) - (b.time || 0))) {
-    const [c] = aiPhotoCat(p.clipEmb); p.aiCat = c;
+    const c = photoCat(p); p.aiCat = c;   // 2026v60 規則 → Claude／Gemini → 本機 AI
     if (!by.has(c)) by.set(c, []); by.get(c).push(p);
   }
   const fmt = d => `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
@@ -8489,7 +8532,7 @@ function groupByAiContent() {
   for (const c of order) {
     const ps = by.get(c); if (!ps || !ps.length) continue;
     const ts = ps.map(p => p.time).filter(t => t instanceof Date && !isNaN(t));
-    const g = { id: groups.length, name: c, folderName: safeName(c), photos: ps, start: ts.length ? new Date(Math.min(...ts)) : null, end: ts.length ? new Date(Math.max(...ts)) : null, aiContent: true };
+    const g = { id: groups.length, name: c.replace(/^[^\p{L}\p{N}]+/u, ''), folderName: safeName(c.replace(/^[^\p{L}\p{N}]+/u, '')), photos: ps, start: ts.length ? new Date(Math.min(...ts)) : null, end: ts.length ? new Date(Math.max(...ts)) : null, aiContent: true };
     g.timeRange = g.start ? `${fmt(g.start)} — ${fmt(g.end)}` : '未知時間';
     ps.forEach(p => { p.groupId = g.id; });
     groups.push(g);
@@ -9138,38 +9181,40 @@ async function bclipPrepare() {
     if (localStorage.getItem('clipGpu') === '1' && !clipState.gpuModel) await clipGpuEnable(() => {}).catch(() => {});
     const todo = photos.filter(p => !p.clipEmb);
     if (todo.length) await aiEmbedPhotos(todo, (d, t, eta) => { _bclip.busy = `AI 看照片：${d} / ${t}${eta ? `（大約還要 ${eta} 秒）` : ''}`; _bclip.pct = d / t * 100; renderBatchClip(); });
-    await clipCatVecs();
+    await clipCatVecs(); await clipTeachFromPhotos();
   } catch (e) { showToast('⚠️ ' + (e.message || e)); }
   _bclip.busy = ''; renderBatchClip();
 }
 function bclipList() {
   const ps = photos.filter(p => p.clipEmb);
   if (_bclip.q && _bclip.qv) { const sc = ps.map(p => [p, clipDot(p.clipEmb, _bclip.qv)]).sort((a, b) => b[1] - a[1]); const top = sc.length ? sc[0][1] : 0; return sc.filter(x => x[1] >= top - CLIP_SEARCH_MARGIN).map(x => x[0]); }
-  if (_bclip.cat) return ps.filter(p => aiPhotoCat(p.clipEmb)[0] === _bclip.cat).sort((a, b) => aiPhotoCat(b.clipEmb)[1] - aiPhotoCat(a.clipEmb)[1]);
+  if (_bclip.cat) return photos.filter(p => photoCat(p) === _bclip.cat).sort((a, b) => aiPhotoCat(b.clipEmb)[1] - aiPhotoCat(a.clipEmb)[1]);   // 2026v60
   return null;
 }
 function renderBatchClip() {
   const el = document.getElementById('bclipBody'); if (!el) return;
-  const ready = clipState.loaded && photos.some(p => p.clipEmb) && !_bclip.busy;
+  const clipOk = clipState.loaded && photos.some(p => p.clipEmb), ready = (clipOk || photos.some(p => p.vlmCat)) && !_bclip.busy;
   const head = `<div class="bclip-head"><h3>🔎 AI 找照片（這一批 ${photos.length} 張）</h3><button class="tip-link" onclick="closeBatchClip()">✕ 關閉</button></div>
     <div class="clip-sub">AI 在這台電腦上看圖，照片不上傳。點縮圖可以改 <b>入選／淘汰</b>。要找整學期的照片，請用「📚 相簿庫 → 🔎 AI 找照片」。</div>`;
   if (_bclip.busy) { el.innerHTML = head + `<div class="clip-panel">${clipBar(_bclip.pct, _bclip.busy)}</div>`; return; }
   if (!ready) {
     el.innerHTML = head + `<div class="clip-panel">${clipState.error ? `<div class="clip-err">⚠️ ${escHtml(clipState.error)}</div>` : ''}
       <button class="lib-pack-btn" onclick="bclipPrepare()">${localStorage.getItem('clipReady') === '1' ? '🔎 開始（看圖模型已下載過）' : '⬇️ 下載看圖模型並開始（約 210 MB，只下載一次）'}</button>
-      <div class="clip-sub">模型：Chinese-CLIP（MIT）＋ transformers.js（Apache-2.0），固定版本、比對 SHA-256。每張約 0.6 秒（有顯示卡更快）。</div></div>`;
+      <div class="clip-sub">模型：Chinese-CLIP（MIT）＋ transformers.js（Apache-2.0），固定版本、比對 SHA-256。每張約 0.6 秒（有顯示卡更快）。</div>
+      <div class="clip-sub" style="margin-top:8px;">或 <button class="tip-link" onclick="openVlmSheet()">📋 用分類總表請 Claude／Gemini 分</button>（比本機 AI 準，但總表要你自己貼給它們）</div></div>`;
     return;
   }
-  const cnt = new Map(); for (const p of photos) if (p.clipEmb) { const c = aiPhotoCat(p.clipEmb)[0]; cnt.set(c, (cnt.get(c) || 0) + 1); }
+  const cnt = new Map(); for (const p of photos) if (p.clipEmb || p.vlmCat || photoFixedDir(p)) { const c = photoCat(p); cnt.set(c, (cnt.get(c) || 0) + 1); }
   const q = s => JSON.stringify(s).replace(/"/g, '&quot;');
   const custom = new Set(clipCustomCats());
-  const chips = [...clipAllCats().map(c => c[0]), '其他'].filter(n => cnt.get(n) || custom.has(n)).map(n => `<button class="clip-chip${_bclip.cat === n ? ' on' : ''}" onclick="bclipCat(${q(n)})">${escHtml(n)} <b>${cnt.get(n) || 0}</b></button>`).join('')
-    + `<button class="clip-chip add" onclick="openClipCatEditor()">🏷 分類項目（${clipAllCats().length}）</button>`;
+  const chips = [...clipAllCats().map(c => c[0]), '其他', ...FIXED_DIRS].filter(n => cnt.get(n) || custom.has(n)).map(n => `<button class="clip-chip${_bclip.cat === n ? ' on' : ''}${FIXED_DIRS.includes(n) ? ' fixed' : ''}" onclick="bclipCat(${q(n)})">${escHtml(n)} <b>${cnt.get(n) || 0}</b></button>`).join('')
+    + `<button class="clip-chip add" onclick="openClipCatEditor()">🏷 分類項目（${clipAllCats().length}）</button><button class="clip-chip add" onclick="openVlmSheet()" title="做成有編號的總表，貼給 Claude／Gemini 分，再把答案貼回來">📋 分類總表（Claude／Gemini）${photos.some(p => p.vlmCat) ? ' ✓' : ''}</button>`
+    + (clipOk ? '' : `<button class="clip-chip add" onclick="bclipPrepare()">🔎 下載本機 AI（打字找照片）</button>`);
   const list = bclipList();
   let grid = '';
   if (list) {
     const show = list.slice(0, _bclip.limit);
-    grid = `<div class="bclip-bar"><span>${_bclip.q ? `「${escHtml(_bclip.q)}」最像的照片` : `🏷 ${escHtml(_bclip.cat)}（AI 分類，可能有錯）`}：${list.length} 張（越前面越像）</span>
+    grid = `<div class="bclip-bar"><span>${_bclip.q ? `「${escHtml(_bclip.q)}」最像的照片` : `🏷 ${escHtml(_bclip.cat)}（${FIXED_DIRS.includes(_bclip.cat) ? '看檔案判斷' : 'AI 分類，可能有錯'}）`}：${list.length} 張（越前面越像）</span>
         <button class="tip-link" onclick="bclipSetAll(true)">✅ 這些全部入選</button><button class="tip-link" onclick="bclipSetAll(false)">✕ 這些全部淘汰</button></div>
       <div class="bclip-grid">${show.map(p => { const i = photos.indexOf(p); return `<div class="bclip-tile ${p.selected ? 'on' : 'off'}" onclick="bclipToggle(${i})" title="${escHtml(p.name)}（點一下改${p.selected ? '淘汰' : '入選'}）"><img src="${p.thumbUrl}" loading="lazy" alt=""><span>${p.selected ? '✅ 入選' : '✕ 淘汰'}</span></div>`; }).join('')}</div>
       ${list.length > show.length ? `<button class="tip-link" onclick="_bclip.limit+=120;renderBatchClip()">再顯示 ${Math.min(120, list.length - show.length)} 張</button>` : ''}`;
@@ -9201,6 +9246,208 @@ function bclipSet(p, on) {
 }
 function bclipToggle(i) { const p = photos[i]; if (!p) return; bclipSet(p, !p.selected); renderBatchClip(); }
 function bclipSetAll(on) { const l = bclipList() || []; if (!l.length || !confirm(`把這 ${l.length} 張全部設為「${on ? '入選' : '淘汰'}」？\n（AI 找的可能有錯，建議先看過縮圖）`)) return; l.forEach(p => bclipSet(p, on)); showToast(`${on ? '✅' : '✕'} ${l.length} 張設為${on ? '入選' : '淘汰'}`); renderBatchClip(); }
+
+// ══════════════════════════════════════════════════════════════
+// 2026v60 🔁 完全一樣的重複檔：先比檔案大小，大小一樣的再比內容（開頭、中間、結尾各 64 KB）
+// ══════════════════════════════════════════════════════════════
+async function fileFingerprint(f) {
+  try {
+    const S = 65536, z = f.size, mid = Math.max(0, Math.floor(z / 2) - S / 2);
+    const buf = new Uint8Array(await new Blob([f.slice(0, S), f.slice(mid, mid + S), f.slice(Math.max(0, z - S))]).arrayBuffer());
+    if (window.crypto && crypto.subtle) { const h = await crypto.subtle.digest('SHA-256', buf); return z + ':' + [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, '0')).join(''); }
+    let a = 0x811c9dc5, b = 0x01000193 ^ 0x5bd1e995;   // 沒有 crypto.subtle 時用兩組 FNV
+    for (let i = 0; i < buf.length; i++) { a = Math.imul(a ^ buf[i], 16777619) >>> 0; b = Math.imul(b ^ buf[buf.length - 1 - i], 16777619) >>> 0; }
+    return z + ':' + a.toString(16) + b.toString(16);
+  } catch (e) { return ''; }
+}
+async function markExactDups(list) {
+  list.forEach(p => { p.exactDupOf = ''; });
+  const bySize = new Map();
+  for (const p of list) { const z = p.file && p.file.size; if (!z) continue; if (!bySize.has(z)) bySize.set(z, []); bySize.get(z).push(p); }
+  let n = 0;
+  for (const ps of bySize.values()) {
+    if (ps.length < 2) continue;
+    const seen = new Map();
+    ps.sort((a, b) => (a.time || 0) - (b.time || 0) || String(a.name).length - String(b.name).length || String(a.name).localeCompare(String(b.name)));
+    for (const p of ps) { const k = await fileFingerprint(p.file); if (!k) continue; if (seen.has(k)) { p.exactDupOf = seen.get(k).name; n++; } else seen.set(k, p); }
+  }
+  return n;
+}
+
+// ══════════════════════════════════════════════════════════════
+// 2026v60 📋 分類總表：照片排成有編號的總表（JPG），你自己貼給 Claude／Gemini 分類，再把回覆貼回來
+// 本工具不連網、不送出；要不要貼、貼給誰，你決定。貼回來的答案也拿來「教」本機 AI
+// ══════════════════════════════════════════════════════════════
+const VLM_COLS = 7, VLM_ROWS = 7, VLM_CELL = 200, VLM_HEAD = 50;
+const _vlm = { list: [], sheets: [], busy: '', pct: 0, msg: '' };
+function vlmTargets() { return photos.filter(p => !photoFixedDir(p)).sort((a, b) => (a.time || 0) - (b.time || 0) || String(a.name).localeCompare(String(b.name))); }
+function vlmEnsureList() {
+  const cur = new Set(photos);
+  if (!_vlm.list.length || _vlm.list.some(p => !cur.has(p))) { _vlm.list = vlmTargets(); vlmDropSheets(); }
+  else { const have = new Set(_vlm.list), add = vlmTargets().filter(p => !have.has(p)); if (add.length) { _vlm.list.push(...add); vlmDropSheets(); } }
+  _vlm.list.forEach((p, i) => { p.vlmNo = i + 1; });
+  return _vlm.list;
+}
+function vlmDropSheets() { for (const s of _vlm.sheets) try { URL.revokeObjectURL(s.url); } catch (e) {} _vlm.sheets = []; }
+function openVlmSheet() {
+  if (!photos.length) { showToast('先匯入照片'); return; }
+  let m = document.getElementById('vlmModal');
+  if (!m) {
+    m = document.createElement('div'); m.id = 'vlmModal'; m.className = 'modal-overlay';
+    m.onclick = e => { if (e.target === m) closeVlmSheet(); };
+    m.innerHTML = '<div class="modal" style="width:min(760px,94vw);max-width:none;max-height:90vh;overflow-y:auto;"><div id="vlmBody"></div></div>';
+    document.body.appendChild(m);
+  }
+  vlmEnsureList(); _vlm.msg = '';
+  m.classList.add('show'); renderVlmSheet();
+}
+function closeVlmSheet() { document.getElementById('vlmModal')?.classList.remove('show'); }
+function renderVlmSheet() {
+  const el = document.getElementById('vlmBody'); if (!el) return;
+  const list = _vlm.list, N = list.length, K = Math.ceil(N / (VLM_COLS * VLM_ROWS)), done = list.filter(p => p.vlmCat).length;
+  const fixedN = photos.length - N;
+  const warn = IS_LIFE
+    ? '⚠️ 總表是照片縮小拼起來的，<b>貼給 Claude／Gemini＝把這些小圖交給那家公司</b>。有家人、小孩的臉時請確認你願意，並在設定裡關掉「用對話改進模型」。不想送出就用本機 AI（照片不離開電腦）。'
+    : '⚠️ 總表上看得到<b>學生的臉</b>。貼給 Claude／Gemini＝把這些小圖交給那家公司，請先確認學校規定：用學校帳號、關掉「用對話改進模型」。不想送出就用本機 AI（照片不離開電腦）。';
+  const sheets = _vlm.sheets.length ? `<div class="vlm-sheets">${_vlm.sheets.map((s, i) => `<div class="vlm-sheet"><img src="${s.url}" alt="分類總表 ${i + 1}"><div>第 ${i + 1} 張・編號 ${s.a}–${s.b}</div><button class="tip-link" onclick="vlmCopyImg(${i})">📋 複製圖片</button> <a class="tip-link" href="${s.url}" download="${escHtml(s.name)}">⬇️ 下載</a></div>`).join('')}</div>
+      ${_vlm.sheets.length > 1 ? `<button class="tip-link" onclick="vlmDownloadAll()">⬇️ 全部下載（${_vlm.sheets.length} 張）</button>` : ''}` : '';
+  el.innerHTML = `<div class="bclip-head"><h3>📋 分類總表：請 Claude／Gemini 幫忙分</h3><button class="tip-link" onclick="closeVlmSheet()">✕ 關閉</button></div>
+    <div class="clip-sub">大模型看圖比本機 AI 準。做法：把照片排成有編號的總表 → 你自己貼給 Claude 或 Gemini → 把它的回答貼回來。本工具<b>不會自己送出任何東西</b>。</div>
+    <div class="vlm-warn">${warn}</div>
+    <div class="vlm-step"><b>①</b> 做總表：<b>${N}</b> 張照片 → <b>${K}</b> 張總表（每張 ${VLM_COLS}×${VLM_ROWS} 格，左上角有編號）${fixedN ? `<span class="clip-sub">（截圖、文件、轉傳、重複檔 ${fixedN} 張看檔案就分好了，不放進總表）</span>` : ''}
+      <div class="clip-row" style="margin-top:6px;"><button class="lib-pack-btn" onclick="vlmBuild()" ${_vlm.busy || !N ? 'disabled' : ''}>${_vlm.sheets.length ? '↻ 重做總表' : '🧩 做總表'}</button>${_vlm.busy ? clipBar(_vlm.pct, _vlm.busy) : ''}</div>${sheets}</div>
+    <div class="vlm-step"><b>②</b> 複製提示詞，打開 <b>Claude</b> 或 <b>Gemini</b>：貼上提示詞，再貼上（或上傳）總表。總表很多時分幾次，一次約 5～10 張。
+      <div class="clip-row" style="margin-top:6px;"><button class="lib-pack-btn" onclick="vlmCopyPrompt()">📋 複製提示詞</button><button class="tip-link" onclick="document.getElementById('vlmPromptBox').hidden=!document.getElementById('vlmPromptBox').hidden">看提示詞</button></div>
+      <textarea id="vlmPromptBox" class="vlm-ta" readonly hidden>${escHtml(vlmPrompt())}</textarea></div>
+    <div class="vlm-step"><b>③</b> 把它的回答整段貼在這裡（分好幾次就貼好幾次）：
+      <textarea id="vlmReply" class="vlm-ta" placeholder='例：{"1":"合照","2":"用餐","3":"其他"}'></textarea>
+      <div class="clip-row"><button class="lib-pack-btn" onclick="vlmApply()">✓ 套用</button>${done ? `<button class="tip-link" onclick="vlmClear()">清除 Claude／Gemini 的分類</button>` : ''}<span class="clip-sub">已分 <b>${done}</b> / ${N} 張</span></div>
+      ${_vlm.msg ? `<div class="vlm-msg">${_vlm.msg}</div>` : ''}</div>
+    <div class="clip-sub">套用後：審核區「🔎 AI 找照片」的類別、相簿「依內容（AI）」的分組都改用這個答案；有本機 AI 特徵的照片也會變成 🎓 例子，<b>之後本機 AI 會照這些例子分</b>（例子是數字，存在這台電腦）。類別名稱和說明在「🏷 分類項目」改。</div>`;
+}
+function vlmPrompt() {
+  const cats = clipAllCats();
+  const lines = cats.map((c, i) => `${i + 1}. ${c[0]}：${c[3] || c[0]}`);
+  lines.push(`${cats.length + 1}. 截圖：手機或電腦的螢幕畫面`, `${cats.length + 2}. 文件收據：紙本文件、收據、發票、海報公告、紙上的文字`);
+  return `你是照片分類助手。我上傳的「分類總表」一格是一張照片，每格左上角黑底白字是編號。
+請把每一個編號的照片分到下面其中一類（只能用這些名稱；都不像就寫「其他」）：
+${lines.join('\n')}
+
+規則：
+- 只看畫面內容判斷，一張照片只選一類；看不清楚就寫「其他」。
+- 不要辨識或描述照片裡的人是誰。
+- 我可能分幾次上傳總表；每次都把這次看到的編號全部分類。
+
+只回覆 JSON，不要其他文字，格式：
+{"1":"${cats[0] ? cats[0][0] : '其他'}","2":"其他"}`;
+}
+async function vlmCopyPrompt() {
+  const t = vlmPrompt();
+  try { await navigator.clipboard.writeText(t); showToast('📋 已複製提示詞：貼到 Claude／Gemini，再貼上總表'); }
+  catch (e) { const b = document.getElementById('vlmPromptBox'); if (b) { b.hidden = false; b.select(); } showToast('請手動複製提示詞（已選好）'); }
+}
+async function vlmImg(url) {
+  if (!url) return null;
+  try { return await createImageBitmap(await (await fetch(url)).blob()); }
+  catch (e) { return await new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = url; }); }
+}
+async function vlmBuild() {
+  if (_vlm.busy) return;
+  const list = vlmEnsureList(), per = VLM_COLS * VLM_ROWS, K = Math.ceil(list.length / per);
+  vlmDropSheets(); _vlm.busy = '做總表中…'; _vlm.pct = 1; renderVlmSheet();
+  try {
+    const stamp = localYmd();
+    for (let k = 0; k < K; k++) {
+      const part = list.slice(k * per, (k + 1) * per), rows = Math.ceil(part.length / VLM_COLS);
+      const cv = document.createElement('canvas'); cv.width = VLM_COLS * VLM_CELL; cv.height = VLM_HEAD + rows * VLM_CELL;
+      const ctx = cv.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, cv.width, cv.height);
+      ctx.fillStyle = '#222'; ctx.font = 'bold 24px sans-serif'; ctx.textBaseline = 'middle';
+      ctx.fillText(`分類總表 ${k + 1} / ${K}　編號 ${part[0].vlmNo}–${part[part.length - 1].vlmNo}`, 14, VLM_HEAD / 2);
+      for (let i = 0; i < part.length; i++) {
+        const p = part[i], x = (i % VLM_COLS) * VLM_CELL, y = VLM_HEAD + Math.floor(i / VLM_COLS) * VLM_CELL, pad = 4, box = VLM_CELL - pad * 2;
+        ctx.fillStyle = '#e9e9e9'; ctx.fillRect(x + pad, y + pad, box, box);
+        const im = await vlmImg(p.thumbUrl);
+        if (im) { const w = im.width, h = im.height, s = Math.min(box / w, box / h), dw = w * s, dh = h * s; ctx.drawImage(im, x + pad + (box - dw) / 2, y + pad + (box - dh) / 2, dw, dh); if (im.close) im.close(); }
+        else { ctx.fillStyle = '#888'; ctx.font = '16px sans-serif'; ctx.fillText('（沒有縮圖）', x + 50, y + VLM_CELL / 2); }
+        const t = String(p.vlmNo); ctx.font = 'bold 26px sans-serif'; const tw = ctx.measureText(t).width;
+        ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillRect(x + pad, y + pad, tw + 14, 34);
+        ctx.fillStyle = '#fff'; ctx.fillText(t, x + pad + 7, y + pad + 18);
+        if (i % 7 === 6) { _vlm.pct = (k * per + i + 1) / list.length * 100; _vlm.busy = `做總表中… ${k * per + i + 1} / ${list.length}`; renderVlmSheet(); await new Promise(r => setTimeout(r, 0)); }
+      }
+      const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.86));
+      _vlm.sheets.push({ cv, blob, url: URL.createObjectURL(blob), a: part[0].vlmNo, b: part[part.length - 1].vlmNo, name: `分類總表_${stamp}_${k + 1}of${K}.jpg` });
+    }
+  } catch (e) { showToast('⚠️ 做總表失敗：' + (e.message || e)); }
+  _vlm.busy = ''; renderVlmSheet();
+}
+async function vlmCopyImg(i) {
+  const s = _vlm.sheets[i]; if (!s) return;
+  try {
+    const png = await new Promise(r => s.cv.toBlob(r, 'image/png'));
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': png })]);
+    showToast(`📋 第 ${i + 1} 張總表已複製：到 Claude／Gemini 按 Ctrl+V 貼上`);
+  } catch (e) { showToast('⚠️ 這個瀏覽器不能複製圖片，請按「⬇️ 下載」再上傳'); }
+}
+async function vlmDownloadAll() {
+  for (const s of _vlm.sheets) { libPackDl(s.blob, s.name); await new Promise(r => setTimeout(r, 400)); }
+}
+// 讀回覆：JSON（{"1":"合照"}、[{"id":1,"category":"合照"}]、{"results":[…]}），或一行一個「1. 合照」「#1：合照」
+function vlmParse(text) {
+  const out = new Map(); text = String(text || '').slice(0, 500000);
+  const add = (k, v) => { const n = parseInt(String(k).replace(/[^\d]/g, ''), 10); if (n > 0 && n < 100000 && v != null && typeof v !== 'object') out.set(n, String(v).trim().slice(0, 40)); };
+  const walk = o => {
+    if (Array.isArray(o)) { for (const x of o) if (x && typeof x === 'object' && !Array.isArray(x)) { const k = x.id ?? x.no ?? x.n ?? x.num ?? x.number ?? x.index ?? x['編號']; const v = x.category ?? x.cat ?? x.class ?? x.label ?? x.type ?? x['類別'] ?? x['分類']; if (k != null && v != null) add(k, v); else walk(x); } else if (Array.isArray(x) && x.length === 2) add(x[0], x[1]); return; }
+    if (o && typeof o === 'object') for (const [k, v] of Object.entries(o)) { if (/^\D{0,3}\d{1,5}\D{0,3}$/.test(k) && (typeof v === 'string' || typeof v === 'number')) add(k, v); else if (v && typeof v === 'object') walk(v); }
+  };
+  // 找出每一段完整的 { } 或 [ ]
+  let depth = 0, start = -1, inStr = false, esc = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inStr) { if (esc) esc = false; else if (ch === '\\') esc = true; else if (ch === '"') inStr = false; continue; }
+    if (ch === '"' && depth > 0) { inStr = true; continue; }
+    if (ch === '{' || ch === '[') { if (depth === 0) start = i; depth++; }
+    else if ((ch === '}' || ch === ']') && depth > 0) { depth--; if (depth === 0 && start >= 0) { try { walk(JSON.parse(text.slice(start, i + 1))); } catch (e) {} start = -1; } }
+  }
+  if (!out.size) { const re = /(?:^|[\s,，;；])[#＃]?\s*(\d{1,5})\s*[\.．、:：)）\-－=]\s*[「『"']?([^\s,，;；」』"'\n]{1,20})/g; let m; while ((m = re.exec(text))) add(m[1], m[2]); }
+  return out;
+}
+function vlmMatch(raw) {
+  const s = String(raw || '').replace(/^[\s"'「『【\[(（]+|[\s"'」』】\])）。.]+$/g, '').replace(/^\d+[\.．、]\s*/, '');
+  if (!s) return ['其他', false];
+  const names = clipAllCats().map(c => c[0]);
+  if (names.includes(s)) return [s, true];
+  if (/^其[他它]/.test(s)) return ['其他', true];
+  if (/截圖|螢幕/.test(s)) return ['📱 截圖', true];
+  if (/文件|收據|發票/.test(s)) return ['📄 文件收據', true];
+  const hit = names.find(n => s.includes(n)) || names.find(n => s.length >= 2 && n.includes(s));
+  return hit ? [hit, true] : ['其他', false];
+}
+async function vlmApply() {
+  const ta = document.getElementById('vlmReply'), m = vlmParse(ta && ta.value), list = vlmEnsureList();
+  if (!m.size) { _vlm.msg = '⚠️ 看不懂貼上的內容：請把 Claude／Gemini 的回答整段貼上（有 { } 的那段）'; renderVlmSheet(); return; }
+  let ok = 0, outN = 0; const unk = [];
+  for (const [n, v] of m) {
+    const p = list[n - 1]; if (!p) { outN++; continue; }
+    const [c, known] = vlmMatch(v); if (!known) unk.push(v);
+    p.vlmCat = c; p.vlmTaught = false; ok++;
+  }
+  let nT = 0; try { nT = await clipTeachFromPhotos(); } catch (e) {}
+  vlmRegroup();
+  _vlm.msg = `✅ 套用 ${ok} 張${outN ? `；${outN} 個編號不在總表裡（總表重做過？）` : ''}${unk.length ? `；${unk.length} 張的類別名稱對不到，先放「其他」（${escHtml([...new Set(unk)].slice(0, 3).join('、'))}）` : ''}${nT ? `；🎓 本機 AI 學了 ${nT} 個例子` : ''}`;
+  if (ta) ta.value = '';
+  renderVlmSheet();
+}
+function vlmClear() {
+  if (!confirm('清除 Claude／Gemini 分的類別？（本機 AI 學過的例子保留，要清在「🏷 分類項目」）')) return;
+  photos.forEach(p => { delete p.vlmCat; p.vlmTaught = false; });
+  vlmRegroup(); _vlm.msg = '已清除'; renderVlmSheet();
+}
+function vlmRegroup() {
+  if (groups.some(g => g.aiContent)) { try { groupByAiContent(); window._quietRender = true; renderResults(); } catch (e) { console.warn(e); } }
+  if (document.getElementById('batchClipModal')?.classList.contains('show')) renderBatchClip();
+  try { updateAnalyzeChoice(); } catch (e) {}
+}
 
 // ══════════════════════════════════════════════════════════════
 // 2026v55 🔎 AI 看圖找同一個畫面＋動作瞬間（選用，預設關）
@@ -14573,88 +14820,128 @@ async function clipEmbedTexts(texts) {
 function clipMean(vs) { const o = new Float32Array(vs[0].length); for (const v of vs) for (let i = 0; i < o.length; i++) o[i] += v[i]; return clipNorm(o); }
 
 // ── 相簿庫「🔎 AI 找照片」：特徵存在這台電腦的瀏覽器（IndexedDB pickupClip），只是數字，不能還原成照片 ──
+// 2026v60：分類改成「少而清楚」— 每類一句「給 AI 看的說明」（老師可以改）；以前的細項放到「更多項目」，預設關
+// [名稱, （保留）, false, 說明, 預設開]
 const CLIP_CATS = [
-  ['合照', ['大合照', '一群學生排成好幾排拍合照', '師生合影']],
-  ['頒獎', ['頒獎', '老師頒發獎狀給學生', '學生上台領獎']],
-  ['運動競賽', ['運動會', '學生在操場上跑步比賽', '接力賽跑']],
-  ['舞台表演', ['舞台表演', '學生在舞台上唱歌跳舞', '學生上台演奏樂器']],
-  ['上課', ['上課', '學生坐在教室裡上課', '老師在黑板前教學']],
-  ['典禮集會', ['典禮', '全校學生在操場上集合', '升旗典禮']],
-  ['講座研習', ['研習', '講者對著投影片演講', '老師們在會議室開會']],
-  ['戶外教學', ['戶外教學', '學生參觀博物館', '學生在戶外大自然裡活動']],
-  ['學生作品', ['學生作品', '學生的畫作和美勞作品', '展示的手工作品']],
-  ['用餐', ['營養午餐', '學生在吃飯', '餐盤裡的飯菜']],
-  ['校園風景', ['校園風景', '學校建築', '校園裡的花草樹木']],
-  ['獎狀證書', ['獎狀', '獎盃和獎牌', '證書']],
-  ['海報文件', ['海報', '公告文件', '紙上的文字']],
-  ['截圖', ['手機截圖', '電腦螢幕畫面', '網頁截圖']],
-  ['親子活動', ['親子活動', '家長和孩子一起參加活動', '家長日']],
-  // 2026v57：更多學校常見項目（不用的可以在「🏷 分類項目」勾掉）
-  ['畢業典禮', ['畢業典禮', '學生穿學士服', '畢業生領畢業證書']],
-  ['閱讀', ['學生在看書', '圖書館', '說故事時間']],
-  ['自然實驗', ['學生做科學實驗', '實驗室裡的燒杯和試管', '學生用放大鏡觀察']],
-  ['資訊課', ['學生使用電腦', '電腦教室', '學生操作平板']],
-  ['美勞創作', ['學生在畫畫', '學生在做勞作', '剪紙和黏貼']],
-  ['音樂課', ['學生在唱歌', '學生吹直笛', '音樂教室']],
-  ['體育課', ['體育課', '學生在打球', '學生在做體操']],
-  ['種植食農', ['學生在種菜', '學生在澆花', '植樹活動']],
-  ['烹飪', ['學生在做菜', '學生在包水餃', '烹飪課']],
-  ['打掃環境', ['學生在打掃', '學生掃地拖地', '淨灘撿垃圾']],
-  ['防災演練', ['防災演練', '學生抱頭蹲下躲在桌子下', '消防演練噴水']],
+  ['合照', [], false, '一群人排好面對鏡頭拍照、師生合影、大合照', 1],
+  ['頒獎', [], false, '上台領獎、老師頒發獎狀給學生、拿著獎盃或獎狀', 1],
+  ['運動競賽', [], false, '操場或球場上跑步比賽、運動會、接力賽、球賽', 1],
+  ['舞台表演', [], false, '台上唱歌、跳舞、演奏樂器、戲劇表演', 1],
+  ['上課學習', [], false, '教室裡上課、做實驗、用電腦、看書、做美勞', 1],
+  ['典禮集會', [], false, '全校學生在操場集合、升旗典禮、開幕閉幕、畢業典禮', 1],
+  ['講座研習', [], false, '有人對著投影片或講台演講、大人開會研習', 1],
+  ['戶外校外', [], false, '校外教學、參觀博物館、在戶外大自然裡活動、種植', 1],
+  ['用餐', [], false, '吃飯、營養午餐、餐盤裡的飯菜', 1],
+  // 更多項目（預設關；學校常辦的可以打開）
+  ['學生作品', [], false, '學生的畫作和美勞作品、展示的手工作品', 0],
+  ['校園風景', [], false, '學校建築、校園裡的花草樹木', 0],
+  ['獎狀證書', [], false, '獎狀、獎盃和獎牌、證書', 0],
+  ['親子活動', [], false, '家長和孩子一起參加活動、家長日', 0],
+  ['畢業典禮', [], false, '學生穿學士服、畢業生領畢業證書', 0],
+  ['閱讀', [], false, '學生在看書、圖書館、說故事時間', 0],
+  ['自然實驗', [], false, '學生做科學實驗、燒杯和試管、用放大鏡觀察', 0],
+  ['資訊課', [], false, '學生使用電腦、電腦教室、學生操作平板', 0],
+  ['美勞創作', [], false, '學生在畫畫、學生在做勞作、剪紙和黏貼', 0],
+  ['音樂課', [], false, '學生在唱歌、學生吹直笛、音樂教室', 0],
+  ['體育課', [], false, '體育課、學生在打球、學生在做體操', 0],
+  ['種植食農', [], false, '學生在種菜、學生在澆花、植樹活動', 0],
+  ['烹飪', [], false, '學生在做菜、學生在包水餃、烹飪課', 0],
+  ['打掃環境', [], false, '學生在打掃、掃地拖地、淨灘撿垃圾', 0],
+  ['防災演練', [], false, '防災演練、學生抱頭蹲下躲在桌子下、消防演練噴水', 0],
 ];
-const CLIP_K_CUSTOM = IS_LIFE ? 'clipCustomCats_life' : 'clipCustomCats', CLIP_K_OFF = IS_LIFE ? 'clipCatsOff_life' : 'clipCatsOff';   // 2026v58 生活版分開存
+// 固定資料夾（不用 AI，先用規則判斷）：截圖、文件收據、轉傳、重複檔；截圖和文件另外請 AI 幫忙抓漏網的
+const FIXED_DIRS = ['📱 截圖', '📄 文件收據', '↪ 轉傳', '🔁 重複檔'];
+const FIXED_AI = [['📱 截圖', '手機截圖、電腦螢幕畫面、網頁截圖、聊天訊息畫面'], ['📄 文件收據', '收據、發票、紙本文件、海報公告、紙上的文字']];
+function catPrompts(n, d) { return [...new Set([n, ...String(d || '').split(/[、，,；;／/]+/).map(s => s.trim()).filter(Boolean)])].slice(0, 8); }
+function photoFixedDir(p) {
+  if (!p) return '';
+  if (p.exactDupOf) return '🔁 重複檔';
+  const k = p.importKind || p.kind || '';
+  return k === 'screenshot' ? '📱 截圖' : k === 'document' ? '📄 文件收據' : k === 'line' ? '↪ 轉傳' : '';
+}
+// 這張照片最後算哪一類：規則 → Claude／Gemini 分的 → 本機 AI
+function photoCat(p) { return photoFixedDir(p) || p.vlmCat || aiPhotoCat(p.clipEmb)[0]; }
+const CLIP_K_CUSTOM = IS_LIFE ? 'clipCustomCats_life' : 'clipCustomCats';   // 2026v58 生活版分開存
+const CLIP_K_STATE = IS_LIFE ? 'clipCatState_life' : 'clipCatState', CLIP_K_DESC = IS_LIFE ? 'clipCatDesc_life' : 'clipCatDesc';   // 2026v60 開關、說明（舊的 clipCatsOff 不再用：分類重新設計，大家從新預設開始）
 const CLIP_SEARCH_MARGIN = 0.035;  // 2026v56：找照片只列「跟最像那張差不多像」的（實測：相關的差 0.02 內、不相關的差 0.05 以上）
 const CLIP_SEARCH_EXAMPLES = ['大隊接力', '頒獎合照', '營養午餐', '舞台表演', '升旗典禮', '學生畫作', '拔河', '戶外教學'];
 const _clip = { q: '', qv: null, cat: '', cluster: -1, clusters: null, running: false, stop: false, done: 0, total: 0, rate: 0,
   loadPct: 0, loadMsg: '', loading: false, emb: new Map(), embLib: '', catVecs: null, catVer: '', assign: null, assignVer: '', busy: '' };
 function clipCustomCats() { try { const a = JSON.parse(localStorage.getItem(CLIP_K_CUSTOM) || '[]'); return Array.isArray(a) ? a.filter(s => typeof s === 'string' && s.trim()).map(s => s.trim().slice(0, 20)).slice(0, 30) : []; } catch (e) { return []; } }
-function clipCatsOff() { try { const a = JSON.parse(localStorage.getItem(CLIP_K_OFF) || '[]'); return new Set(Array.isArray(a) ? a.filter(x => typeof x === 'string') : []); } catch (e) { return new Set(); } }
-function clipAllCats() { const off = clipCatsOff(); return [...CLIP_CATS.filter(c => !off.has(c[0])), ...clipCustomCats().map(n => [n, [n], true])]; }
+function clipJson(k) { try { const o = JSON.parse(localStorage.getItem(k) || '{}'); return o && typeof o === 'object' && !Array.isArray(o) ? o : {}; } catch (e) { return {}; } }
+function clipCatState() { return clipJson(CLIP_K_STATE); }
+function clipCatDescs() { const o = clipJson(CLIP_K_DESC), r = {}; for (const [k, v] of Object.entries(o)) if (typeof v === 'string') r[k] = v.slice(0, 80); return r; }
+function clipCatIsOn(c, st) { return Object.prototype.hasOwnProperty.call(st, c[0]) ? !!st[c[0]] : !!c[4]; }
+function clipCatDesc(n, ds) { ds = ds || clipCatDescs(); if (Object.prototype.hasOwnProperty.call(ds, n)) return ds[n]; const c = CLIP_CATS.find(x => x[0] === n); return c ? c[3] : ''; }
+// [名稱, 比對用的句子, 自己加的?, 說明]
+function clipAllCats() {
+  const st = clipCatState(), ds = clipCatDescs(), mk = (n, custom) => { const d = clipCatDesc(n, ds); return [n, catPrompts(n, d), custom, d]; };
+  return [...CLIP_CATS.filter(c => clipCatIsOn(c, st)).map(c => mk(c[0], false)), ...clipCustomCats().map(n => mk(n, true))];
+}
 // 2026v57 🏷 AI 分類項目：內建的可以勾掉、可以自己加；相簿庫、審核區、相簿一鍵整理都用這一份
 function openClipCatEditor() {
   let m = document.getElementById('clipCatModal');
   if (!m) {
     m = document.createElement('div'); m.id = 'clipCatModal'; m.className = 'modal-overlay';
     m.onclick = e => { if (e.target === m) clipCatEditorDone(); };
-    m.innerHTML = '<div class="modal" style="max-width:640px;max-height:88vh;overflow-y:auto;"><div id="clipCatBody"></div></div>';
+    m.innerHTML = '<div class="modal" style="width:min(720px,94vw);max-width:none;max-height:88vh;overflow-y:auto;"><div id="clipCatBody"></div></div>';
     document.body.appendChild(m);
   }
   m.classList.add('show'); renderClipCatEditor();
+  if (!_clip.teach) clipTeachLoad().then(renderClipCatEditor).catch(() => {});
 }
 function renderClipCatEditor() {
   const el = document.getElementById('clipCatBody'); if (!el) return;
-  const off = clipCatsOff(), custom = clipCustomCats(), q = x => JSON.stringify(x).replace(/"/g, '&quot;');
-  const on = CLIP_CATS.length - CLIP_CATS.filter(c => off.has(c[0])).length + custom.length;
-  el.innerHTML = `<div class="bclip-head"><h3>🏷 AI 分類項目（${on} 類）</h3><button class="tip-link" onclick="clipCatEditorDone()">✓ 完成</button></div>
-    <div class="clip-sub" style="margin-bottom:10px;">AI 會把每張照片分到最像的一類，都不像的放「其他」。項目越少、彼此差越多，分得越準：用不到的可以點掉。</div>
-    <div style="font-weight:700;font-size:13px;margin:6px 0;">內建項目（點一下開／關）</div>
-    <div class="clip-chips">${CLIP_CATS.map(([n, pr]) => `<button class="clip-chip${off.has(n) ? '' : ' on'}" title="AI 用來比對的描述：${escHtml(pr.join('、'))}" onclick="clipCatToggle(${q(n)})">${off.has(n) ? '' : '✓ '}${escHtml(n)}</button>`).join('')}</div>
-    <div style="font-weight:700;font-size:13px;margin:14px 0 6px;">自己加的項目</div>
-    <div class="clip-chips">${custom.length ? custom.map(n => `<button class="clip-chip on">${escHtml(n)}<span class="x" title="刪掉" onclick="clipCatRemove(${q(n)})">×</span></button>`).join('') : '<span class="clip-sub">還沒有。可以加學校特有的活動，例如：鼓號樂隊、交通安全宣導、拔河、英語日。</span>'}</div>
-    <div class="clip-row" style="margin-top:10px;"><input type="text" id="clipCatNew" class="lib-q" style="flex:1;min-width:180px;" maxlength="20" placeholder="打一個項目名稱，例如：鼓號樂隊" onkeydown="if(event.key==='Enter')clipCatAdd()"><button class="lib-pack-btn" onclick="clipCatAdd()">＋ 加入</button></div>
-    <div class="clip-sub" style="margin-top:6px;">小技巧：用「看得到的東西」描述，AI 比較認得出來。例如「學生在操場上拔河」比「團結日」好認。</div>
-    <div class="clip-row" style="margin-top:12px;justify-content:space-between;"><button class="tip-link" onclick="clipCatReset()">↺ 恢復預設（內建全開、刪掉自己加的）</button><button class="lib-pack-btn" onclick="clipCatEditorDone()">✓ 完成</button></div>`;
+  const st = clipCatState(), ds = clipCatDescs(), custom = clipCustomCats(), q = x => JSON.stringify(x).replace(/"/g, '&quot;');
+  const on = clipAllCats().length, nTeach = (_clip.teach || []).length;
+  const row = (n, isOn, custom) => `<div class="cce-row${isOn ? ' on' : ''}">
+      <label class="cce-name"><input type="checkbox" ${isOn ? 'checked' : ''} onchange="clipCatToggle(${q(n)}, this.checked)"> ${escHtml(n)}</label>
+      <input type="text" class="lib-q cce-desc" maxlength="80" value="${escHtml(clipCatDesc(n, ds))}" placeholder="給 AI 看的說明：照片裡看得到什麼" onchange="clipCatSetDesc(${q(n)}, this.value)">
+      ${custom ? `<button class="tip-link" title="刪掉" onclick="clipCatRemove(${q(n)})">✕</button>` : (Object.prototype.hasOwnProperty.call(ds, n) ? `<button class="tip-link" title="說明改回預設" onclick="clipCatSetDesc(${q(n)}, null)">↺</button>` : '<span style="width:18px;"></span>')}
+    </div>`;
+  const core = CLIP_CATS.filter(c => c[4]), more = CLIP_CATS.filter(c => !c[4]);
+  el.innerHTML = `<div class="bclip-head"><h3>🏷 AI 分類項目（${on} 類＋其他）</h3><button class="tip-link" onclick="clipCatEditorDone()">✓ 完成</button></div>
+    <div class="clip-sub" style="margin-bottom:8px;">每張照片會分到最像的一類，都不像的放「其他」。<b>類別少、彼此差很多，分得最準</b>。右邊是「給 AI 看的說明」：寫<b>照片裡看得到的東西</b>，用頓號隔開（例：學生在操場上拔河、繩子），AI 照這個比對。</div>
+    <div class="cce-fixed">固定資料夾（不用 AI，看檔案判斷，一定會分出來）：${FIXED_DIRS.map(escHtml).join('　')}</div>
+    ${core.map(c => row(c[0], clipCatIsOn(c, st), false)).join('')}
+    <details class="cce-more"${more.some(c => clipCatIsOn(c, st)) ? ' open' : ''}><summary>更多項目（${more.filter(c => clipCatIsOn(c, st)).length} / ${more.length} 開；常辦的活動再打開）</summary>${more.map(c => row(c[0], clipCatIsOn(c, st), false)).join('')}</details>
+    <div style="font-weight:700;font-size:13px;margin:12px 0 4px;">自己加的項目</div>
+    ${custom.length ? custom.map(n => row(n, true, true)).join('') : '<div class="clip-sub">還沒有。可以加學校特有的活動。</div>'}
+    <div class="clip-row" style="margin-top:8px;"><input type="text" id="clipCatNew" class="lib-q" style="flex:0 0 140px;width:140px;" maxlength="20" placeholder="名稱：鼓號樂隊" onkeydown="if(event.key==='Enter')clipCatAdd()"><input type="text" id="clipCatNewDesc" class="lib-q" style="flex:1 1 0;min-width:0;" maxlength="80" placeholder="說明：學生穿制服打鼓、吹號、排隊行進" onkeydown="if(event.key==='Enter')clipCatAdd()"><button class="lib-pack-btn" onclick="clipCatAdd()">＋ 加入</button></div>
+    <div class="cce-teach">🎓 AI 學過的例子：<b>${nTeach}</b> 張${nTeach ? `（${escHtml(clipTeachSummary())}）<button class="tip-link" onclick="clipTeachClear()">清除學過的</button>` : '。用「📋 分類總表」請 Claude／Gemini 分好貼回來，AI 就會照那些例子學（例子只存在這台電腦，是數字不是照片）'}</div>
+    <div class="clip-row" style="margin-top:12px;justify-content:space-between;"><button class="tip-link" onclick="clipCatReset()">↺ 恢復預設</button><button class="lib-pack-btn" onclick="clipCatEditorDone()">✓ 完成</button></div>`;
 }
-function clipCatToggle(n) {
-  const off = clipCatsOff(); off.has(n) ? off.delete(n) : off.add(n);
-  try { localStorage.setItem(CLIP_K_OFF, JSON.stringify([...off])); } catch (e) {}
+function clipCatToggle(n, v) {
+  const st = clipCatState(); const c = CLIP_CATS.find(x => x[0] === n); if (!c) return;
+  const now = v === undefined ? !clipCatIsOn(c, st) : !!v;
+  if (now === !!c[4]) delete st[n]; else st[n] = now;
+  try { localStorage.setItem(CLIP_K_STATE, JSON.stringify(st)); } catch (e) {}
+  renderClipCatEditor();
+}
+function clipCatSetDesc(n, d) {
+  const ds = clipCatDescs(); const c = CLIP_CATS.find(x => x[0] === n);
+  d = d === null ? null : String(d).replace(/[<>"']/g, '').trim().slice(0, 80);
+  if (d === null || (c && d === c[3])) delete ds[n]; else ds[n] = d;
+  try { localStorage.setItem(CLIP_K_DESC, JSON.stringify(ds)); } catch (e) {}
   renderClipCatEditor();
 }
 function clipCatAdd() {
-  const el = document.getElementById('clipCatNew'); const n = String(el && el.value || '').trim().replace(/[<>"']/g, '').slice(0, 20); if (!n) return;
-  const off = clipCatsOff();
-  if (CLIP_CATS.some(c => c[0] === n)) { off.delete(n); localStorage.setItem(CLIP_K_OFF, JSON.stringify([...off])); }
+  const el = document.getElementById('clipCatNew'), de = document.getElementById('clipCatNewDesc');
+  const n = String(el && el.value || '').trim().replace(/[<>"']/g, '').slice(0, 20); if (!n) return;
+  if (FIXED_DIRS.some(f => f.includes(n)) || n === '其他') { showToast('「' + n + '」是固定資料夾，不用加'); return; }
+  if (CLIP_CATS.some(c => c[0] === n)) clipCatToggle(n, true);
   else { const a = clipCustomCats(); if (!a.includes(n)) { a.push(n); localStorage.setItem(CLIP_K_CUSTOM, JSON.stringify(a.slice(0, 30))); } }
+  const d = String(de && de.value || '').trim(); if (d) clipCatSetDesc(n, d);
   renderClipCatEditor(); setTimeout(() => document.getElementById('clipCatNew')?.focus(), 0);
 }
-function clipCatRemove(n) { localStorage.setItem(CLIP_K_CUSTOM, JSON.stringify(clipCustomCats().filter(x => x !== n))); renderClipCatEditor(); }
-function clipCatReset() { if (!confirm('恢復預設：內建項目全部打開，自己加的刪掉？')) return; localStorage.removeItem(CLIP_K_OFF); localStorage.removeItem(CLIP_K_CUSTOM); renderClipCatEditor(); }
+function clipCatRemove(n) { localStorage.setItem(CLIP_K_CUSTOM, JSON.stringify(clipCustomCats().filter(x => x !== n))); const ds = clipCatDescs(); delete ds[n]; localStorage.setItem(CLIP_K_DESC, JSON.stringify(ds)); renderClipCatEditor(); }
+function clipCatReset() { if (!confirm('恢復預設：開關、說明都回到預設，自己加的刪掉？（AI 學過的例子保留）')) return; for (const k of [CLIP_K_STATE, CLIP_K_DESC, CLIP_K_CUSTOM]) localStorage.removeItem(k); renderClipCatEditor(); }
 async function clipCatEditorDone() {
   document.getElementById('clipCatModal')?.classList.remove('show');
   _clip.catVecs = null; _clip.assign = null;
-  const all = new Set(clipAllCats().map(c => c[0]));
-  if (_clip.cat && _clip.cat !== '其他' && !all.has(_clip.cat)) _clip.cat = '';
-  if (_bclip.cat && _bclip.cat !== '其他' && !all.has(_bclip.cat)) _bclip.cat = '';
+  const all = new Set([...clipAllCats().map(c => c[0]), '其他', ...FIXED_DIRS]);
+  if (_clip.cat && !all.has(_clip.cat)) _clip.cat = '';
+  if (_bclip.cat && !all.has(_bclip.cat)) _bclip.cat = '';
   try { updateAnalyzeChoice(); } catch (e) {}
   if (clipState.loaded) { try { await clipCatVecs(); } catch (e) { showToast('⚠️ ' + e.message); } }
   if (document.getElementById('libraryModal')?.classList.contains('show') && _libView === 'clip') renderLibraryModal();
@@ -14700,26 +14987,63 @@ async function clipTexts(texts) {
 function clipDot(a, b) { let s = 0; for (let i = 0; i < a.length; i++) s += a[i] * b[i]; return s; }
 async function clipQueryVec(q) { const [a, b] = await clipTexts([q, `一張${q}的照片`]); return clipMean([a, b]); }
 async function clipCatVecs() {
-  const cats = clipAllCats(), ver = cats.map(c => c[0]).join('|');
+  const cats = clipAllCats(), ver = cats.map(c => c[0] + ':' + c[3]).join('|');
+  if (!_clip.fixVecs) {   // 2026v60 截圖、文件：AI 幫規則抓漏網的
+    const f = new Map();
+    for (const [n, d] of FIXED_AI) { const pr = catPrompts(n.replace(/^\S+\s*/, ''), d); f.set(n, clipMean(await clipTexts([...pr, ...pr.map(p => `一張${p}的照片`)]))); }
+    _clip.fixVecs = f;
+  }
+  await clipTeachLoad();
   if (_clip.catVecs && _clip.catVer === ver) return _clip.catVecs;
   const m = new Map();
   for (const [name, prompts] of cats) { const vs = await clipTexts([...prompts, ...prompts.map(p => `一張${p}的照片`)]); m.set(name, clipMean(vs)); }
   _clip.catVecs = m; _clip.catVer = ver; _clip.assign = null;
   return m;
 }
+// 2026v60 🎓 教 AI：Claude／Gemini（或你）分好的照片當例子，下次本機 AI 參考這些例子（Tip-Adapter 作法，不用重新訓練模型）
+// 例子＝照片特徵（512 個數字），存在這台電腦的瀏覽器，不是照片、不上傳
+const TEACH_KEY = 'teach|' + (IS_LIFE ? 'life' : 'school'), TEACH_MAX = 40, TEACH_ALPHA = 10, TEACH_BETA = 5.5;
+async function clipTeachLoad() {
+  if (_clip.teach) return _clip.teach;
+  _clip.teach = [];
+  try {
+    const d = await clipDb();
+    const v = await new Promise(res => { const rq = d.transaction('img', 'readonly').objectStore('img').get(TEACH_KEY); rq.onsuccess = () => res(rq.result); rq.onerror = () => res(null); });
+    if (Array.isArray(v)) _clip.teach = v.filter(x => Array.isArray(x) && typeof x[0] === 'string' && x[1] instanceof ArrayBuffer).map(([c, b]) => ({ c: c.slice(0, 24), v: clipDequant(b) }));
+  } catch (e) {}
+  clipTeachIndex(); return _clip.teach;
+}
+function clipTeachIndex() { const by = new Map(); for (const t of _clip.teach || []) { if (!by.has(t.c)) by.set(t.c, []); by.get(t.c).push(t.v); } _clip.teachBy = by; _clip.teachRev = (_clip.teachRev || 0) + 1; _clip.assign = null; }
+async function clipTeachSave() {
+  try { const d = await clipDb(); await new Promise((res, rej) => { const tx = d.transaction('img', 'readwrite'); tx.objectStore('img').put((_clip.teach || []).map(t => [t.c, clipQuant(t.v)]), TEACH_KEY); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); }
+  catch (e) { console.warn('teach save', e); }
+}
+async function clipTeachAdd(pairs) {
+  await clipTeachLoad(); let n = 0;
+  for (const [c, v] of pairs) {
+    if (!c || c === '其他' || !v) continue;
+    const same = _clip.teach.findIndex(t => clipDot(t.v, v) > 0.995);   // 同一張照片：用新的答案
+    if (same >= 0) _clip.teach.splice(same, 1);
+    _clip.teach.push({ c, v }); n++;
+  }
+  const cnt = new Map(), keep = [];   // 每類最多留最新的 40 張
+  for (let i = _clip.teach.length - 1; i >= 0; i--) { const t = _clip.teach[i], k = cnt.get(t.c) || 0; if (k < TEACH_MAX) { keep.push(t); cnt.set(t.c, k + 1); } }
+  _clip.teach = keep.reverse(); clipTeachIndex(); await clipTeachSave();
+  return n;
+}
+async function clipTeachFromPhotos() {
+  const ps = photos.filter(p => p.vlmCat && p.clipEmb && !p.vlmTaught); if (!ps.length) return 0;
+  const n = await clipTeachAdd(ps.map(p => [p.vlmCat, p.clipEmb])); ps.forEach(p => { p.vlmTaught = true; }); return n;
+}
+function clipTeachSummary() { const by = _clip.teachBy || new Map(); return [...by].sort((a, b) => b[1].length - a[1].length).slice(0, 6).map(([c, vs]) => `${c} ${vs.length}`).join('、') + (by.size > 6 ? '…' : ''); }
+async function clipTeachClear() { if (!confirm('清除 AI 學過的所有例子？（分類項目不變）')) return; _clip.teach = []; clipTeachIndex(); await clipTeachSave(); renderClipCatEditor(); }
 // 每張照片分到最像的類別（不夠像 → 其他）
 function clipAssign() {
-  const ver = _clip.catVer + '#' + _clip.emb.size;
+  const ver = _clip.catVer + '#' + _clip.emb.size + '#' + (_clip.teachRev || 0);
   if (_clip.assign && _clip.assignVer === ver) return _clip.assign;
-  const out = new Map(), cats = [..._clip.catVecs || []];
-  if (!cats.length) return out;
-  for (const [k, v] of _clip.emb) {
-    const sc = cats.map(([n, c]) => [n, clipDot(v, c)]);
-    const mx = Math.max(...sc.map(s => s[1])); let z = 0; for (const s of sc) z += Math.exp(100 * (s[1] - mx));
-    sc.sort((a, b) => b[1] - a[1]);
-    const p = 1 / z;   // 第一名的機率
-    out.set(k, [p >= 0.4 ? sc[0][0] : '其他', sc[0][1], p]);
-  }
+  const out = new Map();
+  if (!_clip.catVecs || !_clip.catVecs.size) return out;
+  for (const [k, v] of _clip.emb) out.set(k, aiPhotoCat(v));
   _clip.assign = out; _clip.assignVer = ver;
   return out;
 }
@@ -14765,10 +15089,12 @@ function clipViewHtml(rows, head, scroll, empty) {
     : left ? `<span>還有 <b>${left}</b> 張 AI 還沒看過</span> <button class="lib-pack-btn" onclick="clipIndexRun()">▶ 讓 AI 看照片</button>` : `<span>✅ ${withEmb.length} 張都看過了</span>`;
   const gpu = clipState.gpuModel ? '<span class="clip-sub">⚡ 顯示卡加速中</span>' : (_clip.gpuOk ? `<button class="tip-link" onclick="clipGpuStart()" title="再下載 377 MB 顯示卡版模型，看照片快約 10 倍（只用來看照片，找照片時的文字一樣用小模型）">⚡ 用顯示卡加速（再下載 377 MB）</button>` : '');
   const assign = _clip.catVecs ? clipAssign() : new Map();
-  const cnt = new Map(); for (const e of withEmb) { const a = assign.get(e.key); if (a) cnt.set(a[0], (cnt.get(a[0]) || 0) + 1); }
+  const catOf = e => photoFixedDir(e) || (assign.get(e.key) || [])[0];   // 2026v60 截圖、文件、轉傳看檔案判斷
+  const cnt = new Map(); for (const e of withEmb) { const a = catOf(e); if (a) cnt.set(a, (cnt.get(a) || 0) + 1); }
   const cats = clipAllCats();
   const chips = cats.map(([n, , custom]) => `<button class="clip-chip${_clip.cat === n ? ' on' : ''}" onclick="clipPickCat(${JSON.stringify(n).replace(/"/g, '&quot;')})">${escHtml(n)} <b>${cnt.get(n) || 0}</b>${custom ? `<span class="x" title="刪掉這個類別" onclick="event.stopPropagation();clipDelCat(${JSON.stringify(n).replace(/"/g, '&quot;')})">×</span>` : ''}</button>`).join('')
     + `<button class="clip-chip${_clip.cat === '其他' ? ' on' : ''}" onclick="clipPickCat('其他')">其他 <b>${cnt.get('其他') || 0}</b></button>`
+    + FIXED_DIRS.filter(n => cnt.get(n)).map(n => `<button class="clip-chip fixed${_clip.cat === n ? ' on' : ''}" onclick="clipPickCat(${JSON.stringify(n).replace(/"/g, '&quot;')})">${escHtml(n)} <b>${cnt.get(n)}</b></button>`).join('')
     + `<button class="clip-chip add" onclick="openClipCatEditor()">🏷 分類項目（${clipAllCats().length}）</button>`;
   const ctrl = `<div class="clip-panel">
       <div class="clip-row">${idx} ${gpu}</div>
@@ -14792,8 +15118,8 @@ function clipViewHtml(rows, head, scroll, empty) {
     title = `🔎「${escHtml(_clip.q)}」最像的照片 <button class="tip-link" onclick="clipSearch('')">清除</button>`;
     const top = sc.length ? sc[0][1] : 0; list = sc.filter(x => x[1] >= top - CLIP_SEARCH_MARGIN).slice(0, 400).map(x => x[0]);   // 2026v56：只列跟最像那張差不多像的
   } else if (_clip.cat) {
-    list = withEmb.filter(e => (assign.get(e.key) || [])[0] === _clip.cat).sort((a, b) => (assign.get(b.key)[1]) - (assign.get(a.key)[1]));
-    title = `🏷 ${escHtml(_clip.cat)}（AI 分類，可能有錯）`;
+    list = withEmb.filter(e => catOf(e) === _clip.cat).sort((a, b) => ((assign.get(b.key) || [])[1] || 0) - ((assign.get(a.key) || [])[1] || 0));
+    title = `🏷 ${escHtml(_clip.cat)}（${FIXED_DIRS.includes(_clip.cat) ? '看檔案判斷' : 'AI 分類，可能有錯'}）`;
   }
   if (list) inner = list.length ? libGridHtml(list) : empty(withEmb.length ? '沒有找到' : '還沒有照片給 AI 看過，先按上面「▶ 讓 AI 看照片」');
   if (!title) { title = '結果'; inner = empty(withEmb.length ? '打字找照片、點類別，或按「🧭 自動分群建議」' : '先按上面「▶ 讓 AI 看照片」，看完就能找照片、分類'); }
@@ -17233,6 +17559,10 @@ async function startAlbumMode() {
   if (!photos.length) { showToast('⚠️ 請先匯入照片（手機相簿整批拖進來即可）'); return; }
   if (window._analysisInProgress) return;
   albumMode = true;
+  if (albumSplitPref() === 'ai') {   // 2026v60 依內容分：截圖、文件也一起整理進固定資料夾
+    const n = ['screenshot', 'document'].reduce((s, k) => s + (triage[k] || []).length, 0);
+    if (n) { ['screenshot', 'document'].forEach(k => { if ((triage[k] || []).length) triageInclude(k); }); showToast(`📱 截圖、📄 文件 ${n} 張一起整理（放進固定資料夾）`); }
+  }
   if (document.getElementById('scenarioSelect')?.value !== 'school_event') pickScenario('school_event');   // v145: 相簿一鍵整理固定用學校活動
   const autoBtn = document.querySelector('.tab-switch .tab-btn[data-mode="auto"]'); if (autoBtn) switchGroupMode('auto', autoBtn);
   await startAnalysis({ timeGroupMode: 'auto', keepAlbum: true });
@@ -18399,7 +18729,7 @@ function updateAnalyzeChoice() {
   document.querySelectorAll('.ac-chip[data-split]').forEach(c => c.classList.toggle('on', c.dataset.split === albumSplitPref()));
   { const el = document.getElementById('acAiCats');   // 2026v57
     if (el) { const ai = albumSplitPref() === 'ai'; el.style.display = ai ? '' : 'none';
-      if (ai) { const cs = clipAllCats().map(c => c[0]); el.innerHTML = `🏷 分成 ${cs.length} 類＋其他：${escHtml(cs.slice(0, 6).join('、'))}${cs.length > 6 ? '…' : ''} <u style="cursor:pointer;" onclick="openClipCatEditor()">調整項目</u><br><span style="opacity:.8;">第一次用會下載看圖模型（約 210 MB，只一次；照片不上傳）</span>`; } } }
+      if (ai) { const cs = clipAllCats().map(c => c[0]); el.innerHTML = `🏷 分成 ${cs.length} 類＋其他：${escHtml(cs.slice(0, 6).join('、'))}${cs.length > 6 ? '…' : ''} <u style="cursor:pointer;" onclick="openClipCatEditor()">調整項目</u>＋固定資料夾：截圖、文件收據、轉傳、重複檔<br><span style="opacity:.8;">本機 AI 第一次會下載看圖模型（約 210 MB，只一次；照片不上傳）</span><br><u style="cursor:pointer;" onclick="openVlmSheet()">📋 想更準：做分類總表給 Claude／Gemini 分</u>${photos.some(p => p.vlmCat) ? `（已分 ${photos.filter(p => p.vlmCat).length} 張）` : ''}`; } } }
   if (one && alb) { one.classList.toggle('recommended', !!photos.length && span <= 1); alb.classList.toggle('recommended', span >= 2); }
   // 2026v2: 切換鈕標「建議」；老師沒手動切過就切到建議的那一個
   const rec = span >= 2 ? 'album' : (photos.length ? 'one' : '');
@@ -19192,23 +19522,24 @@ function tbGenText(results, okFail, badPass, acc) {
 // 2026v58 🏠 生活拾光：同一份程式的生活版（網址 /life、?edition=life，或生活版單檔）
 // 不改學校版的程式，只在生活版時換掉幾個函式、換文字、藏起學校專用的東西
 // ══════════════════════════════════════════════════════════════
-const LIFE_CATS = [
-  ['自拍', ['自拍', '手機自拍的臉部特寫', '對著鏡頭比讚的自拍']],
-  ['家人朋友', ['家人合照', '朋友聚在一起合照', '一群人開心地笑']],
-  ['小孩', ['小孩', '小朋友在玩', '嬰兒']],
-  ['寵物', ['寵物', '狗', '貓']],
-  ['旅行', ['旅行', '觀光景點', '在機場或車站']],
-  ['風景', ['風景', '山和天空', '海邊夕陽']],
-  ['夜景', ['夜景', '城市的燈光', '煙火']],
-  ['美食', ['美食', '餐廳的一盤菜', '甜點和飲料']],
-  ['生日慶祝', ['生日蛋糕', '慶生派對', '吹蠟燭']],
-  ['運動戶外', ['運動', '爬山健行', '騎腳踏車']],
-  ['活動婚禮', ['婚禮', '舞台表演', '演唱會']],
-  ['居家', ['家裡的客廳', '房間', '居家生活']],
-  ['物品購物', ['商品', '買的東西', '開箱']],
-  ['收據文件', ['收據', '發票', '紙本文件']],
-  ['截圖', ['手機截圖', '電腦螢幕畫面', '網頁截圖']],
-  ['迷因轉傳', ['迷因梗圖', '有大字的圖片', '轉傳的長輩圖']],
+const LIFE_CATS = [   // 2026v60：9 類＋其他，每類有「給 AI 看的說明」；細項放「更多項目」（預設關）
+  ['人物合照', [], false, '家人朋友合照、自拍、對著鏡頭笑的人', 1],
+  ['小孩', [], false, '小朋友在玩、嬰兒、小孩的特寫', 1],
+  ['寵物', [], false, '狗、貓、寵物', 1],
+  ['旅行風景', [], false, '觀光景點、山和海、天空、街景、夜景', 1],
+  ['美食', [], false, '一盤菜、飲料、甜點、餐廳的餐點', 1],
+  ['活動聚會', [], false, '生日蛋糕、婚禮、舞台表演、派對', 1],
+  ['運動戶外', [], false, '運動、爬山健行、騎腳踏車、游泳', 1],
+  ['居家生活', [], false, '家裡的客廳、房間、日常生活', 1],
+  ['物品購物', [], false, '商品、開箱、買的東西', 1],
+  ['自拍', [], false, '手機自拍的臉部特寫、對著鏡頭比讚的自拍', 0],
+  ['夜景', [], false, '城市的燈光、煙火、夜晚的街道', 0],
+  ['生日慶祝', [], false, '生日蛋糕、吹蠟燭、慶生派對', 0],
+  ['婚禮', [], false, '新郎新娘、婚紗、喜宴', 0],
+  ['演唱會展覽', [], false, '演唱會舞台、看展覽、博物館', 0],
+  ['交通工具', [], false, '汽車、火車、飛機、機場或車站', 0],
+  ['花草植物', [], false, '花朵特寫、盆栽、植物', 0],
+  ['迷因轉傳', [], false, '迷因梗圖、有大字的圖片、轉傳的長輩圖', 0],
 ];
 const LIFE_EVENTS = [
   ['出遊', ['出遊', '一日遊', '旅行', '國外旅遊', '露營', '野餐', '登山', '海邊', '泡湯', '逛夜市', '看展覽', '遊樂園', '動物園']],
