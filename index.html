@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v58 (2026-11-18)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v59 (2026-11-18)　（原名：AI 照片篩選器）
+  2026v59 (2026-11-18, build v216): 🏠 生活拾光左欄整個換成生活用語 — 單一活動：出遊、聚會、生日；場合：📷 一般生活／🏃 運動比賽；相簿一鍵整理說明；
+                                   拍攝者例子；多位拍攝者說明；AI 照片說明與 FB／IG 貼文改成第一人稱的生活紀錄（不再是學校粉專口吻）
   2026v58 (2026-11-18, build v215): 🏠 生活拾光（生活版）— 同一份程式：網址 /life（或 ?edition=life、生活版單檔）；資料夾「2025-10-24_墾丁旅行」、相簿庫「年／分類／活動」；
                                    AI 分類換成生活 16 類（自拍、家人朋友、小孩、寵物、旅行、風景、美食、收據、截圖、迷因…）；命名推薦換成出遊、聚餐、生日、節日；
                                    藏起時間記錄器、宣導主題；成果包叫「回顧包」、學年回顧叫「年度回顧」；學校版完全不變
@@ -260,7 +262,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v58 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v59 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -3286,7 +3288,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v58 · 2026-11-18</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v59 · 2026-11-18</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3389,7 +3391,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v58 程式逐項清點（2026-11-18）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v59 程式逐項清點（2026-11-18）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3832,7 +3834,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v58（2026-11-18）。</span><br>
+        <span style="font-size:11px;">本說明對應 2026v59（2026-11-18）。</span><br>
         <a href="guide.html" target="_blank" rel="noopener" onclick="if (!/^https?:$/.test(location.protocol)) { event.preventDefault(); showToast('📖 圖文操作說明在校園拾光網站上：網址後面加 /guide.html'); }" style="display:inline-block;margin-top:6px;font-weight:700;color:var(--accent);">📖 看圖文操作說明（每一步都有畫面）→</a>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
@@ -4437,7 +4439,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v58';
+const APP_VERSION = '2026v59';
 // 2026v58：學校版／生活版（生活版單檔把下面這行改成 'life'）
 const APP_EDITION_DEFAULT = 'school';
 const APP_EDITION = (() => { try { const q = new URLSearchParams(location.search).get('edition'); if (q === 'life' || q === 'school') return q; if (/^\/life(\/|\.html)?$/.test(location.pathname)) return 'life'; } catch (e) {} return APP_EDITION_DEFAULT; })();
@@ -4445,7 +4447,7 @@ const IS_LIFE = APP_EDITION === 'life';
 // 2026v51：本機時間的日期／時間字串（toISOString 是世界標準時間，台灣早上 8 點前會變成前一天）
 function localYmd(d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
 function localStamp(len = 19, d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${localYmd(d)} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`.slice(0, len); }
-const APP_BUILD = 'v215';   // 內部建置號（補丁與測試用）
+const APP_BUILD = 'v216';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -12170,7 +12172,7 @@ function rpAiPref(v) {
   try { if (v === undefined) return localStorage.getItem('rpAiCaption') === '1'; localStorage.setItem('rpAiCaption', v ? '1' : '0'); } catch {}
   return !!v;
 }
-const CAPTION_PROMPT = `你是國小行政人員，要替學校活動成果表的每張照片寫一句說明。
+let CAPTION_PROMPT = `你是國小行政人員，要替學校活動成果表的每張照片寫一句說明。
 活動名稱：ACT
 這裡有 N 張照片，依序是【照片 1】到【照片 N】。
 只回覆 JSON：{"captions":["照片1的說明","照片2的說明",…]}，陣列長度必須是 N，順序和照片一致。
@@ -12180,7 +12182,7 @@ const CAPTION_PROMPT = `你是國小行政人員，要替學校活動成果表�
 - 不可以寫任何人名、班級座號、學號，也不要描述任何人的外貌、性別、身材、衣著顏色。
 - 不要加引號、編號或句尾以外的標點，每句以句號結尾。`;
 // v134: 活潑版 — 像現場轉播、句句不同、禁止套話
-const CAPTION_PROMPT_LIVELY = `你是國小老師，要替學校活動照片寫「活潑、有畫面感」的照片說明，給學生和家長看。
+let CAPTION_PROMPT_LIVELY = `你是國小老師，要替學校活動照片寫「活潑、有畫面感」的照片說明，給學生和家長看。
 活動名稱：ACT
 這裡有 N 張照片，依序是【照片 1】到【照片 N】。
 只回覆 JSON：{"captions":["照片1的說明","照片2的說明",…]}，陣列長度必須是 N，順序和照片一致。
@@ -15369,7 +15371,7 @@ async function libraryImportFolders() {
 }
 
 // ══ v133 成果包（相簿庫）：勾照片 → 成果表.docx ＋ AI 照片說明 ＋ AI FB 貼文 ══
-const FB_PROMPT = `你是國小老師，要替學校的 Facebook 粉絲專頁寫一篇活動貼文。
+let FB_PROMPT = `你是國小老師，要替學校的 Facebook 粉絲專頁寫一篇活動貼文。
 學校：UNIT
 活動名稱：ACT
 日期：DATE
@@ -19217,14 +19219,14 @@ const LIFE_EVENTS = [
   ['其他', ['工作', '購物', '美食', '收據', '雜項']],
 ];
 const LIFE_SEASON = { '過年': [1, 2], '元宵': [2, 3], '清明': [4], '端午': [5, 6], '中秋': [9, 10], '聖誕節': [12], '跨年': [12, 1], '母親節': [5], '父親節': [8], '情人節': [2], '萬聖節': [10], '尾牙': [1, 12], '春酒': [2, 3], '開學': [2, 9], '畢業': [6] };
-const LIFE_TEXT = [['校園拾光', '生活拾光'], ['學年回顧', '年度回顧'], ['學年度', '年'], ['成果包', '回顧包'], ['成果表', '照片表'], ['📸 校園活動智慧挑片助手', '📸 生活照片智慧整理'], ['學校活動', '一般活動'], ['做成果包', '做回顧包'], ['多位老師', '多個人'], ['老師', '你']];
+const LIFE_TEXT = [['校園拾光', '生活拾光'], ['學年回顧', '年度回顧'], ['學年度', '年'], ['成果包', '回顧包'], ['成果表', '照片表'], ['📸 校園活動智慧挑片助手', '📸 生活照片智慧整理'], ['學校活動', '一般生活'], ['做成果包', '做回顧包'], ['學校／單位', '署名（可不填）'], ['學校/單位', '署名（可不填）'], ['例：Cona老師', '例：小明'], ['Cona老師', '小明'], ['好幾位老師', '好幾個人'], ['多位老師', '多個人'], ['每位老師', '每個人'], ['各老師', '每個人'], ['跨老師', '跨拍攝者'], ['老師們', '大家'], ['老師', '你'], ['🏫', '📷']];
 function lifeText(root) {
   if (!root) return;
   const fix = s => { let o = s; for (const [a, b] of LIFE_TEXT) if (o.includes(a)) o = o.split(a).join(b); return o; };
   const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-  for (let n = w.nextNode(); n; n = w.nextNode()) { const pn = n.parentNode && n.parentNode.nodeName; if (pn === 'SCRIPT' || pn === 'STYLE' || pn === 'TEXTAREA') continue; const t = n.nodeValue; if (t && /校園拾光|學年|成果|學校活動|老師/.test(t)) { const f = fix(t); if (f !== t) n.nodeValue = f; } }
+  for (let n = w.nextNode(); n; n = w.nextNode()) { const pn = n.parentNode && n.parentNode.nodeName; if (pn === 'SCRIPT' || pn === 'STYLE' || pn === 'TEXTAREA' || (n.parentNode.closest && n.parentNode.closest('.ed-switch'))) continue; const t = n.nodeValue; if (t && /校園拾光|學年|成果|學校活動|老師|🏫/.test(t)) { const f = fix(t); if (f !== t) n.nodeValue = f; } }
   if (root.querySelectorAll) root.querySelectorAll('[title],[placeholder]').forEach(el => {
-    for (const a of ['title', 'placeholder']) { const v = el.getAttribute(a); if (v && /校園拾光|學年|成果|學校活動|老師/.test(v)) el.setAttribute(a, fix(v)); }
+    for (const a of ['title', 'placeholder']) { const v = el.getAttribute(a); if (v && /校園拾光|學年|成果|學校活動|老師|🏫/.test(v)) el.setAttribute(a, fix(v)); }
   });
 }
 function lifeInit() {
@@ -19266,6 +19268,47 @@ function lifeInit() {
   const _lev = libEditVals; libEditVals = () => { const r = _lev(); r.term = ''; r.base = `${r.sy}/${safeName(r.cat)}/${r.folder}`; return r; };
   albumFolder = g => safeName(g.name) || '未命名';
   geminiNamingOn = () => false;
+  // 2026v59：左欄說明換成生活用語
+  document.querySelectorAll('.ac-for').forEach(el => { if (/今天的運動會|一場宣導/.test(el.textContent)) el.textContent = '一次出遊、一場聚會、一個生日的照片'; if (/手機相簿/.test(el.textContent)) el.textContent = '很多天、很多次出遊混在一起的照片（手機相簿）；自動用「📷 一般生活」挑法'; });
+  document.querySelectorAll('.ac-chip.ac-scen[data-scen="school_event"]').forEach(b => b.innerHTML = '<b>📷 一般生活</b><small>旅行、聚餐、家庭：每段時間平均挑、自然表情；畫面太像只留 1 張</small>');
+  document.querySelectorAll('.ac-chip.ac-scen[data-scen="sports"]').forEach(b => { const sm = b.querySelector('small'); b.innerHTML = '<b>🏃 運動比賽</b>' + (sm ? sm.outerHTML : ''); });
+  document.querySelectorAll('.scen-card[data-scen="school_event"] .sc-name').forEach(e => e.textContent = '一般生活');
+  document.querySelectorAll('.scen-card[data-scen="school_event"] .sc-art').forEach(e => e.textContent = '📷');
+  document.querySelectorAll('.scen-card[data-scen="sports"] .sc-name').forEach(e => e.textContent = '運動比賽');
+  const ph = document.getElementById('photographer'); if (ph) ph.placeholder = '例：小明';
+  // AI 照片說明、貼文：第一人稱的生活紀錄
+  CAPTION_PROMPT = `你要替一組生活照片的每一張寫一句簡短的說明（相簿用）。
+活動名稱：ACT
+這裡有 N 張照片，依序是【照片 1】到【照片 N】。
+只回覆 JSON：{"captions":["照片1的說明","照片2的說明",…]}，陣列長度必須是 N，順序和照片一致。
+每句說明：繁體中文，8 到 20 個字，平實地寫照片裡看得到的人、事、景（例如「海邊散步，夕陽剛好落下」）；不寫人名、不描述外貌身材；不要加引號或編號。`;
+  CAPTION_PROMPT_LIVELY = `你要替一組生活照片寫「有畫面感、有溫度」的照片說明，像自己在相簿裡寫的小註解。
+活動名稱：ACT
+這裡有 N 張照片，依序是【照片 1】到【照片 N】。
+只回覆 JSON：{"captions":["照片1的說明","照片2的說明",…]}，陣列長度必須是 N，順序和照片一致。
+每句說明的規則：
+- 繁體中文，8 到 22 個字，寫照片裡具體的畫面和那一刻的感覺（風景、美食、笑容、動作、天氣）。
+- 這一批的風格：STYLE
+- 可以用驚嘆號、擬聲詞或短句；每一句的開頭和句型都要不一樣。
+- 只寫照片看得到的事，不猜沒拍到的內容；不寫人名，不描述外貌、身材、衣著。
+- 不要加引號或編號。`;
+  FB_PROMPT = `你要幫使用者寫一篇 Facebook／Instagram 的生活紀錄貼文，用第一人稱（我、我們），像自己發文。
+署名或帳號（可不提）：UNIT
+活動名稱：ACT
+日期：DATE
+類型（參考）：TYPE
+我想寫進去的重點：POINTS
+照片說明（參考）：
+CAPS
+這裡附了 N 張照片。
+只回覆 JSON：{"post":"貼文內容"}
+貼文規則：
+- 繁體中文，正文 120 到 220 字，分 2～3 段（段落之間用 \\n 換行），口語、自然、有溫度。
+STYLE
+- 有寫重點時：每一點都要寫進貼文，不可以改變裡面的事實（地點、時間、人數照抄）；沒寫重點時，從照片和活動名稱寫看得到的事。
+- 只寫照片看得到或活動名稱推得出的事，不要編造地點、人名、數字。
+- 不寫任何人的全名，不描述別人的外貌、身材、衣著；小孩不寫名字和學校。
+- 表情符號最多 4 個；最後一行放 2～4 個 hashtag（跟地點、活動有關）。`;
   // 畫面文字：學年度 → 年、成果包 → 回顧包…（新畫出來的也跟著換）
   lifeText(document.body);
   let pend = new Set(), raf = 0;
