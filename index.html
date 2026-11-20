@@ -9330,7 +9330,7 @@ const GEM_FILES = {
   [GEM_BASE + 'onnx/vision_encoder_q4f16.onnx_data']: [99189440, '0835071d2c79c105f8e1b549b7f8dd8c9af07fa95f01ead2e7add280602d3c6d'],
 };
 const GEM_TOTAL = Object.values(GEM_FILES).reduce((s, v) => s + v[0], 0);
-const GEM_CACHE = 'pickup-gemma-v1', GEM_K_AUTO = 'gemmaAuto';
+const GEM_CACHE = 'pickup-gemma-v2', GEM_OK = 'pickup-gemma-ok-v2', GEM_K_AUTO = 'gemmaAuto';   // 驗證過的記號另外放一個快取（Cache 比對網址時不看 #，不能用 url#ok）
 const gemState = { T: null, proc: null, model: null, busy: '', pct: 0, cancel: false, abort: null, error: '', check: null, cached: null, done: 0, total: 0 };
 function gemGB(n) { return (n / 1e9).toFixed(1); }
 async function gemCheck() {
@@ -9345,12 +9345,12 @@ async function gemCheck() {
   r.ok = true; return r;
 }
 async function gemIsCached() {
-  try { const c = await caches.open(GEM_CACHE); for (const u of Object.keys(GEM_FILES)) if (!(await c.match(u + '#ok'))) return false; return true; } catch (e) { return false; }
+  try { const ok = await caches.open(GEM_OK); for (const u of Object.keys(GEM_FILES)) if (!(await ok.match(u))) return false; return true; } catch (e) { return false; }
 }
-// 邊下載邊存進瀏覽器快取、邊算 SHA-256；不符就刪掉。驗證過的檔案另外記一個「#ok」
-async function gemFetchVerified(cache, url, spec, onBytes) {
-  if (await cache.match(url + '#ok') && await cache.match(url)) return;
-  await cache.delete(url); await cache.delete(url + '#ok');
+// 邊下載邊存進瀏覽器快取、邊算 SHA-256；不符就刪掉。驗證過的檔案在 GEM_OK 記一筆
+async function gemFetchVerified(cache, okc, url, spec, onBytes) {
+  if (await okc.match(url) && await cache.match(url)) return;
+  await cache.delete(url); await okc.delete(url);
   gemState.abort = new AbortController();
   const res = await fetch(url, { mode: 'cors', credentials: 'omit', signal: gemState.abort.signal });
   if (!res.ok || !res.body) throw new Error('下載失敗 HTTP ' + res.status);
@@ -9363,20 +9363,21 @@ async function gemFetchVerified(cache, url, spec, onBytes) {
     try { memMonLogEvent('gemma_hash_fail', `⚠️ ${url.split('/').pop()} 驗證失敗`); } catch (e) {}
     throw new Error(`檔案驗證失敗（${url.split('/').pop()}，SHA-256 不符），已丟棄`);
   }
-  await cache.put(url + '#ok', new Response('1'));
+  await okc.put(url, new Response('1'));
 }
 async function gemLoad(pc) {
   if (gemState.model) return;
   try { await navigator.storage.persist(); } catch (e) {}
-  const cache = await caches.open(GEM_CACHE);
+  try { await caches.delete('pickup-gemma-v1'); } catch (e) {}   // v61 測試版的舊快取
+  const cache = await caches.open(GEM_CACHE), okc = await caches.open(GEM_OK);
   let done = 0; const need = [];
-  for (const [u, s] of Object.entries(GEM_FILES)) { if (await cache.match(u + '#ok')) done += s[0]; else need.push([u, s]); }
+  for (const [u, s] of Object.entries(GEM_FILES)) { if ((await okc.match(u)) && (await cache.match(u))) done += s[0]; else need.push([u, s]); }
   const MB = n => (n / 1048576).toFixed(0);
   for (const [u, s] of need) {
     if (gemState.cancel) throw new Error('已取消');
     pc(done / GEM_TOTAL * 85, `下載 Gemma ${MB(done)} / ${MB(GEM_TOTAL)} MB（只下載一次）…`);
     let last = 0;
-    await gemFetchVerified(cache, u, s, n => { done += n; const t = performance.now(); if (t - last > 300) { last = t; pc(done / GEM_TOTAL * 85, `下載 Gemma ${MB(done)} / ${MB(GEM_TOTAL)} MB（只下載一次）…`); } });
+    await gemFetchVerified(cache, okc, u, s, n => { done += n; const t = performance.now(); if (t - last > 300) { last = t; pc(done / GEM_TOTAL * 85, `下載 Gemma ${MB(done)} / ${MB(GEM_TOTAL)} MB（只下載一次）…`); } });
   }
   gemState.cached = true;
   let T = gemState.T;
@@ -9388,7 +9389,7 @@ async function gemLoad(pc) {
     T.env.backends.onnx.wasm.proxy = false;
     // 只給 transformers.js 驗證過的檔案（固定版本）
     T.env.useCustomCache = true;
-    T.env.customCache = { match: async k => { const u = typeof k === 'string' ? k : k && k.url; if (!u || !GEM_FILES[u]) return undefined; return (await cache.match(u + '#ok')) ? (await cache.match(u)) || undefined : undefined; }, put: async () => {} };
+    T.env.customCache = { match: async k => { const u = typeof k === 'string' ? k : k && k.url; if (!u || !GEM_FILES[u]) return undefined; return (await okc.match(u)) ? (await cache.match(u)) || undefined : undefined; }, put: async () => {} };
     T.env.allowRemoteModels = true;
     gemState.T = T;
   }
@@ -9465,7 +9466,7 @@ async function gemDelete() {
   if (gemState.busy) return;
   if (!confirm(`刪除這台電腦裡的 Gemma 模型（釋放約 ${gemGB(GEM_TOTAL)} GB）？之後要用要重新下載。`)) return;
   await gemUnload(); gemState.T = null; gemState.proc = null;
-  try { await caches.delete(GEM_CACHE); } catch (e) {}
+  try { await caches.delete(GEM_CACHE); await caches.delete(GEM_OK); await caches.delete('pickup-gemma-v1'); } catch (e) {}
   gemState.cached = false; localStorage.removeItem(GEM_K_AUTO); renderVlmSheet();
 }
 function gemAutoOn() { return localStorage.getItem(GEM_K_AUTO) === '1'; }
