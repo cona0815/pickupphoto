@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
-  校園拾光 — 2026v60 (2026-11-19)　（原名：AI 照片篩選器）
+  校園拾光 — 2026v61 (2026-11-20)　（原名：AI 照片篩選器）
+  2026v61 (2026-11-20, build v218): 🧠 本機大模型分類 — Gemma 4 E2B（Google，Apache-2.0）在瀏覽器用顯示卡跑，照片不離開電腦；第一次下載約 3.4 GB（固定版本、邊下載邊比對 SHA-256）；
+                                   「🏷 讓大模型分類」視窗：本機 Gemma 或分類總表貼給 Claude／Gemini；可設定相簿「依內容（AI）」整理時自動用 Gemma；用完放掉顯示卡記憶體
   2026v60 (2026-11-19, build v217): 🏷 AI 分類重新設計 — 學校 9 類、生活 9 類＋其他，每類有「給 AI 看的說明」（可改）；以前的細項放「更多項目」（預設關）；
                                    固定資料夾不用 AI：📱 截圖、📄 文件收據、↪ 轉傳、🔁 重複檔（大小＋內容比對）；
                                    📋 分類總表：照片排成有編號的總表，自己貼給 Claude／Gemini 分，答案貼回來就套用；🎓 貼回來的答案當例子教本機 AI
@@ -257,7 +259,7 @@
 <!-- 2026v25 資安：CSP — 這個網頁只准連到下面這些網站（其他網址一律被瀏覽器擋下）；不准 <object>、<base>、表單送出。
      'unsafe-inline'：單一 HTML 檔，程式寫在頁面裡；'unsafe-eval'：HEIC 轉檔函式庫 heic2any（libheif）在背景執行緒用到，拿掉 HEIC 就轉不了；
      blob:：AI 人臉引擎的 .mjs 先比對指紋再從記憶體載入。2026v27 起連線收緊到「路徑」（只准 Gemini 產生內容、雲端硬碟檔案 API…） -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net/npm/jszip@3.10.1/ https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/npm/heic2any@0.0.4/ https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/ https://accounts.google.com/gsi/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@ea45f37a10a080d4fd8854200ebb08a33d84d9e4/audio/bgm/ https://media.githubusercontent.com/media/opencv/opencv_zoo/ https://generativelanguage.googleapis.com/v1beta/models/ https://www.googleapis.com/drive/v3/files https://www.googleapis.com/upload/drive/v3/files https://www.googleapis.com/upload/drive/v3/files/ https://oauth2.googleapis.com/revoke https://accounts.google.com/gsi/ https://nominatim.openstreetmap.org/reverse https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/ https://huggingface.co/Xenova/chinese-clip-vit-base-patch16/ https://*.hf.co https://*.huggingface.co; worker-src 'self' blob:; frame-src 'self' blob: https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net/npm/jszip@3.10.1/ https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/npm/heic2any@0.0.4/ https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/ https://accounts.google.com/gsi/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/ https://cdn.jsdelivr.net/gh/cona0815/pickupphoto@ea45f37a10a080d4fd8854200ebb08a33d84d9e4/audio/bgm/ https://media.githubusercontent.com/media/opencv/opencv_zoo/ https://generativelanguage.googleapis.com/v1beta/models/ https://www.googleapis.com/drive/v3/files https://www.googleapis.com/upload/drive/v3/files https://www.googleapis.com/upload/drive/v3/files/ https://oauth2.googleapis.com/revoke https://accounts.google.com/gsi/ https://nominatim.openstreetmap.org/reverse https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/ https://huggingface.co/Xenova/chinese-clip-vit-base-patch16/ https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/ https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/ https://huggingface.co/onnx-community/gemma-4-E2B-it-ONNX/ https://*.hf.co https://*.huggingface.co; worker-src 'self' blob:; frame-src 'self' blob: https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- 2026v4: PWA（放在網站上時可以安裝成 App） -->
 <link rel="manifest" href="manifest.webmanifest">
@@ -265,7 +267,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="校園拾光">
-<title>校園拾光 2026v60 — 校園活動照片篩選・相簿庫・成果包</title>
+<title>校園拾光 2026v61 — 校園活動照片篩選・相簿庫・成果包</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -2469,6 +2471,8 @@
   .vlm-sheet { width: 150px; font-size: 11px; color: var(--text-dim); }
   .vlm-sheet img { width: 150px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); display: block; margin-bottom: 3px; }
   .vlm-msg { font-size: 12.5px; margin-top: 6px; }
+  .vlm-gem { background: rgba(120,180,255,0.08); border: 1px solid rgba(120,180,255,0.25); border-radius: 10px; padding: 10px 12px; }
+  .vlm-cloud { margin-top: 10px; } .vlm-cloud > summary { cursor: pointer; font-size: 13px; padding: 6px 0; }
   .lib-note { font-size: 11px; color: var(--text-dim); line-height: 1.6; background: rgba(255,255,255,0.04); border-radius: 10px; padding: 6px 10px; margin-bottom: 8px; }
   .lib-selbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; min-height: 30px; margin-bottom: 6px; color: var(--text-dim); }
   .lib-selbar.on { background: rgba(255,138,76,0.12); border: 1px solid rgba(255,138,76,0.35); border-radius: 10px; padding: 4px 8px; color: var(--text); }
@@ -3308,7 +3312,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 <div class="header">
   <div class="header-top">
     <div class="logo">📸</div>
-    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v60 · 2026-11-19</span></h1>
+    <h1>校園拾光 <span style="font-size:12px;font-weight:600;color:var(--text-dim);vertical-align:middle;margin-left:6px;font-family:var(--mono);letter-spacing:0;">2026v61 · 2026-11-20</span></h1>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
       <button class="hdr-chip" id="hdrStatus" onclick="openSettings('perf')" title="分析品質與 AI 人臉偵測（點此調整）"></button>
       <button class="btn-help-header guide-pulse" id="btnHelp" onclick="showManual();this.classList.remove('guide-pulse');" title="操作說明">❓</button>
@@ -3340,6 +3344,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="ok"><td>📍 相簿庫地點的地名（縣市、鄉鎮市區）</td><td>不送出：用內建的全台鄉鎮市區界線（內政部開放資料）在本機算</td><td>只在本機</td><td>不會</td></tr>
         <tr class="ok"><td>🤖 AI 人臉（YuNet）、🧬 128 維人臉特徵、HEIC 轉檔</td><td>不送照片，只下載程式與模型</td><td>只在本機執行</td><td>不會</td></tr>
         <tr class="ok"><td>🔎 相簿庫「AI 找照片」（打字找照片、AI 分類、自動分群）、進階設定「AI 看圖找同一個畫面」</td><td>不送照片，只下載程式與模型（你按「下載看圖模型」才下載）</td><td>只在本機執行</td><td>不會</td></tr>
+        <tr class="ok"><td>🧠 本機大模型分類（Gemma 4，預設不下載）</td><td>不送照片：模型在這台電腦的瀏覽器用顯示卡跑；用完就從顯示卡記憶體放掉；可以在視窗裡刪除模型</td><td>只在本機執行</td><td>不會</td></tr>
         <tr class="ok"><td>🎓 AI 分類「學過的例子」、🔁 重複檔比對</td><td>不送出：例子是照片特徵（512 個數字，不能還原成照片）存在這台電腦的瀏覽器；重複檔是在本機比檔案大小和內容</td><td>只在本機</td><td>不會</td></tr>
         <tr class="warn"><td>📋 分類總表（<b>你自己</b>貼給 Claude／Gemini）</td><td>本工具只在本機做出有編號的總表 JPG（照片縮小成每格 200 px）與提示詞，<b>不會自己送出</b>；你把總表貼給哪家 AI，那些小圖（可能看得到學生的臉）就交給那家公司</td><td>你選的 AI 服務（例如 Anthropic Claude、Google Gemini）</td><td>依那家服務與你的帳號設定：請用學校帳號、關掉「用對話改進模型」；不想送出就只用本機 AI</td></tr>
         <tr class="warn"><td>🌐 相簿庫地點「查地標名稱」（按了才送）</td><td>照片位置的座標（約 500 公尺一格），不含照片、活動名稱</td><td>OpenStreetMap（nominatim.openstreetmap.org）</td><td>不會；地名本身（縣市、鄉鎮市區）用內建資料，不連網</td></tr>
@@ -3358,6 +3363,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr><td>cdn.jsdelivr.net</td><td>每次開啟網頁；開啟 AI 人臉（運動會分析時自動開）／勾 128 維特徵／HEIC 轉檔／製作回顧短片時</td><td>JSZip（壓縮 ZIP 用，MIT）；onnxruntime-web（MIT）、face-api.js（MIT）、heic2any；mp4-muxer（MIT，只在製作 🎬 回顧短片時載入）。<b>都比對 SRI 雜湊</b>，被改過就不執行</td></tr>
         <tr><td>網站本身 <code>audio/bgm/</code>；單檔版改用 cdn.jsdelivr.net/gh/…/pickupphoto@ea45f37a10a080d4fd8854200ebb08a33d84d9e4/audio/bgm/</td><td>回顧短片選了內建配樂，按 🔊 試聽或 🎬 製作時</td><td>只<b>下載</b>那一首配樂（約 1.2 MB，網址裡只有曲目代號），不送出任何資料。10 首都是作者自己聲明公眾領域／CC0 的音樂（Kevin MacLeod、Bryan Teoh，出自 FreePD.com）。抓回來比對 SHA-256，被改過就不用。沒網路時請用「自己選檔案」</td></tr>
         <tr><td>cdn.jsdelivr.net（transformers.js）、huggingface.co（含 *.hf.co 下載節點）</td><td>相簿庫按「⬇️ 下載看圖模型」時（只一次，之後從瀏覽器快取讀）</td><td>transformers.js 3.8.1（Apache-2.0）與推論引擎；Chinese-CLIP 看圖模型（OFA-Sys，MIT；固定版本 f269048）— 每個檔案都比對 SHA-256 才使用</td></tr>
+        <tr><td>cdn.jsdelivr.net（transformers.js 4.3.1、onnxruntime-web）、huggingface.co（含 *.hf.co 下載節點）</td><td>「🏷 讓大模型分類」按「🧠 用 Gemma 分」時（只第一次下載，約 3.4 GB，之後從瀏覽器快取讀）</td><td>transformers.js 4.3.1（Apache-2.0）、onnxruntime-web 1.31 開發版（MIT）、Gemma 4 E2B 模型（Google，Apache-2.0）；固定版本，每個檔案比對 SHA-256，不符就刪掉不用；只下載，<b>不送照片</b></td></tr>
         <tr><td>media.githubusercontent.com</td><td>開啟 AI 人臉時（運動會分析時自動開，用來判斷身體有沒有被切掉）</td><td>YuNet 人臉模型（MIT，比對 SHA-256 才使用）</td></tr>
         <tr><td>accounts.google.com、googleapis.com</td><td>按「同步到 Google Drive」時</td><td>Google 登入；權限只有 drive.file（只看得到本工具建立的檔案）</td></tr>
       </table>
@@ -3413,7 +3419,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
         <tr class="warn"><td>Google 登入（同步到 Google Drive，選用）</td><td>Google 登入程式由 Google 隨時更新，無法鎖雜湊</td><td>只在按「同步到 Google Drive」時才載入；權限只有 drive.file。不用就不會載入</td></tr>
         <tr class="warn"><td>共用電腦</td><td>Gemini Key、最近整理記錄、分析快取存在這台電腦的瀏覽器</td><td>共用電腦用完請到「設定 → 儲存」清除，並刪除 Gemini Key</td></tr>
       </table>
-      <div class="pv-foot">本頁依 2026v60 程式逐項清點（2026-11-19）。網頁裡不含學校行事曆的日期資料。</div>
+      <div class="pv-foot">本頁依 2026v61 程式逐項清點（2026-11-20）。網頁裡不含學校行事曆的日期資料。</div>
     </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn confirm" onclick="document.getElementById('securityModal').classList.remove('show')">了解</button>
@@ -3856,7 +3862,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
       <div style="background:rgba(77,171,247,0.12);border:1px solid var(--blue);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.8;">
         頁首下方的<b>步驟列</b>就是流程：<b>匯入 → 整理方式 → 分析 → 命名 → 審核 → 匯出</b>。綠色勾是完成，亮起的是下一步；點任一步會跳到那裡。<br>
         畫面下方的<b>「下一步」提示</b>會告訴你要按哪裡，要按的地方會發光；按「帶我去」直接捲過去（不需要可以按「不要再提示」，⚙️ 設定 → 關於 可再打開）。<br>
-        <span style="font-size:11px;">本說明對應 2026v60（2026-11-19）。</span><br>
+        <span style="font-size:11px;">本說明對應 2026v61（2026-11-20）。</span><br>
         <a href="guide.html" target="_blank" rel="noopener" onclick="if (!/^https?:$/.test(location.protocol)) { event.preventDefault(); showToast('📖 圖文操作說明在校園拾光網站上：網址後面加 /guide.html'); }" style="display:inline-block;margin-top:6px;font-weight:700;color:var(--accent);">📖 看圖文操作說明（每一步都有畫面）→</a>
       </div>
       <div style="color:var(--accent);font-weight:700;font-size:14px;margin:16px 0 4px;display:flex;align-items:center;gap:6px;"><span class="step-num">1</span> 匯入照片</div>
@@ -4461,7 +4467,7 @@ body:not(.gemini-naming) #btnOcr, body:not(.gemini-naming) .ocr-pin, body:not(.g
 // proxies that read/write AppState fields, preserving backward
 // compatibility with ~140 existing functions during the transition.
 // ══════════════════════════════════════════════════════════════
-const APP_VERSION = '2026v60';
+const APP_VERSION = '2026v61';
 // 2026v58：學校版／生活版（生活版單檔把下面這行改成 'life'）
 const APP_EDITION_DEFAULT = 'school';
 const APP_EDITION = (() => { try { const q = new URLSearchParams(location.search).get('edition'); if (q === 'life' || q === 'school') return q; if (/^\/life(\/|\.html)?$/.test(location.pathname)) return 'life'; } catch (e) {} return APP_EDITION_DEFAULT; })();
@@ -4469,7 +4475,7 @@ const IS_LIFE = APP_EDITION === 'life';
 // 2026v51：本機時間的日期／時間字串（toISOString 是世界標準時間，台灣早上 8 點前會變成前一天）
 function localYmd(d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
 function localStamp(len = 19, d = new Date()) { const p = n => String(n).padStart(2, '0'); return `${localYmd(d)} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`.slice(0, len); }
-const APP_BUILD = 'v217';   // 內部建置號（補丁與測試用）
+const APP_BUILD = 'v218';   // 內部建置號（補丁與測試用）
 const APP_BUILD_DATE = '2026-10-28';
 const AppState = {
   // Core data
@@ -6023,6 +6029,7 @@ async function runAnalysisPipeline(options = {}) {
   // 2026v55／v56：AI 看圖（選用）— 找同一個畫面、相簿依內容拆，都要先算每張照片的特徵
   const aiSplit = albumMode && albumSplitPref() === 'ai';
   if (aiSplit) { prog(92, '找完全一樣的重複檔...'); try { await markExactDups(photos); } catch (e) { console.warn('dup', e); } }   // 2026v60
+  if (aiSplit) { try { await gemAutoRun(prog); } catch (e) { console.warn('gemma auto', e); } }   // 2026v61 🧠 打開「自動用 Gemma」才跑
   const vlmAll = aiSplit && photos.every(p => p.vlmCat || photoFixedDir(p));   // Claude／Gemini 都分好了 → 不用下載本機 AI
   if (aiSceneOn() || (aiSplit && !vlmAll)) {
     try { await aiSceneAnalyze(prog); if (aiSplit) { await clipCatVecs(); await clipTeachFromPhotos(); } }
@@ -9201,14 +9208,14 @@ function renderBatchClip() {
     el.innerHTML = head + `<div class="clip-panel">${clipState.error ? `<div class="clip-err">⚠️ ${escHtml(clipState.error)}</div>` : ''}
       <button class="lib-pack-btn" onclick="bclipPrepare()">${localStorage.getItem('clipReady') === '1' ? '🔎 開始（看圖模型已下載過）' : '⬇️ 下載看圖模型並開始（約 210 MB，只下載一次）'}</button>
       <div class="clip-sub">模型：Chinese-CLIP（MIT）＋ transformers.js（Apache-2.0），固定版本、比對 SHA-256。每張約 0.6 秒（有顯示卡更快）。</div>
-      <div class="clip-sub" style="margin-top:8px;">或 <button class="tip-link" onclick="openVlmSheet()">📋 用分類總表請 Claude／Gemini 分</button>（比本機 AI 準，但總表要你自己貼給它們）</div></div>`;
+      <div class="clip-sub" style="margin-top:8px;">或 <button class="tip-link" onclick="openVlmSheet()">🏷 用大模型分（本機 Gemma 或 Claude／Gemini）</button>（比本機小 AI 準）</div></div>`;
     return;
   }
   const cnt = new Map(); for (const p of photos) if (p.clipEmb || p.vlmCat || photoFixedDir(p)) { const c = photoCat(p); cnt.set(c, (cnt.get(c) || 0) + 1); }
   const q = s => JSON.stringify(s).replace(/"/g, '&quot;');
   const custom = new Set(clipCustomCats());
   const chips = [...clipAllCats().map(c => c[0]), '其他', ...FIXED_DIRS].filter(n => cnt.get(n) || custom.has(n)).map(n => `<button class="clip-chip${_bclip.cat === n ? ' on' : ''}${FIXED_DIRS.includes(n) ? ' fixed' : ''}" onclick="bclipCat(${q(n)})">${escHtml(n)} <b>${cnt.get(n) || 0}</b></button>`).join('')
-    + `<button class="clip-chip add" onclick="openClipCatEditor()">🏷 分類項目（${clipAllCats().length}）</button><button class="clip-chip add" onclick="openVlmSheet()" title="做成有編號的總表，貼給 Claude／Gemini 分，再把答案貼回來">📋 分類總表（Claude／Gemini）${photos.some(p => p.vlmCat) ? ' ✓' : ''}</button>`
+    + `<button class="clip-chip add" onclick="openClipCatEditor()">🏷 分類項目（${clipAllCats().length}）</button><button class="clip-chip add" onclick="openVlmSheet()" title="本機 Gemma 大模型，或做分類總表貼給 Claude／Gemini">🏷 大模型分類（Gemma／Claude）${photos.some(p => p.vlmCat) ? ' ✓' : ''}</button>`
     + (clipOk ? '' : `<button class="clip-chip add" onclick="bclipPrepare()">🔎 下載本機 AI（打字找照片）</button>`);
   const list = bclipList();
   let grid = '';
@@ -9246,6 +9253,238 @@ function bclipSet(p, on) {
 }
 function bclipToggle(i) { const p = photos[i]; if (!p) return; bclipSet(p, !p.selected); renderBatchClip(); }
 function bclipSetAll(on) { const l = bclipList() || []; if (!l.length || !confirm(`把這 ${l.length} 張全部設為「${on ? '入選' : '淘汰'}」？\n（AI 找的可能有錯，建議先看過縮圖）`)) return; l.forEach(p => bclipSet(p, on)); showToast(`${on ? '✅' : '✕'} ${l.length} 張設為${on ? '入選' : '淘汰'}`); renderBatchClip(); }
+// 2026v61 大檔案邊下載邊算 SHA-256（crypto.subtle 不能分段算；3 GB 的模型不能整個放進記憶體再算）
+class Sha256Stream {
+  constructor() {
+    this.h = new Int32Array([0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]);
+    this.w = new Int32Array(64); this.buf = new Uint8Array(64); this.bl = 0; this.len = 0;
+  }
+  _blocks(b, o, end) {
+    const K = Sha256Stream.K, w = this.w, h = this.h;
+    let h0 = h[0], h1 = h[1], h2 = h[2], h3 = h[3], h4 = h[4], h5 = h[5], h6 = h[6], h7 = h[7];
+    for (; o + 64 <= end; o += 64) {
+      for (let i = 0; i < 16; i++) { const j = o + i * 4; w[i] = (b[j] << 24) | (b[j + 1] << 16) | (b[j + 2] << 8) | b[j + 3]; }
+      for (let i = 16; i < 64; i++) {
+        const x = w[i - 15], y = w[i - 2];
+        const s0 = ((x >>> 7) | (x << 25)) ^ ((x >>> 18) | (x << 14)) ^ (x >>> 3);
+        const s1 = ((y >>> 17) | (y << 15)) ^ ((y >>> 19) | (y << 13)) ^ (y >>> 10);
+        w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+      }
+      let a = h0, bb = h1, c = h2, d = h3, e = h4, f = h5, g = h6, hh = h7;
+      for (let i = 0; i < 64; i++) {
+        const S1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7));
+        const t1 = (hh + S1 + ((e & f) ^ (~e & g)) + K[i] + w[i]) | 0;
+        const S0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10));
+        const t2 = (S0 + ((a & bb) ^ (a & c) ^ (bb & c))) | 0;
+        hh = g; g = f; f = e; e = (d + t1) | 0; d = c; c = bb; bb = a; a = (t1 + t2) | 0;
+      }
+      h0 = (h0 + a) | 0; h1 = (h1 + bb) | 0; h2 = (h2 + c) | 0; h3 = (h3 + d) | 0; h4 = (h4 + e) | 0; h5 = (h5 + f) | 0; h6 = (h6 + g) | 0; h7 = (h7 + hh) | 0;
+    }
+    h[0] = h0; h[1] = h1; h[2] = h2; h[3] = h3; h[4] = h4; h[5] = h5; h[6] = h6; h[7] = h7;
+    return o;
+  }
+  update(b) {
+    this.len += b.length; let o = 0;
+    if (this.bl) { const n = Math.min(64 - this.bl, b.length); this.buf.set(b.subarray(0, n), this.bl); this.bl += n; o = n; if (this.bl < 64) return this; this._blocks(this.buf, 0, 64); this.bl = 0; }
+    o = this._blocks(b, o, b.length);
+    if (o < b.length) { this.buf.set(b.subarray(o), 0); this.bl = b.length - o; }
+    return this;
+  }
+  hex() {
+    const bits = this.len * 8, pad = new Uint8Array(((this.bl < 56) ? 56 : 120) - this.bl + 8); pad[0] = 0x80;
+    const hi = Math.floor(bits / 4294967296), lo = bits >>> 0, n = pad.length;
+    pad[n - 8] = hi >>> 24; pad[n - 7] = hi >>> 16; pad[n - 6] = hi >>> 8; pad[n - 5] = hi; pad[n - 4] = lo >>> 24; pad[n - 3] = lo >>> 16; pad[n - 2] = lo >>> 8; pad[n - 1] = lo;
+    this.update(pad);
+    return [...this.h].map(x => (x >>> 0).toString(16).padStart(8, '0')).join('');
+  }
+}
+Sha256Stream.K = new Int32Array([0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2]);
+
+// ══════════════════════════════════════════════════════════════
+// 2026v61 🧠 本機大模型分類（Gemma 4 E2B，Google，Apache-2.0）
+// 在這台電腦的瀏覽器用顯示卡跑（WebGPU），照片不離開電腦。第一次下載約 3.4 GB（固定版本、逐檔比對 SHA-256），之後從瀏覽器快取讀
+// 實測（2026-11-20，Cona 老師的電腦）：18 張學校活動照片，Gemma 對 17～18 張、本機小 AI 對 15 張；每張約 0.9 秒；
+// 第一次下載約 3.3 GB（約 1.5 分鐘），之後從快取載入約 7 秒
+// ══════════════════════════════════════════════════════════════
+const GEM_TF_BASE = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/dist/';
+const GEM_ORT_BASE = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/dist/';
+const GEM_ID = 'onnx-community/gemma-4-E2B-it-ONNX', GEM_REV = '6f21c99d7e18237f8d2ce92aadfdbfeba877f63a';
+const GEM_BASE = `https://huggingface.co/${GEM_ID}/resolve/${GEM_REV}/`;
+const GEM_FILES = {
+  [GEM_TF_BASE + 'transformers.min.js']: [586230, '8d6716d9086f57c30a4bf367dba61b887593573c770c454465e8019b2703e743'],
+  [GEM_ORT_BASE + 'ort-wasm-simd-threaded.asyncify.mjs']: [53057, '0966b6105cd936744498aa60df7a22cbd47af3374dbc64a9ab561c08a71e3611'],
+  [GEM_ORT_BASE + 'ort-wasm-simd-threaded.asyncify.wasm']: [26861777, '49871f5a4409519797e127440868a6d1923339d9185907f301a5b2a1d90af082'],
+  [GEM_BASE + 'config.json']: [5549, '5494e6677d9e150ea20ba3101ae8a32b0f141004626f052725d8bf48991b9faa'],
+  [GEM_BASE + 'generation_config.json']: [238, 'e6a0b50de21a511f15ac4857b7f227f68ee60ecb1f11255d07b75e0bdc60e155'],
+  [GEM_BASE + 'preprocessor_config.json']: [43, '4457c6e8a09070d7d5d1cd983fbfb67ebafe602bd98120c3543a024f5d07056b'],
+  [GEM_BASE + 'processor_config.json']: [1689, '32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c'],
+  [GEM_BASE + 'tokenizer_config.json']: [18590, '175c298b7bedbe83b3f2d6eecdc1fc9058cb4ff6d9f115c5990bc82d96336b9e'],
+  [GEM_BASE + 'chat_template.jinja']: [16317, '781d10940fbc44be40064b5d43a056fc486c84ceaa55538226368b57314132bf'],
+  [GEM_BASE + 'tokenizer.json']: [19439251, '47bd35616c7c782aaca6ccf48c75f3461d5877170984b8836b375107d0a9f566'],
+  [GEM_BASE + 'onnx/audio_encoder_q4f16.onnx']: [260446, '5e0deb22791685c792d4b8e089deef9670fa4a4cecde434213d6a742e58fc3fa'],
+  [GEM_BASE + 'onnx/audio_encoder_q4f16.onnx_data']: [171258112, 'df58e61a00bafa9449ee5fd52895ce952f158bbdd1fe38df8a68f48f36842e62'],
+  [GEM_BASE + 'onnx/decoder_model_merged_q4f16.onnx']: [673231, '73c0f1fe04f9a3a048fb3319c0671b6cf0346bf33a3a8624c853bcffe01c24a4'],
+  [GEM_BASE + 'onnx/decoder_model_merged_q4f16.onnx_data']: [1519700992, '3b27245a7396cb7039a4e4118bd2a8aa35106bae381522edf7c4867b5f22bb10'],
+  [GEM_BASE + 'onnx/embed_tokens_q4f16.onnx']: [5621, 'd7ca53f6a169471b5699b2f57ee4c7aa2c73732b0152f3909e64b71384444825'],
+  [GEM_BASE + 'onnx/embed_tokens_q4f16.onnx_data']: [1590689792, '024b199e6358ed42970f807686add5f9430d7e254ca7ce22fc9c83f015b9c517'],
+  [GEM_BASE + 'onnx/vision_encoder_q4f16.onnx']: [189124, 'e0a4e48e519ade4eeddbb4cdadb812a7251aea871f7fb5f50576615fd3af22a3'],
+  [GEM_BASE + 'onnx/vision_encoder_q4f16.onnx_data']: [99189440, '0835071d2c79c105f8e1b549b7f8dd8c9af07fa95f01ead2e7add280602d3c6d'],
+};
+const GEM_TOTAL = Object.values(GEM_FILES).reduce((s, v) => s + v[0], 0);
+const GEM_CACHE = 'pickup-gemma-v2', GEM_OK = 'pickup-gemma-ok-v2', GEM_K_AUTO = 'gemmaAuto';   // 驗證過的記號另外放一個快取（Cache 比對網址時不看 #，不能用 url#ok）
+const gemState = { T: null, proc: null, model: null, busy: '', pct: 0, cancel: false, abort: null, error: '', check: null, cached: null, done: 0, total: 0 };
+function gemGB(n) { return (n / 1e9).toFixed(1); }
+async function gemCheck() {
+  const r = { ok: false, why: '', warn: [] };
+  if (!navigator.gpu) { r.why = '這個瀏覽器不能用顯示卡跑 AI（沒有 WebGPU）。請用新版的 Chrome 或 Edge。'; return r; }
+  let a = null; try { a = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' }); } catch (e) {}
+  if (!a) { r.why = '找不到可以用的顯示卡（WebGPU 打不開）。'; return r; }
+  if (!a.features || !a.features.has('shader-f16')) { r.why = '這張顯示卡不支援半精度運算（shader-f16），跑不動 Gemma。'; return r; }
+  const mem = navigator.deviceMemory || 0;
+  if (mem && mem < 8) r.warn.push(`這台電腦的記憶體大約 ${mem} GB，可能不夠（建議 8 GB 以上），跑到一半可能當掉`);
+  try { const e = await navigator.storage.estimate(); const free = (e.quota || 0) - (e.usage || 0); if (free && free < GEM_TOTAL * 1.1 && !(await gemIsCached())) r.warn.push(`瀏覽器可用空間大約 ${gemGB(free)} GB，可能放不下 ${gemGB(GEM_TOTAL)} GB 的模型`); } catch (e) {}
+  r.ok = true; return r;
+}
+async function gemIsCached() {
+  try { const ok = await caches.open(GEM_OK); for (const u of Object.keys(GEM_FILES)) if (!(await ok.match(u))) return false; return true; } catch (e) { return false; }
+}
+// 邊下載邊存進瀏覽器快取、邊算 SHA-256；不符就刪掉。驗證過的檔案在 GEM_OK 記一筆
+async function gemFetchVerified(cache, okc, url, spec, onBytes) {
+  if (await okc.match(url) && await cache.match(url)) return;
+  await cache.delete(url); await okc.delete(url);
+  gemState.abort = new AbortController();
+  const res = await fetch(url, { mode: 'cors', credentials: 'omit', signal: gemState.abort.signal });
+  if (!res.ok || !res.body) throw new Error('下載失敗 HTTP ' + res.status);
+  const [a, b] = res.body.tee(), sh = new Sha256Stream(); let got = 0;
+  const hashing = (async () => { const rd = b.getReader(); for (;;) { const { done, value } = await rd.read(); if (done) break; sh.update(value); got += value.length; onBytes(value.length); } })();
+  try { await Promise.all([cache.put(url, new Response(a, { headers: { 'content-type': 'application/octet-stream' } })), hashing]); }
+  catch (e) { try { await cache.delete(url); } catch (x) {} throw e; }
+  if (got !== spec[0] || sh.hex() !== spec[1]) {
+    await cache.delete(url);
+    try { memMonLogEvent('gemma_hash_fail', `⚠️ ${url.split('/').pop()} 驗證失敗`); } catch (e) {}
+    throw new Error(`檔案驗證失敗（${url.split('/').pop()}，SHA-256 不符），已丟棄`);
+  }
+  await okc.put(url, new Response('1'));
+}
+async function gemLoad(pc) {
+  if (gemState.model) return;
+  try { await navigator.storage.persist(); } catch (e) {}
+  try { await caches.delete('pickup-gemma-v1'); } catch (e) {}   // v61 測試版的舊快取
+  const cache = await caches.open(GEM_CACHE), okc = await caches.open(GEM_OK);
+  let done = 0; const need = [];
+  for (const [u, s] of Object.entries(GEM_FILES)) { if ((await okc.match(u)) && (await cache.match(u))) done += s[0]; else need.push([u, s]); }
+  const MB = n => (n / 1048576).toFixed(0);
+  for (const [u, s] of need) {
+    if (gemState.cancel) throw new Error('已取消');
+    pc(done / GEM_TOTAL * 85, `下載 Gemma ${MB(done)} / ${MB(GEM_TOTAL)} MB（只下載一次）…`);
+    let last = 0;
+    await gemFetchVerified(cache, okc, u, s, n => { done += n; const t = performance.now(); if (t - last > 300) { last = t; pc(done / GEM_TOTAL * 85, `下載 Gemma ${MB(done)} / ${MB(GEM_TOTAL)} MB（只下載一次）…`); } });
+  }
+  gemState.cached = true;
+  let T = gemState.T;
+  if (!T) {
+    const blobOf = async (u, type) => URL.createObjectURL(new Blob([await (await cache.match(u)).arrayBuffer()], { type }));
+    T = await import(await blobOf(GEM_TF_BASE + 'transformers.min.js', 'text/javascript'));
+    T.env.allowLocalModels = false; T.env.useBrowserCache = false; T.env.useWasmCache = false;
+    T.env.backends.onnx.wasm.wasmPaths = { mjs: await blobOf(GEM_ORT_BASE + 'ort-wasm-simd-threaded.asyncify.mjs', 'text/javascript'), wasm: await blobOf(GEM_ORT_BASE + 'ort-wasm-simd-threaded.asyncify.wasm', 'application/wasm') };
+    T.env.backends.onnx.wasm.proxy = false;
+    // 只給 transformers.js 驗證過的檔案（固定版本）
+    T.env.useCustomCache = true;
+    T.env.customCache = { match: async k => { const u = typeof k === 'string' ? k : k && k.url; if (!u || !GEM_FILES[u]) return undefined; return (await okc.match(u)) ? (await cache.match(u)) || undefined : undefined; }, put: async () => {} };
+    T.env.allowRemoteModels = true;
+    gemState.T = T;
+  }
+  pc(88, '把 Gemma 載入顯示卡（約 20～60 秒）…');
+  const opt = { revision: GEM_REV };
+  if (!gemState.proc) gemState.proc = await T.AutoProcessor.from_pretrained(GEM_ID, opt);
+  gemState.model = await T.Gemma4ForConditionalGeneration.from_pretrained(GEM_ID, { ...opt, dtype: 'q4f16', device: 'webgpu' });
+  try { memMonLogEvent('gemma_ready', '🧠 Gemma 4 E2B 載入（WebGPU）'); } catch (e) {}
+}
+async function gemUnload() { try { if (gemState.model && gemState.model.dispose) await gemState.model.dispose(); } catch (e) {} gemState.model = null; }
+function gemNames() { return [...clipAllCats().map(c => c[0]), '截圖', '文件收據']; }
+function gemPromptText() {
+  const cats = clipAllCats();
+  const lines = cats.map((c, i) => `${i + 1}. ${c[0]}：${c[3] || c[0]}`);
+  lines.push(`${cats.length + 1}. 截圖：手機或電腦的螢幕畫面`, `${cats.length + 2}. 文件收據：紙本文件、收據、發票、海報公告、紙上的文字`);
+  return `${IS_LIFE ? '這是一張生活照片。' : '這是一張學校活動的照片。'}請從下面的類別選一個最符合的（都不像就回答「其他」）：\n${lines.join('\n')}\n只回答類別名稱，不要其他字。`;
+}
+// 回答可能是「用餐」「9」「9. 用餐」→ 對回類別
+function gemParse(raw, names) {
+  const s = String(raw || '').trim();
+  const [c, known] = vlmMatch(s); if (known) return c;
+  const m = s.match(/\d{1,2}/); if (m && names[+m[0] - 1]) return vlmMatch(names[+m[0] - 1])[0];
+  return '其他';
+}
+async function gemImage(p) {
+  const T = gemState.T;
+  try { if (p.file && p.file.size) { const bmp = await createImageBitmap(p.file, { resizeWidth: 640, resizeQuality: 'medium' }); const c = document.createElement('canvas'); c.width = bmp.width; c.height = bmp.height; c.getContext('2d').drawImage(bmp, 0, 0); bmp.close && bmp.close(); return T.RawImage.fromCanvas(c); } } catch (e) {}
+  if (p.thumbUrl) return await T.RawImage.fromBlob(await (await fetch(p.thumbUrl)).blob());
+  return null;
+}
+// 分類：list 裡每張照片 → p.vlmCat（來源 gemma）
+async function gemClassify(list, pc) {
+  const names = gemNames(), proc = gemState.proc;
+  const prompt = proc.apply_chat_template([{ role: 'user', content: [{ type: 'image' }, { type: 'text', text: gemPromptText() }] }], { enable_thinking: false, add_generation_prompt: true });
+  let n = 0; const t0 = performance.now();
+  for (const p of list) {
+    if (gemState.cancel) break;
+    const im = await gemImage(p); n++;
+    if (!im) continue;
+    const inputs = await proc(prompt, im, null, { add_special_tokens: false });
+    const out = await gemState.model.generate({ ...inputs, max_new_tokens: 12, do_sample: false });
+    const raw = proc.batch_decode(out.slice(null, [inputs.input_ids.dims.at(-1), null]), { skip_special_tokens: true })[0];
+    p.vlmCat = gemParse(raw, names); p.vlmSrc = 'gemma'; p.vlmTaught = false;
+    const per = (performance.now() - t0) / 1000 / n;
+    pc(n / list.length * 100, `🧠 Gemma 看圖分類 ${n} / ${list.length}（每張約 ${per.toFixed(1)} 秒，還要約 ${Math.ceil(per * (list.length - n))} 秒）`);
+    if (n % 4 === 0) await new Promise(r => setTimeout(r, 0));
+  }
+  return n;
+}
+// 在「讓大模型分類」視窗按的
+async function gemRun(all) {
+  if (gemState.busy) return;
+  const list = vlmEnsureList().filter(p => all || !p.vlmCat);
+  if (!list.length) { showToast('這些照片都分好了（要重分請按「全部重分」）'); return; }
+  const chk = await gemCheck(); gemState.check = chk;
+  if (!chk.ok) { gemState.error = chk.why; renderVlmSheet(); return; }
+  if (!(await gemIsCached()) && !confirm(`第一次要下載 Gemma 模型約 ${gemGB(GEM_TOTAL)} GB（只下載一次，存在這台電腦的瀏覽器）。\n建議用學校或家裡的網路，不要用手機熱點。要開始嗎？${chk.warn.length ? '\n\n⚠️ ' + chk.warn.join('\n⚠️ ') : ''}`)) return;
+  gemState.cancel = false; gemState.error = ''; gemState.busy = '準備中…'; gemState.pct = 0; renderVlmSheet();
+  const pc = (pct, msg) => { gemState.pct = pct; gemState.busy = msg; renderVlmSheet(); };
+  let n = 0;
+  try {
+    await gemLoad(pc);
+    n = await gemClassify(list, pc);
+  } catch (e) { console.warn('gemma', e); gemState.error = (gemState.cancel ? '已取消' : '⚠️ Gemma 沒辦法跑：' + ((e && e.message) || e)); }
+  await gemUnload();   // 用完就放掉顯示卡記憶體（下次從快取載入約 20～60 秒）
+  gemState.busy = ''; gemState.abort = null;
+  let nT = 0; try { nT = await clipTeachFromPhotos(); } catch (e) {}
+  vlmRegroup();
+  if (n) _vlm.msg = `🧠 Gemma 分好 ${n} 張${nT ? `；🎓 本機小 AI 學了 ${nT} 個例子` : ''}`;
+  renderVlmSheet();
+}
+function gemStop() { gemState.cancel = true; try { gemState.abort && gemState.abort.abort(); } catch (e) {} gemState.busy = '取消中…'; renderVlmSheet(); }
+async function gemDelete() {
+  if (gemState.busy) return;
+  if (!confirm(`刪除這台電腦裡的 Gemma 模型（釋放約 ${gemGB(GEM_TOTAL)} GB）？之後要用要重新下載。`)) return;
+  await gemUnload(); gemState.T = null; gemState.proc = null;
+  try { await caches.delete(GEM_CACHE); await caches.delete(GEM_OK); await caches.delete('pickup-gemma-v1'); } catch (e) {}
+  gemState.cached = false; localStorage.removeItem(GEM_K_AUTO); renderVlmSheet();
+}
+function gemAutoOn() { return localStorage.getItem(GEM_K_AUTO) === '1'; }
+function gemAutoSet(v) { if (v) localStorage.setItem(GEM_K_AUTO, '1'); else localStorage.removeItem(GEM_K_AUTO); renderVlmSheet(); try { updateAnalyzeChoice(); } catch (e) {} }
+// 相簿「依內容（AI）」整理時自動跑（打開才跑，而且模型已經下載過）
+async function gemAutoRun(prog) {
+  if (!gemAutoOn() || gemState.busy || !(await gemIsCached())) return 0;
+  const chk = await gemCheck(); if (!chk.ok) { showToast('🧠 ' + chk.why + ' 改用本機小 AI'); return 0; }
+  const list = vlmTargets().filter(p => !p.vlmCat); if (!list.length) return 0;
+  vlmEnsureList();
+  gemState.cancel = false; gemState.busy = 'auto';
+  let n = 0;
+  try { await gemLoad((pct, msg) => prog(92, msg)); n = await gemClassify(list, (pct, msg) => prog(92, msg)); }
+  catch (e) { console.warn('gemma auto', e); showToast('⚠️ Gemma 沒辦法跑，改用本機小 AI：' + ((e && e.message) || e)); }
+  await gemUnload(); gemState.busy = '';
+  return n;
+}
 
 // ══════════════════════════════════════════════════════════════
 // 2026v60 🔁 完全一樣的重複檔：先比檔案大小，大小一樣的再比內容（開頭、中間、結尾各 64 KB）
@@ -9304,6 +9543,12 @@ function openVlmSheet() {
 function closeVlmSheet() { document.getElementById('vlmModal')?.classList.remove('show'); }
 function renderVlmSheet() {
   const el = document.getElementById('vlmBody'); if (!el) return;
+  const keep = document.getElementById('vlmReply')?.value || '', keepOpen = el.querySelector('details.vlm-cloud')?.open;
+  renderVlmSheetInner(el);
+  const ta = document.getElementById('vlmReply'); if (ta && keep) ta.value = keep;
+  const dt = el.querySelector('details.vlm-cloud'); if (dt && keepOpen) dt.open = true;
+}
+function renderVlmSheetInner(el) {
   const list = _vlm.list, N = list.length, K = Math.ceil(N / (VLM_COLS * VLM_ROWS)), done = list.filter(p => p.vlmCat).length;
   const fixedN = photos.length - N;
   const warn = IS_LIFE
@@ -9311,8 +9556,23 @@ function renderVlmSheet() {
     : '⚠️ 總表上看得到<b>學生的臉</b>。貼給 Claude／Gemini＝把這些小圖交給那家公司，請先確認學校規定：用學校帳號、關掉「用對話改進模型」。不想送出就用本機 AI（照片不離開電腦）。';
   const sheets = _vlm.sheets.length ? `<div class="vlm-sheets">${_vlm.sheets.map((s, i) => `<div class="vlm-sheet"><img src="${s.url}" alt="分類總表 ${i + 1}"><div>第 ${i + 1} 張・編號 ${s.a}–${s.b}</div><button class="tip-link" onclick="vlmCopyImg(${i})">📋 複製圖片</button> <a class="tip-link" href="${s.url}" download="${escHtml(s.name)}">⬇️ 下載</a></div>`).join('')}</div>
       ${_vlm.sheets.length > 1 ? `<button class="tip-link" onclick="vlmDownloadAll()">⬇️ 全部下載（${_vlm.sheets.length} 張）</button>` : ''}` : '';
-  el.innerHTML = `<div class="bclip-head"><h3>📋 分類總表：請 Claude／Gemini 幫忙分</h3><button class="tip-link" onclick="closeVlmSheet()">✕ 關閉</button></div>
-    <div class="clip-sub">大模型看圖比本機 AI 準。做法：把照片排成有編號的總表 → 你自己貼給 Claude 或 Gemini → 把它的回答貼回來。本工具<b>不會自己送出任何東西</b>。</div>
+  const g = gemState, gCached = g.cached === true, chk = g.check;
+  if (g.cached === null) { g.cached = 'checking'; gemIsCached().then(v => { g.cached = v; renderVlmSheet(); }); }
+  if (!chk && !g.checking) { g.checking = true; gemCheck().then(r => { g.check = r; g.checking = false; renderVlmSheet(); }); }
+  const todo = list.filter(p => !p.vlmCat).length;
+  const gemBox = `<div class="vlm-step vlm-gem"><b>🧠 本機大模型（Gemma 4）</b>：在這台電腦上用大模型看圖分，<b>照片不離開電腦</b>。比本機小 AI 準（實測 18 張學校照片：Gemma 對 17～18 張，本機小 AI 對 15 張），每張約 1 秒（要用顯示卡）。${gCached ? '模型已經下載在這台電腦。' : `第一次要下載約 <b>${gemGB(GEM_TOTAL)} GB</b>（只一次）。`}
+      ${chk && !chk.ok ? `<div class="vlm-msg">⚠️ ${escHtml(chk.why)} 請用「本機小 AI」或下面的分類總表。</div>` : ''}
+      ${chk && chk.ok && chk.warn.length ? `<div class="vlm-msg">⚠️ ${chk.warn.map(escHtml).join('<br>⚠️ ')}</div>` : ''}
+      <div class="clip-row" style="margin-top:6px;">${g.busy ? `${clipBar(g.pct, g.busy === 'auto' ? '整理中…' : g.busy)}<button class="tip-link" onclick="gemStop()">✕ 取消</button>`
+        : `<button class="lib-pack-btn" onclick="gemRun(false)" ${(chk && !chk.ok) || !N ? 'disabled' : ''}>🧠 用 Gemma 分${todo ? `（${todo} 張還沒分）` : ''}</button>${done ? `<button class="tip-link" onclick="gemRun(true)">全部重分（${N} 張）</button>` : ''}`}</div>
+      ${g.error ? `<div class="vlm-msg">${escHtml(g.error)}</div>` : ''}
+      ${gCached ? `<div class="clip-row" style="margin-top:4px;"><label class="clip-sub" style="cursor:pointer;"><input type="checkbox" ${gemAutoOn() ? 'checked' : ''} onchange="gemAutoSet(this.checked)"> 相簿「依內容（AI）」整理時自動用 Gemma 分</label><button class="tip-link" onclick="gemDelete()">刪除模型（釋放 ${gemGB(GEM_TOTAL)} GB）</button></div>` : ''}</div>`;
+  el.innerHTML = `<div class="bclip-head"><h3>🏷 讓大模型分類（比本機小 AI 準）</h3><button class="tip-link" onclick="closeVlmSheet()">✕ 關閉</button></div>
+    <div class="clip-sub">兩種做法，結果一樣會用在審核區「🔎 AI 找照片」和相簿「依內容（AI）」分組。已分 <b>${done}</b> / ${N} 張${fixedN ? `（截圖、文件、轉傳、重複檔 ${fixedN} 張看檔案就分好了）` : ''}。</div>
+    ${_vlm.msg ? `<div class="vlm-msg" style="margin:6px 0;">${_vlm.msg}</div>` : ''}
+    ${gemBox}
+    <details class="vlm-cloud"${_vlm.sheets.length || (chk && !chk.ok) ? ' open' : ''}><summary><b>📋 或：做分類總表，自己貼給 Claude／Gemini 分</b>（不用下載，但照片會交給那家公司）</summary>
+    <div class="clip-sub">把照片排成有編號的總表 → 你自己貼給 Claude 或 Gemini → 把它的回答貼回來。本工具<b>不會自己送出任何東西</b>。</div>
     <div class="vlm-warn">${warn}</div>
     <div class="vlm-step"><b>①</b> 做總表：<b>${N}</b> 張照片 → <b>${K}</b> 張總表（每張 ${VLM_COLS}×${VLM_ROWS} 格，左上角有編號）${fixedN ? `<span class="clip-sub">（截圖、文件、轉傳、重複檔 ${fixedN} 張看檔案就分好了，不放進總表）</span>` : ''}
       <div class="clip-row" style="margin-top:6px;"><button class="lib-pack-btn" onclick="vlmBuild()" ${_vlm.busy || !N ? 'disabled' : ''}>${_vlm.sheets.length ? '↻ 重做總表' : '🧩 做總表'}</button>${_vlm.busy ? clipBar(_vlm.pct, _vlm.busy) : ''}</div>${sheets}</div>
@@ -9322,8 +9582,9 @@ function renderVlmSheet() {
     <div class="vlm-step"><b>③</b> 把它的回答整段貼在這裡（分好幾次就貼好幾次）：
       <textarea id="vlmReply" class="vlm-ta" placeholder='例：{"1":"合照","2":"用餐","3":"其他"}'></textarea>
       <div class="clip-row"><button class="lib-pack-btn" onclick="vlmApply()">✓ 套用</button>${done ? `<button class="tip-link" onclick="vlmClear()">清除 Claude／Gemini 的分類</button>` : ''}<span class="clip-sub">已分 <b>${done}</b> / ${N} 張</span></div>
-      ${_vlm.msg ? `<div class="vlm-msg">${_vlm.msg}</div>` : ''}</div>
-    <div class="clip-sub">套用後：審核區「🔎 AI 找照片」的類別、相簿「依內容（AI）」的分組都改用這個答案；有本機 AI 特徵的照片也會變成 🎓 例子，<b>之後本機 AI 會照這些例子分</b>（例子是數字，存在這台電腦）。類別名稱和說明在「🏷 分類項目」改。</div>`;
+</div>
+    </details>
+    <div class="clip-sub" style="margin-top:10px;">分好之後，有本機小 AI 特徵的照片也會變成 🎓 例子，<b>之後本機小 AI 會照這些例子分</b>（例子是數字，存在這台電腦）。類別名稱和說明在「🏷 分類項目」改。</div>`;
 }
 function vlmPrompt() {
   const cats = clipAllCats();
@@ -18729,7 +18990,7 @@ function updateAnalyzeChoice() {
   document.querySelectorAll('.ac-chip[data-split]').forEach(c => c.classList.toggle('on', c.dataset.split === albumSplitPref()));
   { const el = document.getElementById('acAiCats');   // 2026v57
     if (el) { const ai = albumSplitPref() === 'ai'; el.style.display = ai ? '' : 'none';
-      if (ai) { const cs = clipAllCats().map(c => c[0]); el.innerHTML = `🏷 分成 ${cs.length} 類＋其他：${escHtml(cs.slice(0, 6).join('、'))}${cs.length > 6 ? '…' : ''} <u style="cursor:pointer;" onclick="openClipCatEditor()">調整項目</u>＋固定資料夾：截圖、文件收據、轉傳、重複檔<br><span style="opacity:.8;">本機 AI 第一次會下載看圖模型（約 210 MB，只一次；照片不上傳）</span><br><u style="cursor:pointer;" onclick="openVlmSheet()">📋 想更準：做分類總表給 Claude／Gemini 分</u>${photos.some(p => p.vlmCat) ? `（已分 ${photos.filter(p => p.vlmCat).length} 張）` : ''}`; } } }
+      if (ai) { const cs = clipAllCats().map(c => c[0]); el.innerHTML = `🏷 分成 ${cs.length} 類＋其他：${escHtml(cs.slice(0, 6).join('、'))}${cs.length > 6 ? '…' : ''} <u style="cursor:pointer;" onclick="openClipCatEditor()">調整項目</u>＋固定資料夾：截圖、文件收據、轉傳、重複檔<br><span style="opacity:.8;">本機 AI 第一次會下載看圖模型（約 210 MB，只一次；照片不上傳）</span><br><u style="cursor:pointer;" onclick="openVlmSheet()">🏷 想更準：用大模型分（本機 Gemma 或 Claude／Gemini）</u>${gemAutoOn() ? '　🧠 整理時自動用 Gemma' : ''}${photos.some(p => p.vlmCat) ? `（已分 ${photos.filter(p => p.vlmCat).length} 張）` : ''}`; } } }
   if (one && alb) { one.classList.toggle('recommended', !!photos.length && span <= 1); alb.classList.toggle('recommended', span >= 2); }
   // 2026v2: 切換鈕標「建議」；老師沒手動切過就切到建議的那一個
   const rec = span >= 2 ? 'album' : (photos.length ? 'one' : '');
