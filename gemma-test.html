@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gemma 4 看圖分類測試 v1（2026-11-20）</title>
+<style>
+body{font-family:system-ui,"Microsoft JhengHei",sans-serif;margin:16px;background:#14141c;color:#eee;font-size:14px}
+button{font-size:14px;padding:6px 12px;margin:2px;cursor:pointer}
+table{border-collapse:collapse;width:100%;margin-top:10px}td,th{border-bottom:1px solid #333;padding:4px 6px;text-align:left;vertical-align:middle}
+img{width:96px;height:72px;object-fit:cover;border-radius:4px}.ok{color:#7f7}.ng{color:#f88}#log{white-space:pre-wrap;font-family:monospace;font-size:12px;background:#000;padding:8px;max-height:220px;overflow:auto}
+#sum{font-size:15px;margin:8px 0;padding:8px;background:#22223a;border-radius:6px}
+</style></head><body>
+<h2>Gemma 4 E2B 看圖分類測試 v1（2026-11-20）</h2>
+<div>比較：本機 Chinese-CLIP（現在用的）vs Gemma 4 E2B（新的，在瀏覽器跑）。測試照片來自 Wikimedia Commons（公開授權），也可以加自己的照片（只在本機）。</div>
+<div style="margin:8px 0">
+<button id="bSample">① 抓測試照片</button>
+<input type="file" id="files" multiple accept="image/*">
+<button id="bClip">② 跑 Chinese-CLIP</button>
+<button id="bGemma">③ 跑 Gemma 4</button>
+</div>
+<div id="sum">還沒開始</div>
+<div id="log"></div>
+<table><thead><tr><th>照片</th><th>預期</th><th>CLIP</th><th>Gemma</th><th>Gemma 秒</th><th>Gemma 原始回答</th></tr></thead><tbody id="tb"></tbody></table>
+<script type="module">
+const TJ = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1';
+const T = await import(TJ);
+const $ = id => document.getElementById(id);
+const log = s => { $('log').textContent += s + '\n'; $('log').scrollTop = 1e9; console.log(s); };
+const CATS = [
+ ['合照','一群人排好面對鏡頭拍照、師生合影、大合照'],
+ ['頒獎','上台領獎、老師頒發獎狀給學生、拿著獎盃或獎狀'],
+ ['運動競賽','操場或球場上跑步比賽、運動會、接力賽、球賽'],
+ ['舞台表演','台上唱歌、跳舞、演奏樂器、戲劇表演'],
+ ['上課學習','教室裡上課、做實驗、用電腦、看書、做美勞'],
+ ['典禮集會','全校學生在操場集合、升旗典禮、開幕閉幕、畢業典禮'],
+ ['講座研習','有人對著投影片或講台演講、大人開會研習'],
+ ['戶外校外','校外教學、參觀博物館、在戶外大自然裡活動、種植'],
+ ['用餐','吃飯、營養午餐、餐盤裡的飯菜'],
+];
+const QUERIES = [
+ ['合照','school class photo students group portrait'],
+ ['頒獎','student receiving award certificate ceremony'],
+ ['運動競賽','school sports day relay race children'],
+ ['舞台表演','school children stage performance dance'],
+ ['上課學習','elementary school classroom students lesson'],
+ ['典禮集會','school assembly students flag ceremony'],
+ ['講座研習','teachers workshop presentation projector'],
+ ['戶外校外','students field trip museum visit'],
+ ['用餐','school lunch children eating cafeteria'],
+];
+const items = [];   // {exp, url, blob, clip, gemma, sec, raw}
+let clipStats = '', gemStats = '';
+function render() {
+  $('tb').innerHTML = items.map(it => `<tr><td><img src="${it.url}"></td><td>${it.exp||'—'}</td>
+   <td class="${it.clip ? (it.clip===it.exp?'ok':'ng') : ''}">${it.clip||''}</td>
+   <td class="${it.gemma ? (it.gemma===it.exp?'ok':'ng') : ''}">${it.gemma||''}</td><td>${it.sec?it.sec.toFixed(1):''}</td><td>${(it.raw||'').replace(/</g,'&lt;')}</td></tr>`).join('');
+  const acc = k => { const l = items.filter(i => i.exp && i[k]); return l.length ? `${l.filter(i=>i[k]===i.exp).length}/${l.length}` : '—'; };
+  $('sum').innerHTML = `照片 ${items.length} 張｜CLIP 對 ${acc('clip')} ${clipStats}｜Gemma 對 ${acc('gemma')} ${gemStats}`;
+  window.__result = { n: items.length, clip: acc('clip'), gemma: acc('gemma'), clipStats, gemStats, rows: items.map(i => [i.exp, i.clip, i.gemma, i.sec && +i.sec.toFixed(2), i.raw]) };
+}
+$('bSample').onclick = async () => {
+  for (const [exp, q] of QUERIES) {
+    const u = 'https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=6&gsrsearch=' + encodeURIComponent(q + ' filetype:bitmap') + '&prop=imageinfo&iiprop=url|mime&iiurlwidth=640';
+    try {
+      const j = await (await fetch(u)).json(); const pages = Object.values(j.query?.pages || {}).sort((a,b)=>a.index-b.index).filter(p => /jpeg/.test(p.imageinfo?.[0]?.mime||'')).slice(0, 3);
+      for (const p of pages) { const b = await (await fetch(p.imageinfo[0].thumburl)).blob(); items.push({ exp, blob: b, url: URL.createObjectURL(b), title: p.title }); }
+      log(`${exp}: ${pages.length} 張`);
+    } catch (e) { log(`${exp}: 失敗 ${e.message}`); }
+    render();
+  }
+  window.__samples = true;
+};
+$('files').onchange = e => { for (const f of e.target.files) items.push({ exp: '', blob: f, url: URL.createObjectURL(f) }); render(); };
+const norm = v => { let s = 0; for (const x of v) s += x*x; s = Math.sqrt(s)||1; return v.map(x => x/s); };
+const dot = (a,b) => { let s=0; for (let i=0;i<a.length;i++) s+=a[i]*b[i]; return s; };
+$('bClip').onclick = async () => {
+  const id = 'Xenova/chinese-clip-vit-base-patch16'; const t0 = performance.now();
+  const tok = await T.AutoTokenizer.from_pretrained(id), proc = await T.AutoProcessor.from_pretrained(id);
+  const tm = await T.ChineseCLIPModel ? null : null;
+  const textModel = await T.CLIPTextModelWithProjection.from_pretrained(id, { dtype: 'q8', device: 'wasm' });
+  const visModel = await T.CLIPVisionModelWithProjection.from_pretrained(id, { dtype: 'q8', device: 'wasm' });
+  log('CLIP 載入 ' + ((performance.now()-t0)/1000).toFixed(1) + ' 秒');
+  const cv = [];
+  for (const [n, d] of CATS) {
+    const ph = [n, ...d.split('、')]; const all = [...ph, ...ph.map(p => `一張${p}的照片`)];
+    const ti = tok(all, { padding: true, truncation: true }); const { text_embeds } = await textModel(ti);
+    const D = text_embeds.dims[1], arr = text_embeds.data; let m = new Array(D).fill(0);
+    for (let r = 0; r < all.length; r++) { const v = norm(Array.from(arr.slice(r*D,(r+1)*D))); for (let k=0;k<D;k++) m[k]+=v[k]; }
+    cv.push([n, norm(m)]);
+  }
+  const t1 = performance.now();
+  for (const it of items) {
+    const im = await T.RawImage.fromBlob(it.blob); const ii = await proc(im); const { image_embeds } = await visModel(ii);
+    const v = norm(Array.from(image_embeds.data)); const sc = cv.map(([n,c]) => [n, dot(v,c)]).sort((a,b)=>b[1]-a[1]); it.clip = sc[0][0]; render();
+  }
+  clipStats = `（每張 ${((performance.now()-t1)/1000/items.length).toFixed(2)} 秒）`; render(); window.__clipDone = true;
+};
+$('bGemma').onclick = async () => {
+  if (!navigator.gpu) { log('⚠️ 這台瀏覽器沒有 WebGPU'); }
+  const id = 'onnx-community/gemma-4-E2B-it-ONNX'; const t0 = performance.now(); const files = {};
+  const pc = info => { if (info.status === 'progress' && info.file) { files[info.file] = info.total || files[info.file] || 0; } if (info.status === 'progress_total') { window.__dl = info; } };
+  const proc = await T.AutoProcessor.from_pretrained(id);
+  const model = await T.Gemma4ForConditionalGeneration.from_pretrained(id, { dtype: 'q4f16', device: 'webgpu', progress_callback: pc });
+  const mb = Object.values(files).reduce((a,b)=>a+b,0)/1e6;
+  const loadS = (performance.now()-t0)/1000; log(`Gemma 載入 ${loadS.toFixed(1)} 秒，下載 ${mb.toFixed(0)} MB：` + Object.entries(files).map(([f,s])=>`${f} ${(s/1e6).toFixed(0)}MB`).join('、'));
+  const list = CATS.map(([n,d], i) => `${i+1}. ${n}：${d}`).join('\n');
+  const text = `這是學校活動的照片。請從下面類別選一個最符合的（都不像就回答「其他」）：\n${list}\n只回答類別名稱，不要其他字。`;
+  const prompt = proc.apply_chat_template([{ role: 'user', content: [{ type: 'image' }, { type: 'text', text }] }], { enable_thinking: false, add_generation_prompt: true });
+  const secs = [];
+  for (const it of items) {
+    const t1 = performance.now();
+    const im = await T.RawImage.fromBlob(it.blob);
+    const inputs = await proc(prompt, im, null, { add_special_tokens: false });
+    const out = await model.generate({ ...inputs, max_new_tokens: 12, do_sample: false });
+    const raw = proc.batch_decode(out.slice(null, [inputs.input_ids.dims.at(-1), null]), { skip_special_tokens: true })[0].trim();
+    it.raw = raw; it.gemma = (CATS.find(([n]) => raw.includes(n)) || ['其他'])[0]; it.sec = (performance.now()-t1)/1000; secs.push(it.sec); render();
+  }
+  const s2 = secs.slice(1); gemStats = `（下載 ${mb.toFixed(0)} MB、載入 ${loadS.toFixed(0)} 秒、第一張 ${secs[0]?.toFixed(1)} 秒、之後每張 ${(s2.reduce((a,b)=>a+b,0)/(s2.length||1)).toFixed(1)} 秒）`;
+  render(); window.__gemmaDone = true;
+};
+window.__ready = true; log('準備好了');
+</script></body></html>
